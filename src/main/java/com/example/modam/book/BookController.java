@@ -6,6 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 public class BookController {
 
@@ -16,12 +19,12 @@ public class BookController {
     }
 
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonNode searchBooks(String query, String queryType) throws Exception {
+    public List<BookInfoResponse> searchBooks(String query, String queryType) throws Exception {
         if (query == null || query.isBlank() || queryType == null || queryType.isBlank()) {
-            return new XmlMapper().createObjectNode();
+            return new ArrayList<>();
         }
 
-        JsonNode bookData = bookService.parseBookData(query, queryType);
+        List<BookInfoResponse> bookData = bookService.parseBookData(query, queryType);
         return bookData;
 
         // 컨트롤러 레이어에서는 입력 데이터를 점검하고 서비스 레이어에 데이터를 보내준다.

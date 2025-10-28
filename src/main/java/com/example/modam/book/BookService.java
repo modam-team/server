@@ -1,6 +1,7 @@
 package com.example.modam.book;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,12 +10,15 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class BookService {
     @Value("${aladin.ttb.key}")
     private String ttbKey;
 
+    // API를 불러올 URL을 형성
     public URL makeUrl(String query, String queryType) throws Exception {
         String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
         StringBuilder sb = new StringBuilder("http://www.aladin.co.kr/ttb/api/ItemSearch.aspx");
@@ -27,13 +31,29 @@ public class BookService {
         return url;
     }
 
-    public JsonNode parseBookData (String query, String queryType) throws Exception {
+    // 응답 데이터인 XML을 응답 JSON으로 가공
+    public List<BookInfoResponse> parseBookData(String query, String queryType) throws Exception {
         URL url = makeUrl(query, queryType);
 
         try (InputStream in = url.openStream()) {
             XmlMapper xmlMapper = new XmlMapper();
             JsonNode root = xmlMapper.readTree(in);
-            return root;
+
+            JsonNode itemsNode = root.path("item");
+            List<BookInfoResponse> result = new ArrayList<>();
+            ObjectMapper jsonMapper = new ObjectMapper();
+
+            if (itemsNode.isArray()) {
+                for (JsonNode item : itemsNode) {
+                    BookInfoResponse book = jsonMapper.convertValue(item, BookInfoResponse.class);
+                    result.add(book);
+                }
+            } else if (itemsNode.isObject()) { // 데이터가 1개만 오는 경우
+                BookInfoResponse book = jsonMapper.convertValue(itemsNode, BookInfoResponse.class);
+                result.add(book);
+            }
+
+            return result;
         }
     }
 }
