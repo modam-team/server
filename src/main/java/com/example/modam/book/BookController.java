@@ -2,20 +2,18 @@ package com.example.modam.book;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 @RestController
 public class BookController {
-    @Value("${aladin.ttb.key}")
-    private String ttbKey;
+
+    private BookService bookService;
+
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
 
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonNode searchBooks(String query, String queryType) throws Exception {
@@ -23,18 +21,11 @@ public class BookController {
             return new XmlMapper().createObjectNode();
         }
 
-        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
-        StringBuilder sb = new StringBuilder("http://www.aladin.co.kr/ttb/api/ItemSearch.aspx");
-        sb.append("?ttbkey=").append(ttbKey);
-        sb.append("&Query=").append(encodedQuery);
-        sb.append("&QueryType=").append(queryType);
-        sb.append("&MaxResults=20&start=1&output=xml&Version=20131101");
+        JsonNode bookData = bookService.parseBookData(query, queryType);
+        return bookData;
 
-        URL url = new URL(sb.toString());
-        try (InputStream in = url.openStream()) {
-            XmlMapper xmlMapper = new XmlMapper();
-            JsonNode root = xmlMapper.readTree(in);
-            return root;
-        }
+        // 컨트롤러 레이어에서는 입력 데이터를 점검하고 서비스 레이어에 데이터를 보내준다.
+        // 서비스 레이어에서는 URL을 만들고, 외부에서 데이터를 받아와서 responseDTO에 대응하는 데이터를 가져와준다.
+        // 컨트롤러 레이어에서는 서비스 레이어에서 받아온 데이터를 API 응답으로 보내준다.
     }
 }

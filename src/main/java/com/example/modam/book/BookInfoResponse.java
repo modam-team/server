@@ -8,4 +8,6 @@ import lombok.Data;
 public class BookInfoResponse {
     private String title;
     private String author;
+    private String cover;
+    private String categoryName;
 }
