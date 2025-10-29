@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -12,6 +13,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class BookService {
@@ -32,7 +34,8 @@ public class BookService {
     }
 
     // 응답 데이터인 XML을 응답 JSON으로 가공
-    public List<BookInfoResponse> parseBookData(String query, String queryType) throws Exception {
+    @Async("aladin")
+    public CompletableFuture<List<BookInfoResponse>> parseBookData(String query, String queryType) throws Exception {
         URL url = makeUrl(query, queryType);
 
         try (InputStream in = url.openStream()) {
@@ -53,7 +56,7 @@ public class BookService {
                 result.add(book);
             }
 
-            return result;
+            return CompletableFuture.completedFuture(result);
         }
     }
 }

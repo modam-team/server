@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class BookController {
@@ -19,12 +20,12 @@ public class BookController {
     }
 
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BookInfoResponse> searchBooks(String query, String queryType) throws Exception {
+    public CompletableFuture<List<BookInfoResponse>> searchBooks(String query, String queryType) throws Exception {
         if (query == null || query.isBlank() || queryType == null || queryType.isBlank()) {
-            return new ArrayList<>();
+            return new CompletableFuture<>();
         }
 
-        List<BookInfoResponse> bookData = bookService.parseBookData(query, queryType);
+        CompletableFuture<List<BookInfoResponse>> bookData = bookService.parseBookData(query, queryType);
         return bookData;
 
         // 컨트롤러 레이어에서는 입력 데이터를 점검하고 서비스 레이어에 데이터를 보내준다.
