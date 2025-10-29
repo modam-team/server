@@ -3,6 +3,7 @@ package com.example.modam.book;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,14 @@ import java.util.concurrent.CompletableFuture;
 public class BookService {
     @Value("${aladin.ttb.key}")
     private String ttbKey;
+
+    private final XmlMapper xmlMapper;
+    private final ObjectMapper jsonMapper;
+
+    public BookService(XmlMapper xmlMapper, ObjectMapper jsonMapper) {
+        this.jsonMapper = jsonMapper;
+        this.xmlMapper = xmlMapper;
+    }
 
     // API를 불러올 URL을 형성
     public URL makeUrl(String query, String queryType) throws Exception {
@@ -39,12 +48,9 @@ public class BookService {
         URL url = makeUrl(query, queryType);
 
         try (InputStream in = url.openStream()) {
-            XmlMapper xmlMapper = new XmlMapper();
             JsonNode root = xmlMapper.readTree(in);
-
             JsonNode itemsNode = root.path("item");
             List<BookInfoResponse> result = new ArrayList<>();
-            ObjectMapper jsonMapper = new ObjectMapper();
 
             if (itemsNode.isArray()) {
                 for (JsonNode item : itemsNode) {
