@@ -1,0 +1,86 @@
+name: CICD
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+concurrency:
+  group: cicd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-only:
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      JWT_KEY: ${{ secrets.ALADIN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Gradle Build (no tests)
+        run: ./gradlew clean build --no-daemon -x test
+
+  docker-publish:
+    if: >
+      github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main'
+      || (github.event_name == 'push' &&
+                github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout merged commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Gradle Build (no tests)
+        run: ./gradlew clean build --no-daemon -x test
+
+      - name: Set image tag (short SHA)
+        id: vars
+        run: |
+          SHA_TAG=${GITHUB_SHA::7}
+          echo "sha_tag=${SHA_TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t hwangrock/modam:latest \
+                       -t hwangrock/modam:${{ steps.vars.outputs.sha_tag }} .
+
+      - name: Push Docker image
+        run: |
+          docker push hwangrock/modam:latest
+          docker push hwangrock/modam:${{ steps.vars.outputs.sha_tag }}
+
+      - name: Logout
+        if: always()
+        run: docker logout
