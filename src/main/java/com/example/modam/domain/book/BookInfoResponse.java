@@ -1,4 +1,4 @@
-package com.example.modam.book;
+package com.example.modam.domain.book;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;

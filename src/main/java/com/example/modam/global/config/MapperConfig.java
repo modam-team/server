@@ -1,4 +1,4 @@
-package com.example.modam.config;
+package com.example.modam.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;

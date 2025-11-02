@@ -1,4 +1,4 @@
-package com.example.modam.config;
+package com.example.modam.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
