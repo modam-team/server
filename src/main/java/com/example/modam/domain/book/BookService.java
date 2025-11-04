@@ -80,6 +80,7 @@ public class BookService {
     String preprocessCategory(String s) {
         String[] parseData = s.split(">");
         String parsedCategory = parseData[1].trim();
+        String firstDepth = parseData[0].trim();
 
         if (categoryMapping.isImpossible(parsedCategory)) {
             return "impossible category";
@@ -90,6 +91,10 @@ public class BookService {
             return mapped;
         }
 
-        return "impossible category";
+        if (firstDepth.equals("해외도서")) {
+            return firstDepth + ">" + parsedCategory;
+        }
+
+        return parsedCategory;
     }
 }
