@@ -22,10 +22,12 @@ public class BookService {
 
     private final XmlMapper xmlMapper;
     private final ObjectMapper jsonMapper;
+    private final CategoryMapping categoryMapping;
 
-    public BookService(XmlMapper xmlMapper, ObjectMapper jsonMapper) {
+    public BookService(XmlMapper xmlMapper, ObjectMapper jsonMapper, CategoryMapping categoryMapping) {
         this.jsonMapper = jsonMapper;
         this.xmlMapper = xmlMapper;
+        this.categoryMapping = categoryMapping;
     }
 
     // API를 불러올 URL을 형성
@@ -54,14 +56,40 @@ public class BookService {
             if (itemsNode.isArray()) {
                 for (JsonNode item : itemsNode) {
                     BookInfoResponse book = jsonMapper.convertValue(item, BookInfoResponse.class);
-                    result.add(book);
+                    String newCategory = preprocessCategory(book.getCategoryName());
+                    if (!newCategory.equals("impossible category")) {
+                        book.setCategoryName(newCategory);
+                        result.add(book);
+                    }
                 }
             } else if (itemsNode.isObject()) { // 데이터가 1개만 오는 경우
                 BookInfoResponse book = jsonMapper.convertValue(itemsNode, BookInfoResponse.class);
-                result.add(book);
+                String newCategory = preprocessCategory(book.getCategoryName());
+                if (!newCategory.equals("impossible category")) {
+                    book.setCategoryName(newCategory);
+                    result.add(book);
+                }
             }
 
             return CompletableFuture.completedFuture(result);
         }
+    }
+
+    // 입력데이터는 가공되지 않은 카테고리 데이터
+    // ex) 국내도서>소설/시/희곡>추리/미스터리소설>영미 추리/미스터리소설
+    String preprocessCategory(String s) {
+        String[] parseData = s.split(">");
+        String parsedCategory = parseData[1].trim();
+
+        if (categoryMapping.isImpossible(parsedCategory)) {
+            return "impossible category";
+        }
+
+        String mapped = categoryMapping.mapCategory(parsedCategory);
+        if (mapped != null && !mapped.isBlank()) {
+            return mapped;
+        }
+
+        return "impossible category";
     }
 }
