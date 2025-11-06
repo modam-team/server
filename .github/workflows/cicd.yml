@@ -96,9 +96,9 @@ jobs:
             # 1. EC2에서 Docker Hub 로그인
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{secrets.DOCKER_USERNAME}}" --password-stdin
             # 2. 실행 중인 이전 컨테이너 종료 및 삭제 
-            if [ $(docer ps -a -q -f name=modam_server)]; then
+            if [ $(docker ps -a -q -f name=modam_server) ]; then
               docker stop modam_server
-              docker rm mpdam_server
+              docker rm modam_server
             fi
 
             # 3. 최신 이미지 다운로드
