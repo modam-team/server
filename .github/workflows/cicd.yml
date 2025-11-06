@@ -41,7 +41,7 @@ jobs:
       github.event.pull_request.merged == true &&
       github.event.pull_request.base.ref == 'main'
       || (github.event_name == 'push' &&
-                github.ref == 'refs/heads/main')
+                (github.ref == 'refs/heads/main' || github.ref=='refs/heads/deploy')) 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout merged commit
@@ -94,15 +94,13 @@ jobs:
           key: ${{ secrets.AWS_SSH_KEY }}
           script: |
             # 환경 변수로 secret 설정
-            export DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
-            export DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}"
-            export ALADIN_SECRET="${{ secrets.ALADIN }}"
+            ALADIN_SECRET="${{ secrets.ALADIN }}"
 
             # 디버깅: secret이 제대로 전달되었는지 확인 (길이 출력)
             echo "ALADIN secret length: ${#ALADIN_SECRET}"
 
             # 1. EC2에서 Docker Hub 로그인
-            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             # 2. 실행 중인 이전 컨테이너 종료 및 삭제
             if [ $(docker ps -a -q -f name=modam_server) ]; then
               docker stop modam_server
