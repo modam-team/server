@@ -93,11 +93,16 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.AWS_SSH_KEY }}
           script: |
-            # aladin secret 값을 쉘 변수에 저장
-            ALADIN_KEY="${{ secrets.ALADIN }}"
+            # 환경 변수로 secret 설정
+            export DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
+            export DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}"
+            export ALADIN_SECRET="${{ secrets.ALADIN }}"
+
+            # 디버깅: secret이 제대로 전달되었는지 확인 (길이 출력)
+            echo "ALADIN secret length: ${#ALADIN_SECRET}"
 
             # 1. EC2에서 Docker Hub 로그인
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
             # 2. 실행 중인 이전 컨테이너 종료 및 삭제
             if [ $(docker ps -a -q -f name=modam_server) ]; then
               docker stop modam_server
@@ -108,7 +113,7 @@ jobs:
             docker pull hwangrock/modam:latest
 
             # 4. 새로운 컨테이너 실행
-            docker run -d --name modam_server -p 8080:8080 -e ALADIN="$ALADIN_KEY" hwangrock/modam:latest
+            docker run -d --name modam_server -p 8080:8080 -e ALADIN="$ALADIN_SECRET" hwangrock/modam:latest
 
             # 5. docker hub 로그아웃
             docker logout
