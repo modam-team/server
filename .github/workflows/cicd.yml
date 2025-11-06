@@ -105,7 +105,7 @@ jobs:
             docker pull hwangroc/modam:latest
 
             # 4. 새로운 컨테이너 실행
-            docker run -d --name modam_server -p 8080:8080 -e ALADIN_TTB_KEY="${{ secrets.ALADIN }}" hwangrock/modam:latest
+            docker run -d --name modam_server -p 8080:8080 -e ALADIN="${{ secrets.ALADIN }}" hwangrock/modam:latest
 
             # 5. docker hub 로그아웃
             docker logout 
