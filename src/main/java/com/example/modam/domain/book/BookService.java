@@ -38,6 +38,7 @@ public class BookService {
         sb.append("&Query=").append(encodedQuery);
         sb.append("&QueryType=").append(queryType);
         sb.append("&MaxResults=20&start=1&output=xml&Version=20131101");
+        sb.append("&Cover=Big");
 
         URL url = new URL(sb.toString());
         return url;
