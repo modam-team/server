@@ -13,20 +13,20 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 public class BookController {
 
-    private BookService bookService;
+    private BookFacade bookFacade;
 
-    public BookController(BookService bookService) {
-        this.bookService = bookService;
+    public BookController(BookFacade bookFacade) {
+        this.bookFacade=bookFacade;
     }
 
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture<ResponseDTO<List<BookInfoResponse>>> searchBooks(String query, String queryType) throws Exception {
+    public CompletableFuture<ResponseDTO<List<BookEntity>>> searchBooks(String query, String queryType) throws Exception {
 
         if (query == null || query.isBlank() || queryType == null || queryType.isBlank()) {
             throw new ApiException(ErrorDefine.INVALID_ARGUMENT);
         }
 
-        return bookService.parseBookData(query, queryType)
+        return bookFacade.searchBook(query, queryType)
                 .thenApply(bookList -> new ResponseDTO<>(bookList));
     }
     // 컨트롤러 레이어에서는 입력 데이터를 점검하고 서비스 레이어에 데이터를 보내준다.
