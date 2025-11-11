@@ -96,6 +96,6 @@ public class BookService {
             return firstDepth + ">" + parsedCategory;
         }
 
-        return parsedCategory;
+        return parsedCategory; // 테스트용으로 일단은 예외 카테고리도 반환. 나중에 바꿀 예정
     }
 }
