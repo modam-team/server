@@ -1,8 +1,6 @@
 package com.example.modam.domain.book;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity(name = "book")
@@ -12,7 +10,8 @@ import lombok.*;
 @Builder
 public class BookEntity {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     @Column(nullable = false)
     private String title;
@@ -30,9 +29,11 @@ public class BookEntity {
 
     private String description;
 
+    private String itemId; // 알라딘에서 책을 저장할때 레코드가 중복되지 않기 위함
+
     public static BookEntity toDatabase(BookInfoResponse dto) {
         return BookEntity.builder()
-                .id(dto.getItemId())
+                .itemId(dto.getItemId())
                 .title(dto.getTitle())
                 .author(dto.getAuthor())
                 .publisher(dto.getPublisher())

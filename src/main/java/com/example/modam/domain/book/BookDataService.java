@@ -19,17 +19,17 @@ public class BookDataService {
     @Transactional
     public void saveBook(List<BookEntity> data) {
         List<String> ids = data.stream()
-                .map(BookEntity::getId)
+                .map(BookEntity::getItemId)
                 .collect(Collectors.toList());
 
-        List<BookEntity> existing = bookRepository.findAllById(ids);
+        List<BookEntity> existing = bookRepository.findAllByItemIdIn(ids);
 
         Set<String> existingIds = existing.stream()
-                .map(BookEntity::getId)
+                .map(BookEntity::getItemId)
                 .collect(Collectors.toSet());
 
         List<BookEntity> toSave = data.stream()
-                .filter(b -> !existingIds.contains(b.getId()))
+                .filter(b -> !existingIds.contains(b.getItemId()))
                 .collect(Collectors.toList());
 
         if (!toSave.isEmpty()) {
