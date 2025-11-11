@@ -17,6 +17,5 @@ public class BookInfoResponse {
     private String author;
     private String cover;
     private String categoryName;
-    private String description;
     private String publisher;
 }

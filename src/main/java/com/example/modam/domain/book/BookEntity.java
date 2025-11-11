@@ -27,8 +27,6 @@ public class BookEntity {
 
     private String cover;
 
-    private String description;
-
     private String itemId; // 알라딘에서 책을 저장할때 레코드가 중복되지 않기 위함
 
     public static BookEntity toDatabase(BookInfoResponse dto) {
@@ -39,7 +37,6 @@ public class BookEntity {
                 .publisher(dto.getPublisher())
                 .categoryName(dto.getCategoryName())
                 .cover(dto.getCover())
-                .description(dto.getDescription())
                 .build();
     }
 }
