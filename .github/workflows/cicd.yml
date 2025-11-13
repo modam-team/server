@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   build-only:
-    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/deploy'
     runs-on: ubuntu-latest
     env:
       JWT_KEY: ${{ secrets.ALADIN }}
@@ -40,8 +40,6 @@ jobs:
       github.event.action == 'closed' &&
       github.event.pull_request.merged == true &&
       github.event.pull_request.base.ref == 'main'
-      || (github.event_name == 'push' &&
-                (github.ref == 'refs/heads/main' || github.ref=='refs/heads/deploy'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout merged commit
