@@ -102,7 +102,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.AWS_SSH_KEY }}
-          timeout: 120000
+          timeout: 120s
           script: |
             set -euo pipefail
 
