@@ -31,7 +31,7 @@ jobs:
           distribution: "temurin"
           cache: gradle
 
-      - name: Gradle Build (no tests)
+      - name: Gradle Build and Unit Test
         run: ./gradlew clean build --no-daemon
 
   docker-publish:
