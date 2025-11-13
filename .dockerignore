@@ -1,0 +1,25 @@
+# gradle 관련
+.gradle/
+build/
+gradle/
+
+# 테스트 및 빌드
+src/test/
+build/reports/
+build/test-results/
+build/tmp/
+build/generated/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# git 관련
+.git/
+.gitignore
+
+*.log
+*.DS_Store
+Thumbs.db
+__MACOSX/
