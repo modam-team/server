@@ -1,12 +1,12 @@
 package com.example.modam.domain.book;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-@Service
+@Component
 public class BookFacade {
     private final BookService bookService;
     private final BookDataService bookDataService;
