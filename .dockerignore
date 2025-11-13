@@ -1,15 +1,3 @@
-# gradle 관련
-.gradle/
-build/
-gradle/
-
-# 테스트 및 빌드
-src/test/
-build/reports/
-build/test-results/
-build/tmp/
-build/generated/
-
 # IDE
 .idea/
 *.iml
