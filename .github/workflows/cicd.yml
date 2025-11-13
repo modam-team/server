@@ -97,30 +97,35 @@ jobs:
           script: |
             set -euo pipefail
 
-            # 환경 변수 (EC2 내에서 사용)
+            # 환경 변수 설정 (GitHub Secrets에서 가져옴)
             ALADIN_SECRET="${{ secrets.ALADIN }}"
+            DB_URL="${{ secrets.DB_URL }}"
+            DB_USERNAME="${{ secrets.DB_USERNAME }}"
+            DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
 
-            # 1) Docker Hub 로그인 (EC2에서)
+            # 1) Docker Hub 로그인
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
             # 2) 최신 이미지 pull
             docker pull hwangrock/modam:latest
 
-            # 3) 실행 중인 기존 컨테이너가 있으면 안전히 중지 & 삭제
+            # 3) 실행 중인 기존 컨테이너 정리
             EXISTING="$(docker ps -a -q -f name=modam_server || true)"
             if [ -n "$EXISTING" ]; then
               docker stop modam_server || true
               docker rm modam_server || true
             fi
 
-            # 4) 새 컨테이너 실행 (환경변수 주입, 자동 재시작)
+            # 4) 새 컨테이너 실행 (DB 변수 주입)
             docker run -d \
               --name modam_server \
               -p 8080:8080 \
               -e ALADIN="$ALADIN_SECRET" \
+              -e DB_URL="$DB_URL" \
+              -e DB_USERNAME="$DB_USERNAME" \
+              -e DB_PASSWORD="$DB_PASSWORD" \
               --restart unless-stopped \
               hwangrock/modam:latest
 
-            # 5) Docker Hub 로그아웃
+            # 5) 로그아웃
             docker logout
-
