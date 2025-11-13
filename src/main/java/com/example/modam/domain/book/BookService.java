@@ -78,7 +78,7 @@ public class BookService {
 
     // 입력데이터는 가공되지 않은 카테고리 데이터
     // ex) 국내도서>소설/시/희곡>추리/미스터리소설>영미 추리/미스터리소설
-    String preprocessCategory(String s) {
+    public String preprocessCategory(String s) {
         String[] parseData = s.split(">");
         String parsedCategory = parseData[1].trim();
         String firstDepth = parseData[0].trim();
