@@ -32,7 +32,7 @@ jobs:
           cache: gradle
 
       - name: Gradle Build (no tests)
-        run: ./gradlew clean build --no-daemon -x test
+        run: ./gradlew clean build --no-daemon
 
   docker-publish:
     if: >
