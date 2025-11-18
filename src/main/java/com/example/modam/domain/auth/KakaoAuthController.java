@@ -9,7 +9,7 @@ import java.util.Map;
 @RestController
 public class KakaoAuthController {
     @GetMapping("/login/oauth2/code/kakao")
-    public String kakaoLoginSuccess(@AuthenticationPrincipal OAuth2User oauth2User){
+    public String kakaoLoginSuccess(@AuthenticationPrincipal OAuth2User oauth2User) {
         Map<String, Object> attributes = oauth2User.getAttributes();
 
         Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
@@ -24,8 +24,8 @@ public class KakaoAuthController {
 
         // 테스트 결과를 브라우저에 출력
         return "<h1>카카오 로그인 성공!</h1>"
-             + "<h2>환영합니다, " + nickname + "님!</h2>"
-             + "<p>받은 전체 정보: " + attributes + "</p>";
+                + "<h2>환영합니다, " + nickname + "님!</h2>"
+                + "<p>받은 전체 정보: " + attributes + "</p>";
 
     }
 }

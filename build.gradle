@@ -37,6 +37,9 @@ dependencies {
 	// 카카오 로그인
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // 임시 테스트를 위한 로그인 페이지
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 }
 
 tasks.named('test') {
