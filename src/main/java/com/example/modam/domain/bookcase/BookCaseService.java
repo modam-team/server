@@ -7,10 +7,12 @@ import com.example.modam.domain.user.UserRepository;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
+@Transactional(readOnly = true)
 public class BookCaseService {
 
     private final BookRepository bookRepository;
@@ -23,12 +25,21 @@ public class BookCaseService {
         this.bookCaseRepository = bookCaseRepository;
     }
 
-    public BookCaseEntity saveUserBook(long userId, long bookId) {
-        BookEntity book = bookRepository.findById(bookId)
+    public BookEntity getBook(long bookId) {
+        return bookRepository.findById(bookId)
                 .orElseThrow(() -> new ApiException(ErrorDefine.BOOK_NOT_FOUND));
+    }
 
-        UserEntity user = userRepository.findById(userId)
+    public UserEntity getUser(long userId) {
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
+    }
+
+    @Transactional
+    public BookCaseEntity saveUserBook(long userId, long bookId) {
+        BookEntity book = getBook(bookId);
+
+        UserEntity user = getUser(userId);
 
         BookCaseEntity userBook = BookCaseEntity.builder()
                 .book(book)
