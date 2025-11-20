@@ -16,7 +16,12 @@ public class UserEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    // 카카오 이메일 미제공 (필수x)
+    @Column
     private String email;
+
+    // 카카오가 주는 고유 ID(숫자)
+    @Column(nullable = false, unique = true)
+    private String providerId;
 }
 
