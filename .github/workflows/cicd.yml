@@ -113,6 +113,8 @@ jobs:
             DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
             KAKAO_CLIENT_ID="${{ secrets.KAKAO_CLIENT_ID }}"
             KAKAO_CLIENT_SECRET="${{ secrets.KAKAO_CLIENT_SECRET }}"
+            JWT_SECRET_KEY = "${{ secrets.JWT_SECRET_KEY }}"
+            
             
             # 1) Docker Hub 로그인
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -137,6 +139,7 @@ jobs:
               -e SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD" \
               -e KAKAO_CLIENT_ID="$KAKAO_CLIENT_ID" \
               -e KAKAO_CLIENT_SECRET="$KAKAO_CLIENT_SECRET" \
+              -e JWT_SECRET_KEY = "$JWT_SECRET_KEY" \
               --restart unless-stopped \
               hwangrock/modam:latest
 
