@@ -65,8 +65,8 @@ public class SecurityConfig {
                         .requestMatchers("/v1/auth/**").permitAll()
                         // DefaultExceptionHandler 처리를 위한 error PermitAll
                         .requestMatchers("/error/**").permitAll()
-                        // 이외의 모든 요청은 인증 정보 필요
-                        .anyRequest().authenticated());
+                        // 임시 테스트를 위해 모든 요청을 인증 없이 변경
+                        .anyRequest().permitAll());
 
         // OAuth2 로그인 설정 활성화
         http.oauth2Login(oauth2 -> oauth2
@@ -86,7 +86,7 @@ public class SecurityConfig {
 
         // 인증정보 주고받도록 허용
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of("https://hwangrock.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));

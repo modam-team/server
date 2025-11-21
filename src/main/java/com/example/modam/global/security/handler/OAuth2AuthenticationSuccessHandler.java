@@ -32,7 +32,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String accessToken = jwtProvider.createAccessToken(authentication);
 
         // 3. 프론트엔드로 리다이렉트
-        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth/callback")
+        String targetUrl = UriComponentsBuilder.fromUriString("https://hwangrock.com/oauth/callback")
                 .queryParam("accessToken", accessToken)
                 .build().toUriString();
 

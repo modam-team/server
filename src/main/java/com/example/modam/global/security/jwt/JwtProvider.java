@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
@@ -19,7 +19,7 @@ public class JwtProvider {
 
     @Value("${jwt.secret}")
     private String secretkey;
-    private Key key;
+    private SecretKey key;
 
     @Value("${jwt.expiration-time}")
     private long expirationTime;
@@ -27,7 +27,7 @@ public class JwtProvider {
     @PostConstruct
     protected void init(){
         byte[] secretKeyBytes = Decoders.BASE64.decode(secretkey);
-        key = Keys.hmacShaKeyFor(secretKeyBytes);
+        this.key = Keys.hmacShaKeyFor(secretKeyBytes);
     }
 
     // jwt 생성
@@ -42,14 +42,18 @@ public class JwtProvider {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key)
                 .compact();
     }
 
     // 토큰 유효성 검증
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parser()
+                    .verifyWith(key)
+                    .setAllowedClockSkewSeconds(300)
+                    .build()
+                    .parseSignedClaims(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -58,11 +62,11 @@ public class JwtProvider {
 
     // 토큰에서 아이디(Subject) 추출
     public String getUserId(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
+        return Jwts.parser()
+                .verifyWith(key)
                 .build()
-                .parseClaimsJws(token)
-                .getBody()
+                .parseSignedClaims(token)
+                .getPayload()
                 .getSubject();
     }
 }
