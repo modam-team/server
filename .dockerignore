@@ -1,0 +1,14 @@
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# git 관련
+.git/
+.gitignore
+
+*.log
+*.DS_Store
+Thumbs.db
+__MACOSX/

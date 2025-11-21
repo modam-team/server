@@ -31,8 +31,8 @@ jobs:
           distribution: "temurin"
           cache: gradle
 
-      - name: Gradle Build (no tests)
-        run: ./gradlew clean build --no-daemon -x test
+      - name: Gradle Build and Unit Test
+        run: ./gradlew clean build --no-daemon
 
   docker-publish:
     if: >
@@ -41,85 +41,100 @@ jobs:
       github.event.pull_request.merged == true &&
       github.event.pull_request.base.ref == 'main'
       || (github.event_name == 'push' &&
-                (github.ref == 'refs/heads/main' || github.ref=='refs/heads/deploy')) 
+                (github.ref == 'refs/heads/main'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout merged commit
         uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 0
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+      - name: Set up QEMU (for multi-arch builds)
+        uses: docker/setup-qemu-action@v2
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Set up Docker Buildx (use docker-container driver so cache export works)
+        uses: docker/setup-buildx-action@v3
         with:
-          java-version: "21"
-          distribution: "temurin"
-          cache: gradle
+          driver: docker-container
 
-      - name: Gradle Build (no tests)
-        run: ./gradlew clean build --no-daemon -x test
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Set image tag (short SHA)
         id: vars
-        run: |
-          SHA_TAG=${GITHUB_SHA::7}
-          echo "sha_tag=${SHA_TAG}" >> "$GITHUB_OUTPUT"
+        run: echo "sha_tag=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
 
-      - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Build and push Docker image (buildx, multi-stage)
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            hwangrock/modam:latest
+            hwangrock/modam:${{ steps.vars.outputs.sha_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Build Docker image
-        run: |
-          docker build -t hwangrock/modam:latest \
-                       -t hwangrock/modam:${{ steps.vars.outputs.sha_tag }} .
-
-      - name: Push Docker image
-        run: |
-          docker push hwangrock/modam:latest
-          docker push hwangrock/modam:${{ steps.vars.outputs.sha_tag }}
-
-      - name: Logout
+      - name: Logout from Docker Hub
         if: always()
         run: docker logout
 
-      # EC2 배포 단계
-      - name: Deploy to EC2 via SSH
+
+  deploy-ec2:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/deploy'
+    runs-on: ubuntu-latest
+    needs: [ ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy to EC2 via SSH (pull image & restart)
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.AWS_SSH_KEY }}
+          timeout: 120s
           script: |
-            # 환경 변수로 secret 설정
+            set -euo pipefail
+
+            # 환경 변수 설정 (GitHub Secrets에서 가져옴)
             ALADIN_SECRET="${{ secrets.ALADIN }}"
+            DB_URL="${{ secrets.DB_URL }}"
+            DB_USERNAME="${{ secrets.DB_USERNAME }}"
+            DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
 
-            # 디버깅: secret이 제대로 전달되었는지 확인 (길이 출력)
-            echo "ALADIN secret length: ${#ALADIN_SECRET}"
-            # 디버깅 끝
-            
-            # 1. EC2에서 Docker Hub 로그인
+            # 1) Docker Hub 로그인
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-            # 2. 실행 중인 이전 컨테이너 종료 및 삭제
-            if [ $(docker ps -a -q -f name=modam_server) ]; then
-              docker stop modam_server
-              docker rm modam_server
-            fi
 
-            # 3. 최신 이미지 다운로드
+            # 2) 최신 이미지 pull
             docker pull hwangrock/modam:latest
 
-            # 4. 새로운 컨테이너 실행
-            docker run -d --name modam_server -p 8080:8080 \
-              -e ALADIN="${{ secrets.ALADIN }}" \
-              -e KAKAO_CLIENT_ID="${{ secrets.KAKAO_CLIENT_ID }}" \
-              -e KAKAO_CLIENT_SECRET="${{ secrets.KAKAO_CLIENT_SECRET }}" \
-              -e DB_URL="${{ secrets.DB_URL }}" \
-              -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
-              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            # 3) 실행 중인 기존 컨테이너 정리
+            EXISTING="$(docker ps -a -q -f name=modam_server || true)"
+            if [ -n "$EXISTING" ]; then
+              docker stop modam_server || true
+              docker rm modam_server || true
+            fi
+
+            # 4) 새 컨테이너 실행 (DB 변수 주입)
+            docker run -d \
+              --name modam_server \
+              -p 8080:8080 \
+              -e ALADIN="$ALADIN_SECRET" \
+              -e DB_URL="$DB_URL" \
+              -e DB_USERNAME="$DB_USERNAME" \
+              -e DB_PASSWORD="$DB_PASSWORD" \
+              --restart unless-stopped \
               hwangrock/modam:latest
-            
-            # 5. docker hub 로그아웃
+
+            # 5) 로그아웃
             docker logout
