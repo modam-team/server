@@ -63,6 +63,8 @@ public class SecurityConfig {
                 authorize.requestMatchers( "/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         // 로그인 로직 접속 허용
                         .requestMatchers("/v1/auth/**").permitAll()
+                        // 임시로 책장 api는 인증 없이 허용
+                        .requestMatchers("/v1/books/**").permitAll()
                         // DefaultExceptionHandler 처리를 위한 error PermitAll
                         .requestMatchers("/error/**").permitAll()
                         // 이외의 모든 요청은 인증 정보 필요
