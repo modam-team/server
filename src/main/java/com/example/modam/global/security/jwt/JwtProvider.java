@@ -51,6 +51,7 @@ public class JwtProvider {
         try {
             Jwts.parser()
                     .verifyWith(key)
+                    .setAllowedClockSkewSeconds(300)
                     .build()
                     .parseSignedClaims(token);
             return true;
