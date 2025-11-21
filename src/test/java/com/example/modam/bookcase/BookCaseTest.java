@@ -43,7 +43,7 @@ public class BookCaseTest {
         long userId = 1L;
         long bookId = 12345L;
 
-        UserEntity user = new UserEntity(1, "황록", "a1234@naver.com");
+        UserEntity user = new UserEntity(1, "황록", "12345");
         BookEntity book = new BookEntity(12345, "황록1", "하하하", "황", "소설/문학", "a", "123");
 
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
