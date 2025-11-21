@@ -132,9 +132,9 @@ jobs:
               --name modam_server \
               -p 8080:8080 \
               -e ALADIN="$ALADIN_SECRET" \
-              -e DB_URL="$DB_URL" \
-              -e DB_USERNAME="$DB_USERNAME" \
-              -e DB_PASSWORD="$DB_PASSWORD" \
+              -e SPRING_DATASOURCE_URL="$DB_URL" \
+              -e SPRING_DATASOURCE_USERNAME="$DB_USERNAME" \
+              -e SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD" \
               -e KAKAO_CLIENT_ID="$KAKAO_CLIENT_ID" \
               -e KAKAO_CLIENT_SECRET="$KAKAO_CLIENT_SECRET" \
               --restart unless-stopped \
