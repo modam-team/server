@@ -4,15 +4,13 @@ import com.example.modam.global.security.CustomUserDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SecretKey;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import static io.jsonwebtoken.Jwts.parser;
-
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
@@ -29,7 +27,7 @@ public class JwtProvider {
     @PostConstruct
     protected void init(){
         byte[] secretKeyBytes = Decoders.BASE64.decode(secretkey);
-        key = Keys.hmacShaKeyFor(secretKeyBytes);
+        this.key = Keys.hmacShaKeyFor(secretKeyBytes);
     }
 
     // jwt 생성
