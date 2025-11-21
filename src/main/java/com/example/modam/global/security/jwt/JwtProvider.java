@@ -4,14 +4,15 @@ import com.example.modam.global.security.CustomUserDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecretKey;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+
 import static io.jsonwebtoken.Jwts.parser;
 
-import java.security.Key;
 import java.util.Date;
 
 @Component
@@ -20,7 +21,7 @@ public class JwtProvider {
 
     @Value("${jwt.secret}")
     private String secretkey;
-    private Key key;
+    private SecretKey key;
 
     @Value("${jwt.expiration-time}")
     private long expirationTime;
@@ -43,7 +44,7 @@ public class JwtProvider {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key)
                 .compact();
     }
 
