@@ -112,7 +112,11 @@ jobs:
             docker pull hwangrock/modam:latest
 
             # 4. 새로운 컨테이너 실행
-            docker run -d --name modam_server -p 8080:8080 -e ALADIN="$ALADIN_SECRET" hwangrock/modam:latest
-
+            docker run -d --name modam_server -p 8080:8080 \
+              -e ALADIN="${{ secrets.ALADIN }}" \
+              -e KAKAO_CLIENT_ID="${{ secrets.KAKAO_CLIENT_ID }}" \
+              -e KAKAO_CLIENT_SECRET="${{ secrets.KAKAO_CLIENT_SECRET }}" \
+              hwangrock/modam:latest
+            
             # 5. docker hub 로그아웃
             docker logout
