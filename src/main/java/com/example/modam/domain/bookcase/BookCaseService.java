@@ -66,6 +66,7 @@ public class BookCaseService {
         return new BookCaseResponse(before, reading, after);
     }
 
+    @Transactional
     public BookCaseEntity changeUserBook(long userId, long bookId) {
 
         Optional<BookCaseEntity> optionalData = bookCaseRepository.findByUser_IdAndBook_Id(userId, bookId);
