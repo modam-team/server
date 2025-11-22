@@ -27,7 +27,7 @@ public class BookEntity {
 
     private String cover;
 
-    private String itemId; // 알라딘에서 책을 저장할때 레코드가 중복되지 않기 위함
+    private String itemId; // when Aladin save book, no repetition
 
     public static BookEntity toDatabase(BookInfoResponse dto) {
         return BookEntity.builder()
@@ -37,6 +37,17 @@ public class BookEntity {
                 .publisher(dto.getPublisher())
                 .categoryName(dto.getCategoryName())
                 .cover(dto.getCover())
+                .build();
+    }
+
+    public BookInfoResponse toDto() {
+        return BookInfoResponse.builder()
+                .title(title)
+                .author(author)
+                .publisher(publisher)
+                .categoryName(categoryName)
+                .cover(cover)
+                .itemId(itemId)
                 .build();
     }
 }
