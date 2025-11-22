@@ -1,6 +1,7 @@
 package com.example.modam.domain.bookcase;
 
 import com.example.modam.domain.book.BookEntity;
+import com.example.modam.domain.book.BookInfoResponse;
 import com.example.modam.domain.book.BookRepository;
 import com.example.modam.domain.user.UserEntity;
 import com.example.modam.domain.user.UserRepository;
@@ -10,6 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,6 +39,32 @@ public class BookCaseService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
     }
+
+    public List<BookCaseEntity> getUserBook(long userId) {
+        List<BookCaseEntity> bookList = bookCaseRepository.findByUser_Id(userId);
+
+        return bookList;
+    }
+
+    public BookCaseResponse getUserBookCase(long userId) {
+        List<BookCaseEntity> data = getUserBook(userId);
+
+        Map<BookState, List<BookInfoResponse>> grouped = data.stream()
+                .collect(Collectors.groupingBy(
+                        BookCaseEntity::getStatus,
+                        Collectors.mapping(
+                                bookCaseEntity -> bookCaseEntity.getBook().toDto(),
+                                Collectors.toList()
+                        )
+                ));
+
+        List<BookInfoResponse> before = grouped.getOrDefault(BookState.BEFORE, Collections.emptyList());
+        List<BookInfoResponse> reading = grouped.getOrDefault(BookState.READING, Collections.emptyList());
+        List<BookInfoResponse> after = grouped.getOrDefault(BookState.AFTER, Collections.emptyList());
+
+        return new BookCaseResponse(before, reading, after);
+    }
+
 
     @Transactional
     public BookCaseEntity saveUserBook(long userId, long bookId) {

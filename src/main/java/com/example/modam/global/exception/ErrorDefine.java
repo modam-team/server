@@ -13,6 +13,7 @@ public enum ErrorDefine {
     // Not Found
     USER_NOT_FOUND("4040", HttpStatus.NOT_FOUND, "Not Found: User Not Found"),
     BOOK_NOT_FOUND("4041", HttpStatus.NOT_FOUND, "Not Found: Book Not Found"),
+    STATUS_NOT_FOUND("4042",HttpStatus.NOT_FOUND, "Not Found: Book Status Not Found"),
 
     //Already
     USER_ALREADY_HAS_BOOK("4092",HttpStatus.NOT_FOUND,"Already Has: User Already Has Book."),
