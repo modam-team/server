@@ -1,6 +1,8 @@
 package com.example.modam.domain.bookcase;
 
 import com.example.modam.global.response.ResponseDTO;
+import com.example.modam.global.security.CustomUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +19,10 @@ public class BookCaseController {
     }
 
     @PostMapping
-    public ResponseDTO create(@RequestBody BookCaseSaveRequestDTO dto) {
-        long userId = dto.getUserId();
+    public ResponseDTO create(@RequestBody BookCaseSaveRequestDTO dto,
+                              @AuthenticationPrincipal CustomUserDetails user) {
+
+        long userId = user.getUser().getId();
         long bookId = dto.getBookId();
 
         bookCaseService.saveUserBook(userId, bookId);

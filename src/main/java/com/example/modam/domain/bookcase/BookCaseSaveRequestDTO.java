@@ -4,6 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class BookCaseSaveRequestDTO {
-    private long userId;
     private long bookId;
 }
