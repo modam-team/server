@@ -33,4 +33,8 @@ public class BookCaseEntity {
     private LocalDateTime startedAt;
 
     private LocalDateTime finishedAt;
+
+    public void setStatus(BookState state) {
+        this.status = state;
+    }
 }
