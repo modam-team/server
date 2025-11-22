@@ -37,6 +37,11 @@ public class BookCaseService {
 
     @Transactional
     public BookCaseEntity saveUserBook(long userId, long bookId) {
+
+        if (bookCaseRepository.existsByUser_IdAndBook_Id(userId, bookId)) {
+            throw new ApiException(ErrorDefine.USER_ALREADY_HAS_BOOK);
+        }
+
         BookEntity book = getBook(bookId);
 
         UserEntity user = getUser(userId);

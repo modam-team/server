@@ -93,4 +93,19 @@ public class BookCaseTest {
         assertThrows(ApiException.class, () -> bookCaseService.saveUserBook(userId, bookId));
         verify(bookCaseRepository, never()).save(any());
     }
+
+    @DisplayName("유저의 책장에 이미 책이 있을 때 예외 처리 테스트")
+    @Test
+    void exception_test_user_already_has_book(){
+        long userId = 1L;
+        long bookId = 99999L;
+
+        when(bookCaseRepository.existsByUser_IdAndBook_Id(userId, bookId)).thenReturn(true);
+        assertThrows(ApiException.class, () -> bookCaseService.saveUserBook(userId, bookId));
+        
+        verify(bookCaseRepository, never()).save(any(BookCaseEntity.class));
+        verify(bookRepository, never()).findById(any());
+        verify(userRepository, never()).findById(any());
+    }
+
 }
