@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -111,5 +110,21 @@ public class BookCaseInTest {
         assertThrows(ApiException.class, () ->
                 bookCaseService.changeUserBook(userId, 1L)
         );
+    }
+
+    @DisplayName("시간 변경 테스트")
+    @Test
+    void change_time() {
+        long userId = 42L;
+        UserEntity user = UserEntity.builder().id(userId).name("tester").build();
+        BookEntity book = makeBook(1L, "before-book");
+        BookCaseEntity bc = makeBookCase(1L, user, book, BookState.BEFORE);
+
+        when(bookCaseRepository.findByUser_IdAndBook_Id(userId, 1L))
+                .thenReturn(Optional.of(bc));
+
+        BookCaseEntity result = bookCaseService.changeUserBook(userId, 1L);
+
+        assertNotNull(result.getStartedAt(), "before에서 시작하면 startedAt이 있어야함");
     }
 }

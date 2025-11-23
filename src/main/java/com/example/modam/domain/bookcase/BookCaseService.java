@@ -77,8 +77,10 @@ public class BookCaseService {
 
         if (data.getStatus() == BookState.BEFORE) {
             data.setStatus(BookState.READING);
+            data.setStartedAt(LocalDateTime.now());
         } else if (data.getStatus() == BookState.READING) {
             data.setStatus(BookState.AFTER);
+            data.setFinishedAt(LocalDateTime.now());
         } else {
             throw new ApiException(ErrorDefine.UNAUTHORIZED_STATUS);
         }
