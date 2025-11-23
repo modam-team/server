@@ -1,5 +1,7 @@
 package com.example.modam.global.security.jwt;
 
+import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.security.CustomUserDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -25,7 +27,7 @@ public class JwtProvider {
     private long expirationTime;
 
     @PostConstruct
-    protected void init(){
+    protected void init() {
         byte[] secretKeyBytes = Decoders.BASE64.decode(secretkey);
         this.key = Keys.hmacShaKeyFor(secretKeyBytes);
     }
@@ -55,8 +57,14 @@ public class JwtProvider {
                     .build()
                     .parseSignedClaims(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            throw new ApiException(ErrorDefine.TOKEN_EXPIRED);
+        } catch (SecurityException | SignatureException e) {
+            throw new ApiException(ErrorDefine.TOKEN_UNSUPPORTED);
+        } catch (MalformedJwtException e) {
+            throw new ApiException(ErrorDefine.TOKEN_MALFORMED);
         } catch (Exception e) {
-            return false;
+            throw new ApiException(ErrorDefine.TOKEN_INVALID);
         }
     }
 
