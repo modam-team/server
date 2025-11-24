@@ -1,5 +1,6 @@
 package com.example.modam.book;
 
+import com.example.modam.domain.book.AladinResponse;
 import com.example.modam.domain.book.BookDataService;
 import com.example.modam.domain.book.BookEntity;
 import com.example.modam.domain.book.BookRepository;
@@ -30,19 +31,25 @@ public class BookDataTest {
     @Test
     @DisplayName("DB에 중복 책을 저장하지 않는 테스트입니다.")
     void book_save_test() {
-        BookEntity b1 = new BookEntity(1, "황록1", "하하하", "황", "소설/문학", "a", "123");
-        BookEntity b2 = new BookEntity(2, "황록2", "하하하", "황", "소설/문학", "a", "456");
-        BookEntity b3 = new BookEntity(3, "황록3", "하하하", "황", "소설/문학", "a", "789");
-        List<BookEntity> input = List.of(b1, b2, b3);
-        when(bookRepository.findAllByItemIdIn(List.of("123", "456", "789")))
-                .thenReturn(List.of(b2));
+        AladinResponse b1 = new AladinResponse("123", "황록1", "하하하", "황", "소설/문학", "a");
+        AladinResponse b2 = new AladinResponse("456", "황록1", "하하하", "황", "소설/문학", "a");
+        AladinResponse b3 = new AladinResponse("789", "황록1", "하하하", "황", "소설/문학", "a");
+        List<AladinResponse> input = List.of(b1, b2, b3);
+
+        List<String> ids = List.of("123", "456", "789");
+
+        // 기존 DB에 이미 존재한다고 가정하는 엔티티는 b2만 존재하도록 설정
+        when(bookRepository.findAllByItemIdIn(ids))
+                .thenReturn(List.of(BookEntity.toDatabase(b2)));
 
         bookDataService.saveBook(input);
 
-        // captor를 통해 내부에 저장된 데이터를 관측. 디버깅 시에 활용하자
-        ArgumentCaptor<List<BookEntity>> captor = ArgumentCaptor.forClass(List.class);
+        // saveAll에 저장된 값 캡처
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<BookEntity>> captor = (ArgumentCaptor) ArgumentCaptor.forClass(List.class);
         verify(bookRepository, times(1)).saveAll(captor.capture());
         List<BookEntity> saved = captor.getValue();
+
         Set<String> savedItemIds = saved.stream()
                 .map(BookEntity::getItemId)
                 .collect(Collectors.toSet());
@@ -50,7 +57,10 @@ public class BookDataTest {
         assertThat(savedItemIds).containsExactlyInAnyOrder("123", "789");
         assertThat(savedItemIds).doesNotContain("456");
 
-        verify(bookRepository, times(1)).findAllByItemIdIn(List.of("123", "456", "789"));
+        // 핵심: findAllByItemIdIn은 서비스에서 두 번 호출되므로 times(2)
+        verify(bookRepository, times(2)).findAllByItemIdIn(ids);
+
+        // 더 이상의 호출이 없음을 확인
         verifyNoMoreInteractions(bookRepository);
     }
 }

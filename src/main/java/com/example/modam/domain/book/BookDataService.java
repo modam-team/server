@@ -17,7 +17,12 @@ public class BookDataService {
     }
 
     @Transactional
-    public void saveBook(List<BookEntity> data) {
+    public List<BookEntity> saveBook(List<AladinResponse> book) {
+
+        List<BookEntity> data = book.stream()
+                .map(BookEntity::toDatabase)
+                .collect(Collectors.toList());
+
         List<String> ids = data.stream()
                 .map(BookEntity::getItemId)
                 .collect(Collectors.toList());
@@ -35,5 +40,9 @@ public class BookDataService {
         if (!toSave.isEmpty()) {
             bookRepository.saveAll(toSave);
         }
+
+        List<BookEntity> response = bookRepository.findAllByItemIdIn(ids);
+
+        return response;
     }
 }

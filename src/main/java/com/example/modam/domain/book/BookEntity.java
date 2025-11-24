@@ -29,6 +29,7 @@ public class BookEntity {
 
     private String itemId; // when Aladin save book, no repetition
 
+    // dto -> entity
     public static BookEntity toDatabase(AladinResponse dto) {
         return BookEntity.builder()
                 .itemId(dto.getItemId())
@@ -40,14 +41,15 @@ public class BookEntity {
                 .build();
     }
 
-    public AladinResponse toDto() {
-        return AladinResponse.builder()
+    // entity -> dto
+    public BookInfoResponse toDto() {
+        return BookInfoResponse.builder()
+                .bookId(id)
                 .title(title)
                 .author(author)
                 .publisher(publisher)
                 .categoryName(categoryName)
                 .cover(cover)
-                .itemId(itemId)
                 .build();
     }
 }
