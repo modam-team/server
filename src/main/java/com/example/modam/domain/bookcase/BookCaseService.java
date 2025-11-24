@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,6 +64,28 @@ public class BookCaseService {
         List<BookInfoResponse> after = grouped.getOrDefault(BookState.AFTER, Collections.emptyList());
 
         return new BookCaseResponse(before, reading, after);
+    }
+
+    @Transactional
+    public BookCaseEntity changeUserBook(long userId, long bookId) {
+
+        Optional<BookCaseEntity> optionalData = bookCaseRepository.findByUser_IdAndBook_Id(userId, bookId);
+        if (optionalData.isEmpty()) {
+            throw new ApiException(ErrorDefine.BOOKCASE_NOT_FOUND);
+        }
+        BookCaseEntity data = optionalData.get();
+
+        if (data.getStatus() == BookState.BEFORE) {
+            data.setStatus(BookState.READING);
+            data.setStartedAt(LocalDateTime.now());
+        } else if (data.getStatus() == BookState.READING) {
+            data.setStatus(BookState.AFTER);
+            data.setFinishedAt(LocalDateTime.now());
+        } else {
+            throw new ApiException(ErrorDefine.UNAUTHORIZED_STATUS);
+        }
+
+        return data;
     }
 
 

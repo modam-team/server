@@ -23,15 +23,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
 
-        // 1. 로그인 성공한 사용자 정보 가져오기
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-
-
-        // 2. JWT 토큰 생성
+        // JWT 생성
         String accessToken = jwtProvider.createAccessToken(authentication);
 
-        // 3. 프론트엔드로 리다이렉트
+        // 프론트엔드로 리다이렉트
         String targetUrl = UriComponentsBuilder.fromUriString("https://hwangrock.com/oauth/callback")
                 .queryParam("accessToken", accessToken)
                 .build().toUriString();
