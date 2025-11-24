@@ -20,7 +20,7 @@ public class BookController {
     }
 
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture<ResponseDTO<List<BookInfoResponse>>> searchBooks(String query, String queryType) throws Exception {
+    public CompletableFuture<ResponseDTO<List<AladinResponse>>> searchBooks(String query, String queryType) throws Exception {
 
         if (query == null || query.isBlank() || queryType == null || queryType.isBlank()) {
             throw new ApiException(ErrorDefine.INVALID_ARGUMENT);

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BookInfoResponse {
+public class AladinResponse {
     private String itemId;
     private String title;
     private String author;

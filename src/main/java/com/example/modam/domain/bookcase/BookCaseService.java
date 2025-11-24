@@ -1,7 +1,7 @@
 package com.example.modam.domain.bookcase;
 
 import com.example.modam.domain.book.BookEntity;
-import com.example.modam.domain.book.BookInfoResponse;
+import com.example.modam.domain.book.AladinResponse;
 import com.example.modam.domain.book.BookRepository;
 import com.example.modam.domain.user.UserEntity;
 import com.example.modam.domain.user.UserRepository;
@@ -50,7 +50,7 @@ public class BookCaseService {
     public BookCaseResponse getUserBookCase(long userId) {
         List<BookCaseEntity> data = getUserBook(userId);
 
-        Map<BookState, List<BookInfoResponse>> grouped = data.stream()
+        Map<BookState, List<AladinResponse>> grouped = data.stream()
                 .collect(Collectors.groupingBy(
                         BookCaseEntity::getStatus,
                         Collectors.mapping(
@@ -59,9 +59,9 @@ public class BookCaseService {
                         )
                 ));
 
-        List<BookInfoResponse> before = grouped.getOrDefault(BookState.BEFORE, Collections.emptyList());
-        List<BookInfoResponse> reading = grouped.getOrDefault(BookState.READING, Collections.emptyList());
-        List<BookInfoResponse> after = grouped.getOrDefault(BookState.AFTER, Collections.emptyList());
+        List<AladinResponse> before = grouped.getOrDefault(BookState.BEFORE, Collections.emptyList());
+        List<AladinResponse> reading = grouped.getOrDefault(BookState.READING, Collections.emptyList());
+        List<AladinResponse> after = grouped.getOrDefault(BookState.AFTER, Collections.emptyList());
 
         return new BookCaseResponse(before, reading, after);
     }

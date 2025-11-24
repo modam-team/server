@@ -17,7 +17,7 @@ public class BookFacade {
     }
 
     // 알라딘 검색한 스레드가 이어서 DB에 저장하도록 연결하는 퍼사드
-    public CompletableFuture<List<BookInfoResponse>> searchBook(String query, String queryType) throws Exception {
+    public CompletableFuture<List<AladinResponse>> searchBook(String query, String queryType) throws Exception {
         return bookService.parseBookData(query, queryType).thenApply(responses -> {
             List<BookEntity> entities = responses.stream().map(BookEntity::toDatabase).collect(Collectors.toList());
             bookDataService.saveBook(entities);
