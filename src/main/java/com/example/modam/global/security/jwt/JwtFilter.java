@@ -26,38 +26,30 @@ public class JwtFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException{
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
 
         // JWT 유효성 검증
-        if (StringUtils.hasText(token) && jwtProvider.validateToken(token)){
+        if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
+            String userSubject = jwtProvider.getUserId(token);
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userSubject);
 
-            // 토큰에 저장된 Subject(이메일)를 꺼내옵니다.
-            String email = jwtProvider.getUserId(token);
-
-            // 유저 정보 생성
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-
-            if (userDetails != null){
-                // UserDetails, Password, Role 정보를 기반으로 접근 권한을 가지고 있는 Token 생성
+            if (userDetails != null) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
                 // Security Context 해당 접근 권한 정보 설정
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 
-        // 다음 필터로 넘기기
         filterChain.doFilter(request, response);
 
     }
 
     // Request Header에서 토큰 조회 및 Bearer 문자열 제거 후 반환하는 메소드
-    private String resolveToken(HttpServletRequest request){
+    private String resolveToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
 
-        // token 정보 존재 여부 및 bearer 토큰인지 확인
-        if (token!=null && token.startsWith("Bearer ")){
+        if (token != null && token.startsWith("Bearer ")) {
             return token.substring(7);
         }
 

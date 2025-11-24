@@ -39,4 +39,18 @@ public class BookCaseController {
                 data
         );
     }
+
+    @PatchMapping
+    public ResponseDTO update(@RequestBody BookCaseSaveRequestDTO dto,
+                              @AuthenticationPrincipal CustomUserDetails user) {
+
+        long userId = user.getUser().getId();
+        long bookId = dto.getBookId();
+
+        bookCaseService.changeUserBook(userId, bookId);
+
+        return new ResponseDTO<>(
+                "BookCase successfully change status"
+        );
+    }
 }

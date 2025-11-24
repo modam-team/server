@@ -11,15 +11,17 @@ public enum ErrorDefine {
     INVALID_HEADER_ERROR("4006", HttpStatus.BAD_REQUEST, "Bad Request: Invalid Header Error"),
 
     // Not Found
-    USER_NOT_FOUND("4040", HttpStatus.NOT_FOUND, "Not Found: User Not Found"),
+    USER_NOT_FOUND("4040", HttpStatus.NOT_FOUND, "Not Found: KaKao User Not Found"),
     BOOK_NOT_FOUND("4041", HttpStatus.NOT_FOUND, "Not Found: Book Not Found"),
     STATUS_NOT_FOUND("4042",HttpStatus.NOT_FOUND, "Not Found: Book Status Not Found"),
+    BOOKCASE_NOT_FOUND("4043",HttpStatus.NOT_FOUND, "Not Found: Bookcase Not Found"),
 
     //Already
     USER_ALREADY_HAS_BOOK("4092",HttpStatus.NOT_FOUND,"Already Has: User Already Has Book."),
 
     // Forbidden
     UNAUTHORIZED_USER("4030", HttpStatus.FORBIDDEN, "Forbidden: Unauthorized User"),
+    UNAUTHORIZED_STATUS("4091", HttpStatus.FORBIDDEN, "Forbidden: Unauthorized Book Status"),
 
     // social login
     LOGIN_ACCESS_DENIED("4031", HttpStatus.FORBIDDEN, "Forbidden: Login Access Denied"),
