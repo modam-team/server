@@ -2,10 +2,10 @@ package com.example.modam.bookcase;
 
 import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.book.Interface.BookRepository;
-import com.example.modam.domain.bookcase.BookCaseEntity;
-import com.example.modam.domain.bookcase.BookCaseRepository;
-import com.example.modam.domain.bookcase.BookCaseService;
-import com.example.modam.domain.bookcase.BookState;
+import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
+import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
+import com.example.modam.domain.bookcase.Application.BookCaseService;
+import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.user.UserEntity;
 import com.example.modam.domain.user.UserRepository;
 import com.example.modam.global.exception.ApiException;

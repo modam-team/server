@@ -1,4 +1,4 @@
-package com.example.modam.domain.bookcase;
+package com.example.modam.domain.bookcase.Domain;
 
 import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.user.UserEntity;
