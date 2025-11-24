@@ -1,6 +1,6 @@
 package com.example.modam.domain.bookcase;
 
-import com.example.modam.domain.book.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.BookInfoResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

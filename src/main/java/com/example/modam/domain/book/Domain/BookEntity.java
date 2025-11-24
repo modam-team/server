@@ -1,5 +1,7 @@
-package com.example.modam.domain.book;
+package com.example.modam.domain.book.Domain;
 
+import com.example.modam.domain.book.Presentation.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.AladinResponse;
 import jakarta.persistence.*;
 import lombok.*;
 

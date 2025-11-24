@@ -1,6 +1,6 @@
 package com.example.modam.domain.bookcase;
 
-import com.example.modam.domain.book.BookEntity;
+import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;

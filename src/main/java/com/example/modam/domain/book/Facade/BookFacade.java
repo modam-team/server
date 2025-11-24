@@ -1,5 +1,9 @@
-package com.example.modam.domain.book;
+package com.example.modam.domain.book.Facade;
 
+import com.example.modam.domain.book.Application.BookDataService;
+import com.example.modam.domain.book.Presentation.BookInfoResponse;
+import com.example.modam.domain.book.Application.BookService;
+import com.example.modam.domain.book.Domain.BookEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

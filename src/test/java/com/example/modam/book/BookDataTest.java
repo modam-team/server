@@ -1,9 +1,9 @@
 package com.example.modam.book;
 
-import com.example.modam.domain.book.AladinResponse;
-import com.example.modam.domain.book.BookDataService;
-import com.example.modam.domain.book.BookEntity;
-import com.example.modam.domain.book.BookRepository;
+import com.example.modam.domain.book.Presentation.AladinResponse;
+import com.example.modam.domain.book.Application.BookDataService;
+import com.example.modam.domain.book.Domain.BookEntity;
+import com.example.modam.domain.book.Interface.BookRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
