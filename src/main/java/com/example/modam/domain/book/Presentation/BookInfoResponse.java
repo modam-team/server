@@ -12,4 +12,6 @@ public class BookInfoResponse {
     private String cover;
     private String categoryName;
     private String publisher;
+    private double rate;
+    private long totalReview;
 }

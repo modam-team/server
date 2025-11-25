@@ -24,8 +24,9 @@ public class BookFacade {
     public CompletableFuture<List<BookInfoResponse>> searchBook(String query, String queryType) throws Exception {
         return bookService.parseBookData(query, queryType).thenApply(bookData -> {
             List<BookEntity> entities = bookDataService.saveBook(bookData);
-            List<BookInfoResponse> responses = entities.stream().map(BookEntity::toDto).collect(Collectors.toList());
-            return responses;
+            return entities.stream()
+                    .map(bookDataService::toDto)
+                    .collect(Collectors.toList());
         });
     }
 }
