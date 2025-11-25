@@ -13,11 +13,11 @@ public enum ErrorDefine {
     // Not Found
     USER_NOT_FOUND("4040", HttpStatus.NOT_FOUND, "Not Found: KaKao User Not Found"),
     BOOK_NOT_FOUND("4041", HttpStatus.NOT_FOUND, "Not Found: Book Not Found"),
-    STATUS_NOT_FOUND("4042",HttpStatus.NOT_FOUND, "Not Found: Book Status Not Found"),
-    BOOKCASE_NOT_FOUND("4043",HttpStatus.NOT_FOUND, "Not Found: Bookcase Not Found"),
+    STATUS_NOT_FOUND("4042", HttpStatus.NOT_FOUND, "Not Found: Book Status Not Found"),
+    BOOKCASE_NOT_FOUND("4043", HttpStatus.NOT_FOUND, "Not Found: Bookcase Not Found"),
 
     //Already
-    USER_ALREADY_HAS_BOOK("4092",HttpStatus.NOT_FOUND,"Already Has: User Already Has Book."),
+    USER_ALREADY_HAS_BOOK("4092", HttpStatus.NOT_FOUND, "Already Has: User Already Has Book."),
 
     // Forbidden
     UNAUTHORIZED_USER("4030", HttpStatus.FORBIDDEN, "Forbidden: Unauthorized User"),
@@ -30,7 +30,12 @@ public enum ErrorDefine {
     TOKEN_EXPIRED("4034", HttpStatus.FORBIDDEN, "Forbidden: Token Expired"),
     TOKEN_UNSUPPORTED("4035", HttpStatus.FORBIDDEN, "Forbidden: Token Unsupported"),
     TOKEN_UNKNOWN("4036", HttpStatus.FORBIDDEN, "Forbidden: Token Unknown"),
-    TOKEN_INVALID("4037", HttpStatus.FORBIDDEN, "Forbidden: Token Invalid");
+    TOKEN_INVALID("4037", HttpStatus.FORBIDDEN, "Forbidden: Token Invalid"),
+
+    // REVIEW
+    EXCEED_MAX_COMMENT_LENGTH("4038", HttpStatus.FORBIDDEN, "Forbidden: Comment Exceed Max Length"),
+    EXCEED_MAX_RATING_NUM("4030", HttpStatus.FORBIDDEN, "Forbidden: Rating Exceed Max Number"),
+    INVALID_HASHTAG("4039", HttpStatus.FORBIDDEN, "Forbidden: Invalid Hashtag");
 
 
     private final String errorCode;

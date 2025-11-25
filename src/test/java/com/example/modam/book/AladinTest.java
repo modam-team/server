@@ -1,7 +1,7 @@
 package com.example.modam.book;
 
 import com.example.modam.domain.book.Application.BookService;
-import com.example.modam.global.config.CategoryMapping;
+import com.example.modam.global.utils.CategoryMapping;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

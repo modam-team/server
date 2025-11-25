@@ -1,4 +1,4 @@
-package com.example.modam.global.config;
+package com.example.modam.global.utils;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
