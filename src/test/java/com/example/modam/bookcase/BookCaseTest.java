@@ -6,6 +6,7 @@ import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.bookcase.Application.BookCaseService;
 import com.example.modam.domain.bookcase.Domain.BookState;
+import com.example.modam.domain.bookcase.Presentation.BookCaseSaveRequestDTO;
 import com.example.modam.domain.user.UserEntity;
 import com.example.modam.domain.user.UserRepository;
 import com.example.modam.global.exception.ApiException;
@@ -46,6 +47,10 @@ public class BookCaseTest {
         UserEntity user = new UserEntity(1, "황록", "12345");
         BookEntity book = new BookEntity(12345, "황록1", "하하하", "황", "소설/문학", "a", "123");
 
+        BookCaseSaveRequestDTO dto = mock(BookCaseSaveRequestDTO.class);
+        when(dto.getBookId()).thenReturn(bookId);
+        when(dto.getState()).thenReturn(BookState.BEFORE);
+
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
@@ -55,7 +60,7 @@ public class BookCaseTest {
                     return saved;
                 });
 
-        BookCaseEntity result = bookCaseService.saveUserBook(userId, bookId);
+        BookCaseEntity result = bookCaseService.saveUserBook(userId, dto);
 
         ArgumentCaptor<BookCaseEntity> captor = ArgumentCaptor.forClass(BookCaseEntity.class);
         verify(bookCaseRepository, times(1)).save(captor.capture());
@@ -74,9 +79,13 @@ public class BookCaseTest {
         long userId = 1L;
         long bookId = 99999L;
 
+        BookCaseSaveRequestDTO dto = mock(BookCaseSaveRequestDTO.class);
+        when(dto.getBookId()).thenReturn(bookId);
+        when(dto.getState()).thenReturn(BookState.BEFORE);
+
         when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
-        assertThrows(ApiException.class, () -> bookCaseService.saveUserBook(userId, bookId));
+        assertThrows(ApiException.class, () -> bookCaseService.saveUserBook(userId, dto));
         verify(bookCaseRepository, never()).save(any());
     }
 
@@ -87,10 +96,14 @@ public class BookCaseTest {
         long bookId = 99999L;
         BookEntity book = new BookEntity(bookId, "제목", "설명", "저자", "카테고리", "출판사", "isbn");
 
+        BookCaseSaveRequestDTO dto = mock(BookCaseSaveRequestDTO.class);
+        when(dto.getBookId()).thenReturn(bookId);
+        when(dto.getState()).thenReturn(BookState.BEFORE);
+
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        assertThrows(ApiException.class, () -> bookCaseService.saveUserBook(userId, bookId));
+        assertThrows(ApiException.class, () -> bookCaseService.saveUserBook(userId, dto));
         verify(bookCaseRepository, never()).save(any());
     }
 
@@ -100,9 +113,13 @@ public class BookCaseTest {
         long userId = 1L;
         long bookId = 99999L;
 
+        BookCaseSaveRequestDTO dto = mock(BookCaseSaveRequestDTO.class);
+        when(dto.getBookId()).thenReturn(bookId);
+        when(dto.getState()).thenReturn(BookState.BEFORE);
+
         when(bookCaseRepository.existsByUser_IdAndBook_Id(userId, bookId)).thenReturn(true);
-        assertThrows(ApiException.class, () -> bookCaseService.saveUserBook(userId, bookId));
-        
+        assertThrows(ApiException.class, () -> bookCaseService.saveUserBook(userId, dto));
+
         verify(bookCaseRepository, never()).save(any(BookCaseEntity.class));
         verify(bookRepository, never()).findById(any());
         verify(userRepository, never()).findById(any());

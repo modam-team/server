@@ -7,6 +7,7 @@ import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Presentation.BookCaseResponse;
+import com.example.modam.domain.bookcase.Presentation.BookCaseSaveRequestDTO;
 import com.example.modam.domain.user.UserEntity;
 import com.example.modam.domain.user.UserRepository;
 import com.example.modam.global.exception.ApiException;
@@ -94,7 +95,9 @@ public class BookCaseService {
 
 
     @Transactional
-    public BookCaseEntity saveUserBook(long userId, long bookId) {
+    public BookCaseEntity saveUserBook(long userId, BookCaseSaveRequestDTO dto) {
+        long bookId = dto.getBookId();
+        BookState state = dto.getState();
 
         if (bookCaseRepository.existsByUser_IdAndBook_Id(userId, bookId)) {
             throw new ApiException(ErrorDefine.USER_ALREADY_HAS_BOOK);
@@ -104,13 +107,37 @@ public class BookCaseService {
 
         UserEntity user = getUser(userId);
 
-        BookCaseEntity userBook = BookCaseEntity.builder()
-                .book(book)
-                .user(user)
-                .status(BookState.BEFORE)
-                .enrollAt(LocalDateTime.now())
-                .build();
+        if (state == BookState.BEFORE) {
+            BookCaseEntity userBook = BookCaseEntity.builder()
+                    .book(book)
+                    .user(user)
+                    .status(BookState.BEFORE)
+                    .enrollAt(LocalDateTime.now())
+                    .build();
 
-        return bookCaseRepository.save(userBook);
+            return bookCaseRepository.save(userBook);
+        } else if (state == BookState.READING) {
+            BookCaseEntity userBook = BookCaseEntity.builder()
+                    .book(book)
+                    .user(user)
+                    .status(BookState.READING)
+                    .enrollAt(LocalDateTime.now())
+                    .startedAt(LocalDateTime.now())
+                    .build();
+
+            return bookCaseRepository.save(userBook);
+        } else {
+            BookCaseEntity userBook = BookCaseEntity.builder()
+                    .book(book)
+                    .user(user)
+                    .status(BookState.AFTER)
+                    .enrollAt(LocalDateTime.now())
+                    .startedAt(LocalDateTime.now())
+                    .finishedAt(LocalDateTime.now())
+                    .build();
+
+            return bookCaseRepository.save(userBook);
+        }
+
     }
 }

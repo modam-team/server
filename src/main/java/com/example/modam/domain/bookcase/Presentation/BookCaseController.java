@@ -21,9 +21,8 @@ public class BookCaseController {
                               @AuthenticationPrincipal CustomUserDetails user) {
 
         long userId = user.getUser().getId();
-        long bookId = dto.getBookId();
 
-        bookCaseService.saveUserBook(userId, bookId);
+        bookCaseService.saveUserBook(userId, dto);
 
         return new ResponseDTO<>(
                 "BookCase successfully created"
