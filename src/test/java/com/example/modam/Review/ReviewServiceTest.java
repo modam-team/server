@@ -44,6 +44,7 @@ class ReviewServiceTest {
 
         assertThrows(ApiException.class, () -> reviewService.saveReview(1L, dto));
         verify(bookCaseRepository, times(1)).findById(999L);
+
         verifyNoInteractions(reviewRepository);
     }
 
@@ -66,6 +67,27 @@ class ReviewServiceTest {
         verifyNoInteractions(reviewRepository);
     }
 
+    @DisplayName("이미 저장한 책장 예외처리")
+    @Test
+    void Already_save_test() {
+        ReviewRequestDTO dto = mock(ReviewRequestDTO.class);
+        when(dto.getBookCaseId()).thenReturn(10L);
+
+        UserEntity owner = mock(UserEntity.class);
+        when(owner.getId()).thenReturn(1L);
+
+        BookCaseEntity bookCase = mock(BookCaseEntity.class);
+        when(bookCase.getUser()).thenReturn(owner);
+
+        when(bookCaseRepository.findById(10L)).thenReturn(Optional.of(bookCase));
+        when(reviewRepository.existsByBookCase_Id(10L)).thenReturn(true);
+
+        assertThrows(ApiException.class, () -> reviewService.saveReview(1L, dto));
+        verify(bookCaseRepository, times(1)).findById(10L);
+        verify(reviewRepository, times(1)).existsByBookCase_Id(10L);
+        verify(reviewRepository, never()).save(any());
+    }
+
     @DisplayName("점수 최대치를 넘을 때 예외처리")
     @Test
     void Exceed_score_test() {
@@ -77,12 +99,18 @@ class ReviewServiceTest {
 
         BookCaseEntity bookCase = mock(BookCaseEntity.class);
         when(bookCase.getUser()).thenReturn(owner);
+
         when(bookCaseRepository.findById(1L)).thenReturn(Optional.of(bookCase));
+
+        when(reviewRepository.existsByBookCase_Id(1L)).thenReturn(false);
+
         when(dto.getRating()).thenReturn(Integer.MAX_VALUE);
 
         assertThrows(ApiException.class, () -> reviewService.saveReview(1L, dto));
         verify(bookCaseRepository, times(1)).findById(1L);
-        verifyNoInteractions(reviewRepository);
+
+        verify(reviewRepository, times(1)).existsByBookCase_Id(1L);
+        verify(reviewRepository, never()).save(any());
     }
 
     @DisplayName("코멘트가 길때 예외처리")
@@ -99,6 +127,8 @@ class ReviewServiceTest {
 
         when(bookCaseRepository.findById(2L)).thenReturn(Optional.of(bookCase));
 
+        when(reviewRepository.existsByBookCase_Id(2L)).thenReturn(false);
+
         when(dto.getRating()).thenReturn(1);
 
         String longComment = "a".repeat(5000);
@@ -106,13 +136,14 @@ class ReviewServiceTest {
 
         assertThrows(ApiException.class, () -> reviewService.saveReview(2L, dto));
         verify(bookCaseRepository, times(1)).findById(2L);
-        verifyNoInteractions(reviewRepository);
+
+        verify(reviewRepository, times(1)).existsByBookCase_Id(2L);
+        verify(reviewRepository, never()).save(any());
     }
 
     @DisplayName("정해진 해시태그가 아닐때 예외처리")
     @Test
     void Invalid_hashtag_test() {
-        // given
         ReviewRequestDTO dto = mock(ReviewRequestDTO.class);
         when(dto.getBookCaseId()).thenReturn(3L);
 
@@ -124,6 +155,8 @@ class ReviewServiceTest {
 
         when(bookCaseRepository.findById(3L)).thenReturn(Optional.of(bookCase));
 
+        when(reviewRepository.existsByBookCase_Id(3L)).thenReturn(false);
+
         when(dto.getRating()).thenReturn(3);
         when(dto.getComment()).thenReturn("ok");
         when(dto.getHashtag()).thenReturn("not-a-hashtag");
@@ -132,8 +165,9 @@ class ReviewServiceTest {
 
         assertThrows(ApiException.class, () -> reviewService.saveReview(3L, dto));
         verify(bookCaseRepository, times(1)).findById(3L);
+        verify(reviewRepository, times(1)).existsByBookCase_Id(3L);
         verify(defineHashtag, times(1)).isHashtag("not-a-hashtag");
-        verifyNoInteractions(reviewRepository);
+        verify(reviewRepository, never()).save(any());
     }
 
     @DisplayName("올바르게 리뷰 저장 테스트")
@@ -149,6 +183,8 @@ class ReviewServiceTest {
         when(bookCase.getUser()).thenReturn(owner);
 
         when(bookCaseRepository.findById(5L)).thenReturn(Optional.of(bookCase));
+        when(reviewRepository.existsByBookCase_Id(5L)).thenReturn(false);
+
         when(dto.getRating()).thenReturn(4);
         when(dto.getComment()).thenReturn("좋은 책이었어요");
         when(dto.getHashtag()).thenReturn("웃긴");
@@ -166,6 +202,7 @@ class ReviewServiceTest {
         assertSame(bookCase, saved.getBookCase());
 
         verify(bookCaseRepository, times(1)).findById(5L);
+        verify(reviewRepository, times(1)).existsByBookCase_Id(5L);
         verify(defineHashtag, times(1)).isHashtag("웃긴");
         verify(reviewRepository, times(1)).save(any(ReviewEntity.class));
     }

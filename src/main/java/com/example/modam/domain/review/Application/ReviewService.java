@@ -9,6 +9,7 @@ import com.example.modam.global.utils.DefineHashtag;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -28,6 +29,7 @@ public class ReviewService {
         this.defineHashtag = defineHashtag;
     }
 
+    @Transactional
     public ReviewEntity saveReview(long userId, ReviewRequestDTO dto) {
         Optional<BookCaseEntity> findBook = bookCaseRepository.findById(dto.getBookCaseId());
         if (findBook.isEmpty()) {
@@ -37,6 +39,10 @@ public class ReviewService {
         BookCaseEntity book = findBook.get();
         if (userId != book.getUser().getId()) {
             throw new ApiException(ErrorDefine.UNAUTHORIZED_USER);
+        }
+
+        if (reviewRepository.existsByBookCase_Id(dto.getBookCaseId())) {
+            throw new ApiException(ErrorDefine.REVIEW_ALREADY_EXISTS);
         }
 
         if (dto.getRating() > RATING_MAX_NUM) {

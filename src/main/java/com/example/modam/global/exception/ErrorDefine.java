@@ -18,6 +18,7 @@ public enum ErrorDefine {
 
     //Already
     USER_ALREADY_HAS_BOOK("4092", HttpStatus.NOT_FOUND, "Already Has: User Already Has Book."),
+    REVIEW_ALREADY_EXISTS("4093", HttpStatus.NOT_FOUND, "Already Has: Review Already Exists."),
 
     // Forbidden
     UNAUTHORIZED_USER("4030", HttpStatus.FORBIDDEN, "Forbidden: Unauthorized User"),
