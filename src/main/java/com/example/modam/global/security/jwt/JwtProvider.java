@@ -1,5 +1,6 @@
 package com.example.modam.global.security.jwt;
 
+import com.example.modam.domain.auth.dto.TokenResponse;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.security.CustomUserDetails;
@@ -31,17 +32,22 @@ public class JwtProvider {
         byte[] secretKeyBytes = Decoders.BASE64.decode(secretkey);
         this.key = Keys.hmacShaKeyFor(secretKeyBytes);
     }
+    public TokenResponse createToken(String principalId, String role){
+        String accessToken = createTokenInternal(principalId, role, expirationTime);
 
+        return TokenResponse.builder()
+                .accessToken(accessToken)
+                .expiresIn(expirationTime)
+                .build();
+    }
     // jwt 생성
-    public String createAccessToken(Authentication authentication) {
-        // 로그인 성공한 유저의 정보(CustomUserDetails)를 가져옴
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
+    public String createTokenInternal(String principalId, String role, long expirationTime) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setSubject(principalId)
+                .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(key)

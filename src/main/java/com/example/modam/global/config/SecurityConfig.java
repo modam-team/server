@@ -1,14 +1,11 @@
 package com.example.modam.global.config;
 
-import com.example.modam.domain.auth.CustomOAuth2UserService;
-import com.example.modam.global.security.handler.OAuth2AuthenticationSuccessHandler;
 import com.example.modam.global.security.jwt.JwtAuthenticationEntryPoint;
 import com.example.modam.global.security.jwt.JwtFilter;
 import com.example.modam.global.security.jwt.ExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,8 +29,9 @@ public class SecurityConfig {
     private final ExceptionFilter exceptionFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    // rest api에서는 사용하지 않음
+    //private final CustomOAuth2UserService customOAuth2UserService;
+    //private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -57,19 +55,11 @@ public class SecurityConfig {
         // 요청 URI별 권한 설정
         http.authorizeHttpRequests((authorize) ->
                 authorize // 로그인 로직 접속 허용
-                        .requestMatchers("/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**","/v1/auth/**").permitAll()
                         // error PermitAll
                         .requestMatchers("/error/**").permitAll()
                         // 임시 테스트를 위해 모든 요청을 인증 없이 변경
                         .anyRequest().permitAll());
-
-        // OAuth2 로그인 설정 활성화
-        http.oauth2Login(oauth2 -> oauth2
-                .userInfoEndpoint(userInfo -> userInfo
-                        .userService(customOAuth2UserService)
-                )
-                .successHandler(oAuth2AuthenticationSuccessHandler)
-        );
 
         return http.build();
     }
@@ -81,7 +71,7 @@ public class SecurityConfig {
 
         // 인증정보 주고받도록 허용
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("https://hwangrock.com"));
+        config.setAllowedOrigins(List.of("https://hwangrock.com", "http://localhost:8080", "http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));
