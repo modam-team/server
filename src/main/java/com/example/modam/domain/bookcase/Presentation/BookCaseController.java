@@ -1,5 +1,6 @@
-package com.example.modam.domain.bookcase;
+package com.example.modam.domain.bookcase.Presentation;
 
+import com.example.modam.domain.bookcase.Application.BookCaseService;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,9 +21,8 @@ public class BookCaseController {
                               @AuthenticationPrincipal CustomUserDetails user) {
 
         long userId = user.getUser().getId();
-        long bookId = dto.getBookId();
 
-        bookCaseService.saveUserBook(userId, bookId);
+        bookCaseService.saveUserBook(userId, dto);
 
         return new ResponseDTO<>(
                 "BookCase successfully created"

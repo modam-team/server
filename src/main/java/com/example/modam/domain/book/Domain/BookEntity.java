@@ -1,5 +1,7 @@
-package com.example.modam.domain.book;
+package com.example.modam.domain.book.Domain;
 
+import com.example.modam.domain.book.Presentation.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.AladinResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,7 +31,8 @@ public class BookEntity {
 
     private String itemId; // when Aladin save book, no repetition
 
-    public static BookEntity toDatabase(BookInfoResponse dto) {
+    // dto -> entity
+    public static BookEntity toDatabase(AladinResponse dto) {
         return BookEntity.builder()
                 .itemId(dto.getItemId())
                 .title(dto.getTitle())
@@ -40,14 +43,15 @@ public class BookEntity {
                 .build();
     }
 
+    // entity -> dto
     public BookInfoResponse toDto() {
         return BookInfoResponse.builder()
+                .bookId(id)
                 .title(title)
                 .author(author)
                 .publisher(publisher)
                 .categoryName(categoryName)
                 .cover(cover)
-                .itemId(itemId)
                 .build();
     }
 }

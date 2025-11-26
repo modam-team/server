@@ -1,4 +1,4 @@
-package com.example.modam.domain.book;
+package com.example.modam.domain.book.Presentation;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BookInfoResponse {
+public class AladinResponse {
     private String itemId;
     private String title;
     private String author;

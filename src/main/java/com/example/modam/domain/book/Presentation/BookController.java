@@ -1,5 +1,6 @@
-package com.example.modam.domain.book;
+package com.example.modam.domain.book.Presentation;
 
+import com.example.modam.domain.book.Facade.BookFacade;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.response.ResponseDTO;
@@ -29,7 +30,4 @@ public class BookController {
         return bookFacade.searchBook(query, queryType)
                 .thenApply(bookList -> new ResponseDTO<>(bookList));
     }
-    // 컨트롤러 레이어에서는 입력 데이터를 점검하고 서비스 레이어에 데이터를 보내준다.
-    // 서비스 레이어에서는 URL을 만들고, 외부에서 데이터를 받아와서 responseDTO에 대응하는 데이터를 가져와준다.
-    // 컨트롤러 레이어에서는 서비스 레이어에서 받아온 데이터를 API 응답으로 보내준다.
 }

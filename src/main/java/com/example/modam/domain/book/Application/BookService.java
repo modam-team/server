@@ -1,5 +1,7 @@
-package com.example.modam.domain.book;
+package com.example.modam.domain.book.Application;
 
+import com.example.modam.global.utils.CategoryMapping;
+import com.example.modam.domain.book.Presentation.AladinResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -46,17 +48,17 @@ public class BookService {
 
     // 응답 데이터인 XML을 응답 JSON으로 가공
     @Async("aladin")
-    public CompletableFuture<List<BookInfoResponse>> parseBookData(String query, String queryType) throws Exception {
+    public CompletableFuture<List<AladinResponse>> parseBookData(String query, String queryType) throws Exception {
         URL url = makeUrl(query, queryType);
 
         try (InputStream in = url.openStream()) {
             JsonNode root = xmlMapper.readTree(in);
             JsonNode itemsNode = root.path("item");
-            List<BookInfoResponse> result = new ArrayList<>();
+            List<AladinResponse> result = new ArrayList<>();
 
             if (itemsNode.isArray()) {
                 for (JsonNode item : itemsNode) {
-                    BookInfoResponse book = jsonMapper.convertValue(item, BookInfoResponse.class);
+                    AladinResponse book = jsonMapper.convertValue(item, AladinResponse.class);
                     String newCategory = preprocessCategory(book.getCategoryName());
                     if (!newCategory.equals("impossible category")) {
                         book.setCategoryName(newCategory);
@@ -64,7 +66,7 @@ public class BookService {
                     }
                 }
             } else if (itemsNode.isObject()) { // 데이터가 1개만 오는 경우
-                BookInfoResponse book = jsonMapper.convertValue(itemsNode, BookInfoResponse.class);
+                AladinResponse book = jsonMapper.convertValue(itemsNode, AladinResponse.class);
                 String newCategory = preprocessCategory(book.getCategoryName());
                 if (!newCategory.equals("impossible category")) {
                     book.setCategoryName(newCategory);

@@ -1,5 +1,6 @@
-package com.example.modam.domain.bookcase;
+package com.example.modam.domain.bookcase.Interface;
 
+import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
