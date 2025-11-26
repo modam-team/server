@@ -29,10 +29,6 @@ public class SecurityConfig {
     private final ExceptionFilter exceptionFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    // rest api에서는 사용하지 않음
-    //private final CustomOAuth2UserService customOAuth2UserService;
-    //private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 적용 방식 수정 권장
@@ -54,8 +50,15 @@ public class SecurityConfig {
 
         // 요청 URI별 권한 설정
         http.authorizeHttpRequests((authorize) ->
-                authorize // 로그인 로직 접속 허용
-                        .requestMatchers("/api/v1/auth/**","/v1/auth/**").permitAll()
+                authorize
+                        .requestMatchers( // swagger 문서
+                                "/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+                        // 로그인 로직 접속 허용
+                        .requestMatchers("/api/v1/auth/**", "/v1/auth/**").permitAll()
                         // error PermitAll
                         .requestMatchers("/error/**").permitAll()
                         // 임시 테스트를 위해 모든 요청을 인증 없이 변경
