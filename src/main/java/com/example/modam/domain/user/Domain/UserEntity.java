@@ -38,7 +38,7 @@ public class UserEntity {
     @Builder.Default
     private boolean isOnboardingCompleted = false;
 
-    public void updateOnboardingInfo(String nickname, Integer goalScore, List<String> categories){
+    public void updateOnboardingInfo(String nickname, Integer goalScore, String categories){
         this.nickname = nickname;
         this.goalScore = goalScore;
         this.isOnboardingCompleted = true;
