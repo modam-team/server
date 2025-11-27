@@ -7,8 +7,8 @@ import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.bookcase.Application.BookCaseService;
 import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Presentation.BookCaseSaveRequestDTO;
-import com.example.modam.domain.user.UserEntity;
-import com.example.modam.domain.user.UserRepository;
+import com.example.modam.domain.user.Domain.UserEntity;
+import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,12 @@ public class BookCaseTest {
         long userId = 1L;
         long bookId = 12345L;
 
-        UserEntity user = new UserEntity(1, "황록", "12345");
+        UserEntity user = UserEntity.builder()
+                .id(userId)
+                .name("황록")
+                .providerId("12345")
+                .isOnboardingCompleted(true)
+                .build();
         BookEntity book = new BookEntity(12345, "황록1", "하하하", "황", "소설/문학", "a", "123");
 
         BookCaseSaveRequestDTO dto = mock(BookCaseSaveRequestDTO.class);

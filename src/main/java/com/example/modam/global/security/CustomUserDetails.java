@@ -1,6 +1,6 @@
 package com.example.modam.global.security;
 
-import com.example.modam.domain.user.UserEntity;
+import com.example.modam.domain.user.Domain.UserEntity;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

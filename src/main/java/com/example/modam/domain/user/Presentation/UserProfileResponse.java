@@ -1,0 +1,31 @@
+package com.example.modam.domain.user.Presentation;
+
+import com.example.modam.domain.user.Domain.UserEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserProfileResponse {
+    private Long userId;
+    private String name;
+    private String nickname;
+    private Integer goalScore;
+    private String preferredCategories;
+    private boolean isOnboardingCompleted;
+
+    public static UserProfileResponse from(UserEntity user){
+        return UserProfileResponse.builder()
+                .userId(user.getId())
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .goalScore(user.getGoalScore())
+                .preferredCategories(user.getPreferredCategories())
+                .isOnboardingCompleted(user.isOnboardingCompleted())
+                .build();
+    }
+}
