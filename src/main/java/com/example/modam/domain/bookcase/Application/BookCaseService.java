@@ -52,23 +52,10 @@ public class BookCaseService {
         return bookList;
     }
 
-    public BookCaseResponse getUserBookCase(long userId) {
+    public List<BookCaseEntity> getUserBookCase(long userId) {
         List<BookCaseEntity> data = getUserBook(userId);
 
-        Map<BookState, List<BookInfoResponse>> grouped = data.stream()
-                .collect(Collectors.groupingBy(
-                        BookCaseEntity::getStatus,
-                        Collectors.mapping(
-                                bookCaseEntity -> bookCaseEntity.getBook().toDto(),
-                                Collectors.toList()
-                        )
-                ));
-
-        List<BookInfoResponse> before = grouped.getOrDefault(BookState.BEFORE, Collections.emptyList());
-        List<BookInfoResponse> reading = grouped.getOrDefault(BookState.READING, Collections.emptyList());
-        List<BookInfoResponse> after = grouped.getOrDefault(BookState.AFTER, Collections.emptyList());
-
-        return new BookCaseResponse(before, reading, after);
+        return data;
     }
 
     @Transactional

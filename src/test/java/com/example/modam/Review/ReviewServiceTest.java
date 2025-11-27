@@ -1,6 +1,7 @@
 package com.example.modam.Review;
 
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
+import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.review.Application.ReviewService;
 import com.example.modam.domain.review.Interface.ReviewRepository;
@@ -78,6 +79,7 @@ class ReviewServiceTest {
 
         BookCaseEntity bookCase = mock(BookCaseEntity.class);
         when(bookCase.getUser()).thenReturn(owner);
+        when(bookCase.getStatus()).thenReturn(BookState.AFTER);
 
         when(bookCaseRepository.findById(10L)).thenReturn(Optional.of(bookCase));
         when(reviewRepository.existsByBookCase_Id(10L)).thenReturn(true);
@@ -99,6 +101,7 @@ class ReviewServiceTest {
 
         BookCaseEntity bookCase = mock(BookCaseEntity.class);
         when(bookCase.getUser()).thenReturn(owner);
+        when(bookCase.getStatus()).thenReturn(BookState.AFTER);
 
         when(bookCaseRepository.findById(1L)).thenReturn(Optional.of(bookCase));
 
@@ -124,6 +127,7 @@ class ReviewServiceTest {
 
         BookCaseEntity bookCase = mock(BookCaseEntity.class);
         when(bookCase.getUser()).thenReturn(owner);
+        when(bookCase.getStatus()).thenReturn(BookState.AFTER);
 
         when(bookCaseRepository.findById(2L)).thenReturn(Optional.of(bookCase));
 
@@ -152,6 +156,7 @@ class ReviewServiceTest {
 
         BookCaseEntity bookCase = mock(BookCaseEntity.class);
         when(bookCase.getUser()).thenReturn(owner);
+        when(bookCase.getStatus()).thenReturn(BookState.AFTER);
 
         when(bookCaseRepository.findById(3L)).thenReturn(Optional.of(bookCase));
 
@@ -181,6 +186,7 @@ class ReviewServiceTest {
 
         BookCaseEntity bookCase = mock(BookCaseEntity.class);
         when(bookCase.getUser()).thenReturn(owner);
+        when(bookCase.getStatus()).thenReturn(BookState.AFTER);
 
         when(bookCaseRepository.findById(5L)).thenReturn(Optional.of(bookCase));
         when(reviewRepository.existsByBookCase_Id(5L)).thenReturn(false);

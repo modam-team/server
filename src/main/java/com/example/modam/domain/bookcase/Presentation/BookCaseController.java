@@ -1,22 +1,27 @@
 package com.example.modam.domain.bookcase.Presentation;
 
 import com.example.modam.domain.bookcase.Application.BookCaseService;
+import com.example.modam.domain.bookcase.Facade.BookCaseFacade;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/bookcase")
+@Tag(name = "Book Case", description = "책장 관련 API")
 public class BookCaseController {
 
     private BookCaseService bookCaseService;
+    private BookCaseFacade bookCaseFacade;
 
-    public BookCaseController(BookCaseService bookCaseService) {
+    public BookCaseController(BookCaseService bookCaseService, BookCaseFacade bookCaseFacade) {
         this.bookCaseService = bookCaseService;
+        this.bookCaseFacade = bookCaseFacade;
     }
 
     @Operation(
@@ -50,7 +55,7 @@ public class BookCaseController {
     public ResponseDTO<BookCaseResponse> read(@AuthenticationPrincipal CustomUserDetails user) {
         long userId = user.getUser().getId();
 
-        BookCaseResponse data = bookCaseService.getUserBookCase(userId);
+        BookCaseResponse data = bookCaseFacade.createBookCaseInfo(userId);
 
         return new ResponseDTO<>(
                 data

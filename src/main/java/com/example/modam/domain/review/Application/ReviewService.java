@@ -1,6 +1,7 @@
 package com.example.modam.domain.review.Application;
 
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
+import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.review.Domain.ReviewEntity;
 import com.example.modam.domain.review.Interface.ReviewRepository;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class ReviewService {
 
     private final BookCaseRepository bookCaseRepository;
@@ -29,6 +31,10 @@ public class ReviewService {
         this.defineHashtag = defineHashtag;
     }
 
+    public Optional<ReviewEntity> getReview(long bookCaseId) {
+        return reviewRepository.findByBookCase_Id(bookCaseId);
+    }
+
     @Transactional
     public ReviewEntity saveReview(long userId, ReviewRequestDTO dto) {
         Optional<BookCaseEntity> findBook = bookCaseRepository.findById(dto.getBookCaseId());
@@ -39,6 +45,10 @@ public class ReviewService {
         BookCaseEntity book = findBook.get();
         if (userId != book.getUser().getId()) {
             throw new ApiException(ErrorDefine.UNAUTHORIZED_USER);
+        }
+
+        if (book.getStatus() != BookState.AFTER) {
+            throw new ApiException(ErrorDefine.UNAUTHORIZED_STATUS);
         }
 
         if (reviewRepository.existsByBookCase_Id(dto.getBookCaseId())) {
