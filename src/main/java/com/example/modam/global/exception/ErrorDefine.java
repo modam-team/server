@@ -39,6 +39,7 @@ public enum ErrorDefine {
     INVALID_HASHTAG("4039", HttpStatus.FORBIDDEN, "Forbidden: Invalid Hashtag");
 
 
+
     private final String errorCode;
     private final HttpStatus httpStatus;
     private final String message;
