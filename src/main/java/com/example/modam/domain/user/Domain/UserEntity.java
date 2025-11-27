@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Builder
-@Table(name = "user")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,15 +29,20 @@ public class UserEntity {
     @Column(nullable = true)
     private Integer goalScore;
 
+    // 카테고리
+    @Column(nullable = true, length = 500)
+    private String preferredCategories;
+
     // 온보딩 완료 플래그
     @Column(nullable = false)
     @Builder.Default
     private boolean isOnboardingCompleted = false;
 
-    public void updateOnboardingInfo(String nickname, Integer goalScore){
+    public void updateOnboardingInfo(String nickname, Integer goalScore, List<String> categories){
         this.nickname = nickname;
         this.goalScore = goalScore;
         this.isOnboardingCompleted = true;
+        this.preferredCategories = String.join(",", categories);
     }
 }
 

@@ -4,6 +4,7 @@ package com.example.modam.domain.user.Application;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.domain.user.Presentation.OnboardingRequest;
+import com.example.modam.domain.user.Presentation.OnboardingStatusResponse;
 import com.example.modam.domain.user.Presentation.UserProfileResponse;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,10 +34,10 @@ public class UserService {
         }
 
         // 3. UserEntity 업데이트
-        user.updateOnboardingInfo(request.getNickname(), request.getGoalScore());
-
-        // 4. 선호 분야 저장
-        // categoryService.saveUserCategories(userId, request.categoryIds());
+        user.updateOnboardingInfo(
+                request.getNickname(),
+                request.getGoalScore(),
+                request.getCategories());
     }
 
     // 사용자 프로필 조회 메서드
@@ -46,5 +47,14 @@ public class UserService {
                 .orElseThrow(()->new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         return UserProfileResponse.from(user);
+    }
+
+    // 사용자 온보딩 상태 조회 메서드
+    @Transactional(readOnly = true)
+    public OnboardingStatusResponse getOnboardingStatus(Long userId){
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        return OnboardingStatusResponse.from(user.isOnboardingCompleted());
     }
 }

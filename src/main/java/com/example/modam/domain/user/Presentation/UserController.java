@@ -44,4 +44,12 @@ public class UserController {
         UserProfileResponse response = userService.getUserProfile(userId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/onboarding/status")
+    public ResponseEntity<OnboardingStatusResponse> getOnboardingStatus(
+            @RequestHeader(name="X-User-Id") Long userId){
+        OnboardingStatusResponse response = userService.getOnboardingStatus(userId);
+
+        return ResponseEntity.ok(response);
+    }
 }
