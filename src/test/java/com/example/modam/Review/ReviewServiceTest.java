@@ -60,7 +60,6 @@ class ReviewServiceTest {
 
         BookCaseEntity bookCase = mock(BookCaseEntity.class);
         when(bookCase.getUser()).thenReturn(owner);
-        when(bookCase.getStatus()).thenReturn(BookState.AFTER);
 
         when(bookCaseRepository.findById(10L)).thenReturn(Optional.of(bookCase));
 
