@@ -34,5 +34,11 @@ public class UserEntity {
     @Column(nullable = false)
     @Builder.Default
     private boolean isOnboardingCompleted = false;
+
+    public void updateOnboardingInfo(String nickname, Integer goalScore){
+        this.nickname = nickname;
+        this.goalScore = goalScore;
+        this.isOnboardingCompleted = true;
+    }
 }
 
