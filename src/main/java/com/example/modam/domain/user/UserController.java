@@ -1,0 +1,30 @@
+package com.example.modam.domain.user;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import com.example.modam.global.response.NicknameCheckResponse;
+
+@RestController
+@RequestMapping("/api/user")
+@RequiredArgsConstructor
+public class UserController {
+    private final UserService userService;
+
+    @GetMapping("/nickname/check")
+    public ResponseEntity<NicknameCheckResponse> checkNickname(
+            @RequestParam String nickname){
+        boolean isDuplicated = userService.checkNicknameDuplication(nickname);
+
+        NicknameCheckResponse response = new NicknameCheckResponse(
+                !isDuplicated, // 중복 아니면 true
+                isDuplicated ? "이미 사용 중인 닉네임입니다." : "사용 가능한 닉네임입니다."
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+}
