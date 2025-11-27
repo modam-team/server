@@ -1,6 +1,7 @@
 package com.example.modam.domain.bookcase.Presentation;
 
 import com.example.modam.domain.bookcase.Application.BookCaseService;
+import com.example.modam.domain.bookcase.Facade.BookCaseFacade;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class BookCaseController {
 
     private BookCaseService bookCaseService;
+    private BookCaseFacade bookCaseFacade;
 
-    public BookCaseController(BookCaseService bookCaseService) {
+    public BookCaseController(BookCaseService bookCaseService, BookCaseFacade bookCaseFacade) {
         this.bookCaseService = bookCaseService;
+        this.bookCaseFacade = bookCaseFacade;
     }
 
     @Operation(
@@ -50,7 +53,7 @@ public class BookCaseController {
     public ResponseDTO<BookCaseResponse> read(@AuthenticationPrincipal CustomUserDetails user) {
         long userId = user.getUser().getId();
 
-        BookCaseResponse data = bookCaseService.getUserBookCase(userId);
+        BookCaseResponse data = bookCaseFacade.createBookCaseInfo(userId);
 
         return new ResponseDTO<>(
                 data

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class ReviewService {
 
     private final BookCaseRepository bookCaseRepository;
@@ -27,6 +28,10 @@ public class ReviewService {
         this.bookCaseRepository = bookCaseRepository;
         this.reviewRepository = reviewRepository;
         this.defineHashtag = defineHashtag;
+    }
+
+    public Optional<ReviewEntity> getReview(long bookCaseId) {
+        return reviewRepository.findByBookCase_Id(bookCaseId);
     }
 
     @Transactional
