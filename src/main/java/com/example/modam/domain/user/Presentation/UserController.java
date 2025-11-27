@@ -38,4 +38,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileResponse> getUserProfile(
+            @RequestHeader(name="X-User-Id") Long userId) {
+        UserProfileResponse response = userService.getUserProfile(userId);
+        return ResponseEntity.ok(response);
+    }
 }
