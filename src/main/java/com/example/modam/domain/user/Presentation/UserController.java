@@ -1,12 +1,12 @@
-package com.example.modam.domain.user;
+package com.example.modam.domain.user.Presentation;
 
+import com.example.modam.domain.user.Application.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.modam.global.response.NicknameCheckResponse;
 
 @RestController
 @RequestMapping("/api/user")

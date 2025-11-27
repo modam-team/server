@@ -1,6 +1,6 @@
-package com.example.modam.domain.user;
+package com.example.modam.domain.user.Interface;
 
-import org.apache.catalina.User;
+import com.example.modam.domain.user.Domain.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

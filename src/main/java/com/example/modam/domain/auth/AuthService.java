@@ -3,8 +3,8 @@ package com.example.modam.domain.auth;
 import com.example.modam.domain.auth.dto.KakaoTokenResponse;
 import com.example.modam.domain.auth.dto.KakaoUserInfo;
 import com.example.modam.domain.auth.dto.TokenResponse;
-import com.example.modam.domain.user.UserEntity;
-import com.example.modam.domain.user.UserRepository;
+import com.example.modam.domain.user.Domain.UserEntity;
+import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.config.KakaoOauthConfig;
 import com.example.modam.global.security.jwt.JwtProvider;
 

@@ -6,7 +6,7 @@ import com.example.modam.domain.review.Application.ReviewService;
 import com.example.modam.domain.review.Interface.ReviewRepository;
 import com.example.modam.domain.review.Presentation.ReviewRequestDTO;
 import com.example.modam.domain.review.Domain.ReviewEntity;
-import com.example.modam.domain.user.UserEntity;
+import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.utils.DefineHashtag;
 import org.junit.jupiter.api.DisplayName;

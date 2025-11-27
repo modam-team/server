@@ -1,4 +1,4 @@
-package com.example.modam.domain.user;
+package com.example.modam.domain.user.Domain;
 
 import jakarta.persistence.*;
 import lombok.*;

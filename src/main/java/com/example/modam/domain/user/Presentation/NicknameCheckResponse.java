@@ -1,4 +1,4 @@
-package com.example.modam.global.response;
+package com.example.modam.domain.user.Presentation;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

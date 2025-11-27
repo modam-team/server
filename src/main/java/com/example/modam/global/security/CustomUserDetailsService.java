@@ -1,7 +1,7 @@
 package com.example.modam.global.security;
 
-import com.example.modam.domain.user.UserRepository;
-import com.example.modam.domain.user.UserEntity;
+import com.example.modam.domain.user.Interface.UserRepository;
+import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import lombok.RequiredArgsConstructor;
