@@ -53,7 +53,7 @@ public class BookService {
         sb.append("?ttbkey=").append(ttbKey);
         sb.append("&QueryType=").append(queryType);
         sb.append("&SearchTarget=Book");
-        sb.append("&MaxResults=5");
+        sb.append("&MaxResults=6");
         sb.append("&start=1");
         sb.append("&output=xml");
         sb.append("&Version=20131101");
