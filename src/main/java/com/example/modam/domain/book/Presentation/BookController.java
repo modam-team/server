@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -33,13 +34,9 @@ public class BookController {
             @ApiResponse(responseCode = "200", description = "책 검색 성공")
     })
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture<ResponseDTO<List<BookInfoResponse>>> searchBooks(String query, String queryType) throws Exception {
+    public CompletableFuture<ResponseDTO<List<BookInfoResponse>>> searchBooks(@RequestBody BookSearchRequest dto) throws Exception {
 
-        if (query == null || query.isBlank() || queryType == null || queryType.isBlank()) {
-            throw new ApiException(ErrorDefine.INVALID_ARGUMENT);
-        }
-
-        return bookFacade.searchBook(query, queryType)
+        return bookFacade.searchBook(dto)
                 .thenApply(bookList -> new ResponseDTO<>(bookList));
     }
 }
