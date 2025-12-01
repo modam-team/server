@@ -50,7 +50,7 @@ public class BookCaseTest {
                 .providerId("12345")
                 .isOnboardingCompleted(true)
                 .build();
-        BookEntity book = new BookEntity(12345, "황록1", "하하하", "황", "소설/문학", "a", "123");
+        BookEntity book = new BookEntity(12345, "황록1", "하하하", "황", "소설/문학", "a", "123", true);
 
         BookCaseSaveRequestDTO dto = mock(BookCaseSaveRequestDTO.class);
         when(dto.getBookId()).thenReturn(bookId);
@@ -96,10 +96,10 @@ public class BookCaseTest {
 
     @DisplayName("유저 없을 때 예외 처리 테스트")
     @Test
-    void save_test_userNotFound(){
+    void save_test_userNotFound() {
         long userId = 1L;
         long bookId = 99999L;
-        BookEntity book = new BookEntity(bookId, "제목", "설명", "저자", "카테고리", "출판사", "isbn");
+        BookEntity book = new BookEntity(bookId, "제목", "설명", "저자", "카테고리", "출판사", "isbn", true);
 
         BookCaseSaveRequestDTO dto = mock(BookCaseSaveRequestDTO.class);
         when(dto.getBookId()).thenReturn(bookId);
@@ -114,7 +114,7 @@ public class BookCaseTest {
 
     @DisplayName("유저의 책장에 이미 책이 있을 때 예외 처리 테스트")
     @Test
-    void exception_test_user_already_has_book(){
+    void exception_test_user_already_has_book() {
         long userId = 1L;
         long bookId = 99999L;
 
