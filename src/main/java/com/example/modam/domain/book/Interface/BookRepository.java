@@ -12,7 +12,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
     List<BookEntity> findAllByItemIdIn(List<String> itemIds);
 
     @Query("""
-                SELECT new com.example.modam.domain.book.Presentation.ReviewScore(
+                SELECT new com.example.modam.domain.book.Presentation.dto.ReviewScore(
                     COUNT(r),
                     COALESCE(SUM(r.rating), 0)
                 )
