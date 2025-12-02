@@ -49,4 +49,16 @@ public class BookCaseFacade {
 
         return response;
     }
+
+    public List<BookCaseInfoResponse> searchBookCaseInfo(long userId, String title, BookState state) {
+        List<BookCaseEntity> data = bookCaseService.searchUserBookCase(userId, title, state);
+        List<BookCaseInfoResponse> response = new ArrayList<>();
+        for (BookCaseEntity b : data) {
+            BookInfoResponse info = bookDataService.toDto(b.getBook());
+            Optional<ReviewEntity> review = reviewService.getReview(b.getId());
+            response.add(new BookCaseInfoResponse(info, b, review));
+        }
+
+        return response;
+    }
 }

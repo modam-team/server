@@ -58,6 +58,10 @@ public class BookCaseService {
         return data;
     }
 
+    public List<BookCaseEntity> searchUserBookCase(long userId, String title, BookState state) {
+        return bookCaseRepository.searchByUserAndBookTitle(userId, title, state);
+    }
+
     @Transactional
     public BookCaseEntity changeUserBook(long userId, long bookId) {
 

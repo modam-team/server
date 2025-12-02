@@ -1,6 +1,7 @@
 package com.example.modam.domain.bookcase.Presentation;
 
 import com.example.modam.domain.bookcase.Application.BookCaseService;
+import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Facade.BookCaseFacade;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookcase")
@@ -80,6 +83,28 @@ public class BookCaseController {
 
         return new ResponseDTO<>(
                 "BookCase successfully change status"
+        );
+    }
+
+
+    @Operation(
+            summary = "책장에서 상태 별 책 검색",
+            description = "사용자가 책장에서 상태에 따라 책을 검색합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "책장에서 책 검색 성공")
+    })
+    @GetMapping("/search")
+    public ResponseDTO<List<BookCaseInfoResponse>> search(@RequestBody BookCaseSearchRequest dto,
+                                                          @AuthenticationPrincipal CustomUserDetails user) {
+        long userId = user.getUser().getId();
+        String title = dto.getTitle();
+        BookState state = dto.getState();
+
+        List<BookCaseInfoResponse> data = bookCaseFacade.searchBookCaseInfo(userId, title, state);
+
+        return new ResponseDTO<>(
+                data
         );
     }
 }
