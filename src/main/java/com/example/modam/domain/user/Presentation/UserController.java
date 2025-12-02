@@ -3,10 +3,12 @@ package com.example.modam.domain.user.Presentation;
 import com.example.modam.domain.user.Application.UserService;
 import com.example.modam.domain.user.Presentation.OnboardingRequest;
 import com.example.modam.domain.user.Presentation.NicknameCheckResponse;
+import com.example.modam.global.security.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,8 +33,9 @@ public class UserController {
     @PostMapping("/onboarding/complete")
     public ResponseEntity<Void> completeOnboarding(
             @RequestBody @Valid OnboardingRequest request,
-            @RequestHeader (name="X-User-Id") Long userId) {
+            @AuthenticationPrincipal CustomUserDetails user) {
 
+        Long userId = user.getUser().getId();
         userService.completeOnboarding(userId, request);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -40,14 +43,17 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getUserProfile(
-            @RequestHeader(name="X-User-Id") Long userId) {
+            @AuthenticationPrincipal CustomUserDetails user){
+        Long userId = user.getUser().getId();
         UserProfileResponse response = userService.getUserProfile(userId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/onboarding/status")
     public ResponseEntity<OnboardingStatusResponse> getOnboardingStatus(
-            @RequestHeader(name="X-User-Id") Long userId){
+            @AuthenticationPrincipal CustomUserDetails user){
+        Long userId = user.getUser().getId();
+
         OnboardingStatusResponse response = userService.getOnboardingStatus(userId);
 
         return ResponseEntity.ok(response);
