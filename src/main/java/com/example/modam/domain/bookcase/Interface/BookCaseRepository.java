@@ -16,14 +16,17 @@ public interface BookCaseRepository extends JpaRepository<BookCaseEntity, Long> 
 
     Optional<BookCaseEntity> findByUser_IdAndBook_Id(Long userId, Long bookId);
 
-    @Query("""
-            select bc 
-             from bookcase bc
-             join fetch bc.book b
-             where bc.user.id = :userId and b.title like %:title% and bc.status = :state
-            """)
+    @Query(value = """
+            SELECT bc.*
+            FROM bookcase bc
+            JOIN book b ON bc.book_id = b.id
+            WHERE bc.user_id = :userId
+              AND bc.status = :state
+              AND MATCH(b.title) AGAINST(:query IN BOOLEAN MODE)
+            """,
+            nativeQuery = true)
     List<BookCaseEntity> searchByUserAndBookTitle(@Param("userId") Long userId,
-                                                  @Param("title") String title, @Param("state") BookState state);
+                                                  @Param("query") String query, @Param("state") BookState state);
 
     @Query("""
             select bc
