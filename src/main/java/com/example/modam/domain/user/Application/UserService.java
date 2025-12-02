@@ -3,11 +3,12 @@ package com.example.modam.domain.user.Application;
 
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
-import com.example.modam.domain.user.Presentation.OnboardingRequest;
-import com.example.modam.domain.user.Presentation.OnboardingStatusResponse;
-import com.example.modam.domain.user.Presentation.UserProfileResponse;
+
+import com.example.modam.domain.user.Presentation.dto.OnboardingStatusResponse;
+import com.example.modam.domain.user.Presentation.dto.UserProfileResponse;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
+import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class UserService {
 
     // 온보딩 최종 제출
     @Transactional
-    public void completeOnboarding(Long userId, OnboardingRequest request){
+    public void completeOnboarding(Long userId, com.example.modam.domain.user.Presentation.dto.@Valid OnboardingRequest request){
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
 
