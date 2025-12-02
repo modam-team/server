@@ -1,4 +1,4 @@
-package com.example.modam.domain.bookcase.Presentation;
+package com.example.modam.domain.bookcase.Presentation.dto;
 
 import com.example.modam.domain.bookcase.Domain.BookState;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package com.example.modam.domain.book.Interface;
 
 import com.example.modam.domain.book.Domain.BookEntity;
-import com.example.modam.domain.book.Presentation.ReviewScore;
+import com.example.modam.domain.book.Presentation.dto.ReviewScore;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

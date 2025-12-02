@@ -1,8 +1,10 @@
 package com.example.modam.domain.user.Presentation;
 
 import com.example.modam.domain.user.Application.UserService;
-import com.example.modam.domain.user.Presentation.OnboardingRequest;
-import com.example.modam.domain.user.Presentation.NicknameCheckResponse;
+import com.example.modam.domain.user.Presentation.dto.NicknameCheckResponse;
+import com.example.modam.domain.user.Presentation.dto.OnboardingRequest;
+import com.example.modam.domain.user.Presentation.dto.OnboardingStatusResponse;
+import com.example.modam.domain.user.Presentation.dto.UserProfileResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

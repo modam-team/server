@@ -1,10 +1,10 @@
 package com.example.modam.domain.book.Facade;
 
 import com.example.modam.domain.book.Application.BookDataService;
-import com.example.modam.domain.book.Presentation.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
 import com.example.modam.domain.book.Application.BookService;
 import com.example.modam.domain.book.Domain.BookEntity;
-import com.example.modam.domain.book.Presentation.BookSearchRequest;
+import com.example.modam.domain.book.Presentation.dto.BookSearchRequest;
 import com.example.modam.global.utils.BestSellerCache;
 import org.springframework.stereotype.Component;
 

@@ -1,13 +1,11 @@
 package com.example.modam.domain.bookcase.Application;
 
 import com.example.modam.domain.book.Domain.BookEntity;
-import com.example.modam.domain.book.Presentation.BookInfoResponse;
 import com.example.modam.domain.book.Interface.BookRepository;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
-import com.example.modam.domain.bookcase.Presentation.BookCaseResponse;
-import com.example.modam.domain.bookcase.Presentation.BookCaseSaveRequestDTO;
+import com.example.modam.domain.bookcase.Presentation.dto.BookCaseSaveRequestDTO;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
@@ -16,11 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)

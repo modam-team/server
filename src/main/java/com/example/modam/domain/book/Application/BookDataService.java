@@ -2,9 +2,9 @@ package com.example.modam.domain.book.Application;
 
 import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.book.Interface.BookRepository;
-import com.example.modam.domain.book.Presentation.AladinResponse;
-import com.example.modam.domain.book.Presentation.BookInfoResponse;
-import com.example.modam.domain.book.Presentation.ReviewScore;
+import com.example.modam.domain.book.Presentation.dto.AladinResponse;
+import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.ReviewScore;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

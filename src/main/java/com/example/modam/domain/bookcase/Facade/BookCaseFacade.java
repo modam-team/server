@@ -1,12 +1,12 @@
 package com.example.modam.domain.bookcase.Facade;
 
 import com.example.modam.domain.book.Application.BookDataService;
-import com.example.modam.domain.book.Presentation.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
 import com.example.modam.domain.bookcase.Application.BookCaseService;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
-import com.example.modam.domain.bookcase.Presentation.BookCaseInfoResponse;
-import com.example.modam.domain.bookcase.Presentation.BookCaseResponse;
+import com.example.modam.domain.bookcase.Presentation.dto.BookCaseInfoResponse;
+import com.example.modam.domain.bookcase.Presentation.dto.BookCaseResponse;
 import com.example.modam.domain.review.Application.ReviewService;
 import com.example.modam.domain.review.Domain.ReviewEntity;
 import org.springframework.stereotype.Component;

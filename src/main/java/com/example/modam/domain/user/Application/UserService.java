@@ -3,9 +3,9 @@ package com.example.modam.domain.user.Application;
 
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
-import com.example.modam.domain.user.Presentation.OnboardingRequest;
-import com.example.modam.domain.user.Presentation.OnboardingStatusResponse;
-import com.example.modam.domain.user.Presentation.UserProfileResponse;
+import com.example.modam.domain.user.Presentation.dto.OnboardingRequest;
+import com.example.modam.domain.user.Presentation.dto.OnboardingStatusResponse;
+import com.example.modam.domain.user.Presentation.dto.UserProfileResponse;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

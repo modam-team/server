@@ -6,7 +6,7 @@ import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.bookcase.Application.BookCaseService;
 import com.example.modam.domain.bookcase.Domain.BookState;
-import com.example.modam.domain.bookcase.Presentation.BookCaseSaveRequestDTO;
+import com.example.modam.domain.bookcase.Presentation.dto.BookCaseSaveRequestDTO;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;

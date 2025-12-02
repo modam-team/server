@@ -5,7 +5,7 @@ import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.review.Domain.ReviewEntity;
 import com.example.modam.domain.review.Interface.ReviewRepository;
-import com.example.modam.domain.review.Presentation.ReviewRequestDTO;
+import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
 import com.example.modam.global.utils.DefineHashtag;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;

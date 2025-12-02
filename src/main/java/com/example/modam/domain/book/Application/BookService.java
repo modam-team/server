@@ -1,8 +1,8 @@
 package com.example.modam.domain.book.Application;
 
-import com.example.modam.domain.book.Presentation.BookSearchRequest;
+import com.example.modam.domain.book.Presentation.dto.BookSearchRequest;
 import com.example.modam.global.utils.CategoryMapping;
-import com.example.modam.domain.book.Presentation.AladinResponse;
+import com.example.modam.domain.book.Presentation.dto.AladinResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;

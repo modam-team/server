@@ -1,6 +1,6 @@
 package com.example.modam.book;
 
-import com.example.modam.domain.book.Presentation.AladinResponse;
+import com.example.modam.domain.book.Presentation.dto.AladinResponse;
 import com.example.modam.domain.book.Application.BookDataService;
 import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.book.Interface.BookRepository;
