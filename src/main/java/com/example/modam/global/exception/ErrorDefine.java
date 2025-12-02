@@ -10,6 +10,10 @@ public enum ErrorDefine {
     INVALID_ARGUMENT("4000", HttpStatus.BAD_REQUEST, "Bad Request: Invalid Arguments"),
     INVALID_HEADER_ERROR("4006", HttpStatus.BAD_REQUEST, "Bad Request: Invalid Header Error"),
 
+    // Onboarding
+    USER_ALREADY_ONBOARDED("4007", HttpStatus.BAD_REQUEST, "Bad Request: User has already completed onboarding"),
+    NICKNAME_DUPLICATION("4008", HttpStatus.BAD_REQUEST, "Bad Request: The nickname is already in already in use."),
+
     // Not Found
     USER_NOT_FOUND("4040", HttpStatus.NOT_FOUND, "Not Found: KaKao User Not Found"),
     BOOK_NOT_FOUND("4041", HttpStatus.NOT_FOUND, "Not Found: Book Not Found"),
