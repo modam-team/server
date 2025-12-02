@@ -114,7 +114,7 @@ public class BookCaseFacadeTest {
         assertEquals(103L, after.get(0).getBookId());
 
         assertEquals(5, before.get(0).getUserRate());
-        
+
         verify(bookDataService, times(3)).toDto(any(BookEntity.class), nullable(ReviewScore.class));
         verify(reviewService).getByBookCaseIds(Arrays.asList(1L, 2L, 3L));
         verify(bookCaseService).getUserBookCase(123L);
