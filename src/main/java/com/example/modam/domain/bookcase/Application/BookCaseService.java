@@ -41,14 +41,8 @@ public class BookCaseService {
                 .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
     }
 
-    public List<BookCaseEntity> getUserBook(long userId) {
-        List<BookCaseEntity> bookList = bookCaseRepository.findByUser_Id(userId);
-
-        return bookList;
-    }
-
     public List<BookCaseEntity> getUserBookCase(long userId) {
-        List<BookCaseEntity> data = getUserBook(userId);
+        List<BookCaseEntity> data = bookCaseRepository.findByUserIdWithBook(userId);
 
         return data;
     }

@@ -1,7 +1,9 @@
 package com.example.modam.bookcase;
 
 import com.example.modam.domain.book.Application.BookDataService;
+import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.ReviewScore;
 import com.example.modam.domain.bookcase.Application.BookCaseService;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
@@ -39,7 +41,7 @@ public class BookCaseFacadeTest {
     @InjectMocks
     private BookCaseFacade bookCaseFacade;
 
-    @DisplayName("책의 상태를 올바르게 나누는지 확인하는 테스트")
+    @DisplayName("책의 상태를 올바르게 나누는지 확인하는 테스트 (수정: getByBookCaseIds + toDto(book, score))")
     @Test
     public void book_state_test() {
         BookCaseEntity beforeEntity = mock(BookCaseEntity.class);
@@ -72,14 +74,14 @@ public class BookCaseFacadeTest {
                 .publisher("Publisher").rate(4.0).totalReview(7L)
                 .build();
 
-        when(bookDataService.toDto(any())).thenReturn(info1, info2, info3);
+        when(bookDataService.toDto(any(BookEntity.class), any(ReviewScore.class)))
+                .thenReturn(info1, info2, info3);
 
         ReviewEntity reviewForBefore = mock(ReviewEntity.class);
         when(reviewForBefore.getRating()).thenReturn(5);
 
-        when(reviewService.getReview(1L)).thenReturn(Optional.of(reviewForBefore));
-        when(reviewService.getReview(2L)).thenReturn(Optional.empty());
-        when(reviewService.getReview(3L)).thenReturn(Optional.empty());
+        when(reviewService.getByBookCaseIds(Arrays.asList(1L, 2L, 3L)))
+                .thenReturn(Arrays.asList(reviewForBefore));
 
         List<BookCaseEntity> mockedList = Arrays.asList(beforeEntity, readingEntity, afterEntity);
         when(bookCaseService.getUserBookCase(123L)).thenReturn(mockedList);
@@ -102,10 +104,8 @@ public class BookCaseFacadeTest {
 
         assertEquals(5, before.get(0).getUserRate());
 
-        verify(bookDataService, times(3)).toDto(any());
-        verify(reviewService).getReview(1L);
-        verify(reviewService).getReview(2L);
-        verify(reviewService).getReview(3L);
+        verify(bookDataService, times(3)).toDto(any(BookEntity.class), any(ReviewScore.class));
+        verify(reviewService).getByBookCaseIds(Arrays.asList(1L, 2L, 3L));
         verify(bookCaseService).getUserBookCase(123L);
     }
 }

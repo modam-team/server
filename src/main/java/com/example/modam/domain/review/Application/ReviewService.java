@@ -12,6 +12,7 @@ import com.example.modam.global.exception.ErrorDefine;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,8 +32,12 @@ public class ReviewService {
         this.defineHashtag = defineHashtag;
     }
 
-    public Optional<ReviewEntity> getReview(long bookCaseId) {
-        return reviewRepository.findByBookCase_Id(bookCaseId);
+    public List<ReviewEntity> getByBookCaseIds(List<Long> caseIds) {
+
+        if (caseIds == null || caseIds.isEmpty()) {
+            return List.of();
+        }
+        return reviewRepository.findByBookCaseIds(caseIds);
     }
 
     @Transactional
