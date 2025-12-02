@@ -1,8 +1,6 @@
 package com.example.modam.domain.user.Presentation;
 
 import com.example.modam.domain.user.Application.UserService;
-import com.example.modam.domain.user.Presentation.OnboardingRequest;
-import com.example.modam.domain.user.Presentation.NicknameCheckResponse;
 import com.example.modam.global.security.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +18,7 @@ public class UserController {
     @GetMapping("/nickname/check")
     public ResponseEntity<NicknameCheckResponse> checkNickname(
             @RequestParam String nickname){
+
         boolean isDuplicated = userService.checkNicknameDuplication(nickname);
 
         NicknameCheckResponse response = new NicknameCheckResponse(
