@@ -1,6 +1,6 @@
-package com.example.modam.domain.bookcase.Presentation;
+package com.example.modam.domain.bookcase.Presentation.dto;
 
-import com.example.modam.domain.book.Presentation.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.review.Domain.ReviewEntity;

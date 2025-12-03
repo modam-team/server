@@ -1,4 +1,4 @@
-package com.example.modam.domain.user.Presentation;
+package com.example.modam.domain.user.Presentation.dto;
 
 import com.example.modam.domain.user.Domain.UserEntity;
 import lombok.AllArgsConstructor;

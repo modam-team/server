@@ -1,6 +1,10 @@
 package com.example.modam.domain.user.Presentation;
 
 import com.example.modam.domain.user.Application.UserService;
+import com.example.modam.domain.user.Presentation.dto.NicknameCheckResponse;
+import com.example.modam.domain.user.Presentation.dto.OnboardingRequest;
+import com.example.modam.domain.user.Presentation.dto.OnboardingStatusResponse;
+import com.example.modam.domain.user.Presentation.dto.UserProfileResponse;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

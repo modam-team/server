@@ -1,10 +1,10 @@
 package com.example.modam.domain.review.Presentation;
 
 import com.example.modam.domain.review.Application.ReviewService;
+import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;

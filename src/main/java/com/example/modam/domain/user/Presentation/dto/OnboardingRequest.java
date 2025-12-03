@@ -1,4 +1,4 @@
-package com.example.modam.domain.user.Presentation;
+package com.example.modam.domain.user.Presentation.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

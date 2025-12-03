@@ -1,15 +1,18 @@
 package com.example.modam.domain.book.Facade;
 
 import com.example.modam.domain.book.Application.BookDataService;
-import com.example.modam.domain.book.Presentation.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
 import com.example.modam.domain.book.Application.BookService;
 import com.example.modam.domain.book.Domain.BookEntity;
-import com.example.modam.domain.book.Presentation.BookSearchRequest;
+import com.example.modam.domain.book.Presentation.dto.BookSearchRequest;
+import com.example.modam.domain.book.Presentation.dto.ReviewScore;
 import com.example.modam.global.utils.BestSellerCache;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -39,8 +42,18 @@ public class BookFacade {
                 bookService.parseBookData(dto)
                         .thenApply(bookData -> {
                             List<BookEntity> entities = bookDataService.saveBook(bookData);
+
+                            List<Long> bookIds = entities.stream()
+                                    .map(BookEntity::getId)
+                                    .distinct()
+                                    .toList();
+
+                            List<ReviewScore> scores = bookDataService.getBookReviewScore(bookIds);
+                            Map<Long, ReviewScore> scoreMap = scores.stream()
+                                    .collect(Collectors.toMap(ReviewScore::BookId, Function.identity()));
+
                             return entities.stream()
-                                    .map(bookDataService::toDto)
+                                    .map(book -> bookDataService.toDto(book, scoreMap.get(book.getId())))
                                     .collect(Collectors.toList());
                         });
 

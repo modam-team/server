@@ -1,13 +1,11 @@
 package com.example.modam.domain.bookcase.Application;
 
 import com.example.modam.domain.book.Domain.BookEntity;
-import com.example.modam.domain.book.Presentation.BookInfoResponse;
 import com.example.modam.domain.book.Interface.BookRepository;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
-import com.example.modam.domain.bookcase.Presentation.BookCaseResponse;
-import com.example.modam.domain.bookcase.Presentation.BookCaseSaveRequestDTO;
+import com.example.modam.domain.bookcase.Presentation.dto.BookCaseSaveRequestDTO;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
@@ -16,11 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -46,16 +41,39 @@ public class BookCaseService {
                 .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
     }
 
-    public List<BookCaseEntity> getUserBook(long userId) {
-        List<BookCaseEntity> bookList = bookCaseRepository.findByUser_Id(userId);
-
-        return bookList;
-    }
-
     public List<BookCaseEntity> getUserBookCase(long userId) {
-        List<BookCaseEntity> data = getUserBook(userId);
+        List<BookCaseEntity> data = bookCaseRepository.findByUserIdWithBook(userId);
 
         return data;
+    }
+
+    public String toFTS(String s) {
+        s = s.trim();
+        s = s.replaceAll("[\\+\\-><()~\"@*]", " ");
+        s = s.replaceAll("[^\\p{L}\\p{N}\\s]", " ");
+        String[] tokens = s.split("\\s+");
+        StringBuilder out = new StringBuilder();
+
+        for (String t : tokens) {
+            if (t == null) {
+                continue;
+            }
+            t = t.trim();
+            if (t.isEmpty()) {
+                continue;
+            }
+
+            if (t.length() == 1) {
+                continue;
+            }
+            out.append("+").append(t).append("*").append(" ");
+        }
+        return out.toString().trim();
+    }
+
+    public List<BookCaseEntity> searchUserBookCase(long userId, String title, BookState state) {
+        title = toFTS(title);
+        return bookCaseRepository.searchByUserAndBookTitle(userId, title, state);
     }
 
     @Transactional

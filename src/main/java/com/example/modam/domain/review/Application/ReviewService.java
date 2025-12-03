@@ -5,13 +5,14 @@ import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.review.Domain.ReviewEntity;
 import com.example.modam.domain.review.Interface.ReviewRepository;
-import com.example.modam.domain.review.Presentation.ReviewRequestDTO;
+import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
 import com.example.modam.global.utils.DefineHashtag;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,8 +32,12 @@ public class ReviewService {
         this.defineHashtag = defineHashtag;
     }
 
-    public Optional<ReviewEntity> getReview(long bookCaseId) {
-        return reviewRepository.findByBookCase_Id(bookCaseId);
+    public List<ReviewEntity> getByBookCaseIds(List<Long> caseIds) {
+
+        if (caseIds == null || caseIds.isEmpty()) {
+            return List.of();
+        }
+        return reviewRepository.findByBookCaseIds(caseIds);
     }
 
     @Transactional

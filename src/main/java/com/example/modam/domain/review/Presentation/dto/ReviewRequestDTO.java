@@ -1,4 +1,4 @@
-package com.example.modam.domain.review.Presentation;
+package com.example.modam.domain.review.Presentation.dto;
 
 import lombok.Getter;
 

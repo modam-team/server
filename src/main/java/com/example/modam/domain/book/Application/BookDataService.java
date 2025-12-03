@@ -2,9 +2,9 @@ package com.example.modam.domain.book.Application;
 
 import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.book.Interface.BookRepository;
-import com.example.modam.domain.book.Presentation.AladinResponse;
-import com.example.modam.domain.book.Presentation.BookInfoResponse;
-import com.example.modam.domain.book.Presentation.ReviewScore;
+import com.example.modam.domain.book.Presentation.dto.AladinResponse;
+import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.ReviewScore;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +21,15 @@ public class BookDataService {
         this.bookRepository = bookRepository;
     }
 
-    public BookInfoResponse toDto(BookEntity book) {
-        ReviewScore score = bookRepository.findReviewScoreByBookId(book.getId());
-
+    public BookInfoResponse toDto(BookEntity book, ReviewScore score) {
         long count = 0;
         double rate = 0;
-        if (score != null) {
+        if (score != null && score.reviewCount() > 0) {
             count = score.reviewCount();
             rate = Math.round((score.totalRate() / (double) score.reviewCount()) * 10) / 10.0;
         }
 
-        BookInfoResponse info = BookInfoResponse.builder()
+        return BookInfoResponse.builder()
                 .bookId(book.getId())
                 .title(book.getTitle())
                 .author(book.getAuthor())
@@ -41,9 +39,18 @@ public class BookDataService {
                 .rate(rate)
                 .totalReview(count)
                 .build();
+    }
 
-        return info;
 
+    public List<ReviewScore> getBookReviewScore(List<Long> bookIds) {
+
+        if (bookIds == null || bookIds.isEmpty()) {
+            return List.of();
+        }
+
+        List<ReviewScore> BookReview = bookRepository.findReviewScoreByBookId(bookIds);
+
+        return BookReview;
     }
 
     @Transactional

@@ -5,7 +5,6 @@ import com.example.modam.domain.bookcase.Application.BookCaseService;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
-import com.example.modam.domain.bookcase.Presentation.BookCaseResponse;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.global.exception.ApiException;
 import org.junit.jupiter.api.DisplayName;
@@ -15,8 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;

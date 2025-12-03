@@ -1,8 +1,8 @@
 package com.example.modam.domain.book.Presentation;
 
 import com.example.modam.domain.book.Facade.BookFacade;
-import com.example.modam.global.exception.ApiException;
-import com.example.modam.global.exception.ErrorDefine;
+import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.BookSearchRequest;
 import com.example.modam.global.response.ResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

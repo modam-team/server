@@ -1,7 +1,7 @@
 package com.example.modam.domain.book.Domain;
 
-import com.example.modam.domain.book.Presentation.BookInfoResponse;
-import com.example.modam.domain.book.Presentation.AladinResponse;
+import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.AladinResponse;
 import jakarta.persistence.*;
 import lombok.*;
 

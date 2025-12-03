@@ -1,6 +1,6 @@
 package com.example.modam.global.utils;
 
-import com.example.modam.domain.book.Presentation.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
