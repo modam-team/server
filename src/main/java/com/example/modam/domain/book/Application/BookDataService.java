@@ -5,6 +5,8 @@ import com.example.modam.domain.book.Interface.BookRepository;
 import com.example.modam.domain.book.Presentation.dto.AladinResponse;
 import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
 import com.example.modam.domain.book.Presentation.dto.ReviewScore;
+import com.example.modam.domain.book.Presentation.dto.addBookRequest;
+import com.example.modam.global.utils.CategoryMapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +53,19 @@ public class BookDataService {
         List<ReviewScore> BookReview = bookRepository.findReviewScoreByBookId(bookIds);
 
         return BookReview;
+    }
+
+    @Transactional
+    public BookEntity requestBook(addBookRequest dto) {
+        BookEntity book = BookEntity.builder()
+                .title(dto.getTitle())
+                .author(dto.getAuthor())
+                .publisher(dto.getPublisher())
+                .categoryName(dto.getCategory())
+                .isReceivedFromAladin(false)
+                .build();
+
+        return bookRepository.save(book);
     }
 
     @Transactional

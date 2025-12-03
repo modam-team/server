@@ -45,16 +45,4 @@ public class BookEntity {
                 .isReceivedFromAladin(true)
                 .build();
     }
-
-    // entity -> dto
-    public BookInfoResponse toDto() {
-        return BookInfoResponse.builder()
-                .bookId(id)
-                .title(title)
-                .author(author)
-                .publisher(publisher)
-                .categoryName(categoryName)
-                .cover(cover)
-                .build();
-    }
 }
