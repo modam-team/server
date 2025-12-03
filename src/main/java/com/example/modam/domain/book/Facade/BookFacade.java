@@ -6,7 +6,9 @@ import com.example.modam.domain.book.Application.BookService;
 import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.book.Presentation.dto.BookSearchRequest;
 import com.example.modam.domain.book.Presentation.dto.ReviewScore;
+import com.example.modam.domain.book.Presentation.dto.addBookRequest;
 import com.example.modam.global.utils.BestSellerCache;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class BookFacade {
     private final BookService bookService;
@@ -70,5 +73,17 @@ public class BookFacade {
         }
 
         return response;
+    }
+
+    public void requestBook(long userId, addBookRequest dto) {
+        log.info(
+                "[Book Request] userId={}, title={}, author={}, publisher={}, category={}",
+                userId,
+                dto.getTitle(),
+                dto.getAuthor(),
+                dto.getPublisher(),
+                dto.getCategory()
+        );
+        bookDataService.requestBook(dto);
     }
 }
