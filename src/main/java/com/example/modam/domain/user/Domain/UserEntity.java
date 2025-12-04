@@ -32,6 +32,13 @@ public class UserEntity {
     @Builder.Default
     private boolean isOnboardingCompleted = false;
 
+    @Column(nullable=true)
+    private String profileImageUrl;
+
+    public void updateProfileImageUrl(String imageUrl){
+        this.profileImageUrl = imageUrl;
+    }
+
     public void updateOnboardingInfo(String nickname, Integer goalScore, String categories){
         this.nickname = nickname;
         this.goalScore = goalScore;

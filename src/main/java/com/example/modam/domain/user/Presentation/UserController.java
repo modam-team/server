@@ -5,6 +5,8 @@ import com.example.modam.domain.user.Presentation.dto.NicknameCheckResponse;
 import com.example.modam.domain.user.Presentation.dto.OnboardingRequest;
 import com.example.modam.domain.user.Presentation.dto.OnboardingStatusResponse;
 import com.example.modam.domain.user.Presentation.dto.UserProfileResponse;
+import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/user")
@@ -79,5 +84,23 @@ public class UserController {
         OnboardingStatusResponse response = userService.getOnboardingStatus(userId);
 
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "프로필 사진 업로드 및 변경",
+            description = "프로필 이미지를 S3에 업로드하고 DB에 URL을 저장합니다"
+    )
+    @PostMapping("/profile/image")
+    public ResponseEntity<Void> uploadProfileImage(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @RequestPart("imageFile")MultipartFile file) throws IOException {
+        if (file.isEmpty()){
+            throw new ApiException(ErrorDefine.FILE_IS_EMPTY);
+        }
+
+        Long userId = user.getUser().getId();
+        userService.updateProfileImage(userId, file);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
