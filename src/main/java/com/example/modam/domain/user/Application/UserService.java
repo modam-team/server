@@ -9,6 +9,7 @@ import com.example.modam.domain.user.Presentation.dto.UserProfileResponse;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.utils.S3Uploader;
+import com.example.modam.domain.user.Presentation.dto.OnboardingRequest;
 import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
