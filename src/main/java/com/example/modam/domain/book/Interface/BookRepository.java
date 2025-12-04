@@ -26,8 +26,8 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
     @Query(value = """
             select *
             from book b
-            where b.isReceivedFromAladin = true
-            and match(b.title) against(: query in boolean mode)
+            where b.is_received_from_aladin = true
+            and match(b.title) against(:query in boolean mode)
             """,nativeQuery = true)
     List<BookEntity> searchByBookTitle(@Param("query")String query);
 }

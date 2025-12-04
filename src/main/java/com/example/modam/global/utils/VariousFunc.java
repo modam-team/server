@@ -28,4 +28,12 @@ public class VariousFunc {
         }
         return out.toString().trim();
     }
+
+    public boolean isInvalidQuery(String query) {
+        if (query == null || query.trim().isEmpty() || query.length() < 2 || !query.matches("^[a-zA-Z0-9가-힣\\s]+$")) {
+            return true;
+        }
+
+        return false;
+    }
 }

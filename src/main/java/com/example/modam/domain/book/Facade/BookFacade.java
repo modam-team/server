@@ -7,7 +7,11 @@ import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.book.Presentation.dto.BookSearchRequest;
 import com.example.modam.domain.book.Presentation.dto.ReviewScore;
 import com.example.modam.domain.book.Presentation.dto.addBookRequest;
+import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.utils.BestSellerCache;
+import com.example.modam.global.utils.PreviousQuery;
+import com.example.modam.global.utils.VariousFunc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -23,36 +27,80 @@ public class BookFacade {
     private final BookService bookService;
     private final BookDataService bookDataService;
     private final BestSellerCache bestSellerCache;
+    private final PreviousQuery previousQuery;
+    private final VariousFunc variousFunc;
 
-    public BookFacade(BookService bookService, BookDataService bookDataService, BestSellerCache bestSellerCache) {
+    public BookFacade(BookService bookService, BookDataService bookDataService,
+                      BestSellerCache bestSellerCache, PreviousQuery previousQuery, VariousFunc variousFunc) {
         this.bookService = bookService;
         this.bookDataService = bookDataService;
         this.bestSellerCache = bestSellerCache;
+        this.previousQuery = previousQuery;
+        this.variousFunc = variousFunc;
     }
 
     // 알라딘 검색한 스레드가 이어서 DB에 저장하도록 연결하는 퍼사드, 베스트셀러는 서버 캐시에 저장
-    public CompletableFuture<List<BookInfoResponse>> searchBook(BookSearchRequest dto) throws Exception {
+    public CompletableFuture<List<BookInfoResponse>> searchBook(BookSearchRequest dto, long userId) throws Exception {
+
+        log.info("[search book to Exterior API] userId={}, queryType={}, query={} ",
+                userId, dto.getQueryType(), dto.getQuery());
 
         boolean isBestseller = "Bestseller".equals(dto.getQueryType());
+
+        if (!isBestseller && variousFunc.isInvalidQuery(dto.getQuery())) {
+            throw new ApiException(ErrorDefine.INVALID_ARGUMENT);
+        }
+
         if (isBestseller) {
             CompletableFuture<List<BookInfoResponse>> cached = bestSellerCache.get();
             if (cached != null) {
+                log.info("Bestseller is caching");
                 return cached;
             }
+
+        }
+
+        if (!isBestseller && previousQuery.done(dto.getQuery())) {
+            log.info("[Previous Query] Fast DB Search for query={}", dto.getQuery());
+
+            return CompletableFuture.supplyAsync(() -> {
+                List<BookEntity> entities = bookDataService.searchBook(dto.getQuery());
+
+                List<Long> bookIds = entities.stream().map(BookEntity::getId).toList();
+                Map<Long, ReviewScore> scoreMap =
+                        bookDataService.getBookReviewScore(bookIds).stream()
+                                .collect(Collectors.toMap(ReviewScore::BookId, Function.identity()));
+
+                return entities.stream()
+                        .map(book -> bookDataService.toDto(book, scoreMap.get(book.getId())))
+                        .collect(Collectors.toList());
+            });
+        }
+
+        if (!isBestseller) {
+            previousQuery.update(dto.getQuery());
         }
 
         CompletableFuture<List<BookInfoResponse>> response =
                 bookService.parseBookData(dto)
                         .thenApply(bookData -> {
-                            List<BookEntity> entities = bookDataService.saveBook(bookData);
+
+                            List<BookEntity> entities;
+
+                            if (isBestseller) {
+                                entities = bookDataService.saveBook(bookData);
+                            } else {
+                                bookDataService.saveBook(bookData);
+                                entities = bookDataService.searchBook(dto.getQuery());
+                            }
 
                             List<Long> bookIds = entities.stream()
                                     .map(BookEntity::getId)
                                     .distinct()
                                     .toList();
 
-                            List<ReviewScore> scores = bookDataService.getBookReviewScore(bookIds);
-                            Map<Long, ReviewScore> scoreMap = scores.stream()
+                            Map<Long, ReviewScore> scoreMap = bookDataService.getBookReviewScore(bookIds)
+                                    .stream()
                                     .collect(Collectors.toMap(ReviewScore::BookId, Function.identity()));
 
                             return entities.stream()
