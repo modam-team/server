@@ -1,6 +1,8 @@
 package com.example.modam.domain.report.Presentation;
 
 import com.example.modam.domain.report.Application.ReportService;
+import com.example.modam.domain.report.Presentation.dto.ReadingLogRequest;
+import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
 import com.example.modam.domain.report.Presentation.dto.RecordReadingLogRequest;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
@@ -9,10 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/report")
@@ -42,6 +43,24 @@ public class ReportController {
 
         return new ResponseDTO<>(
                 "readingLog successfully recorded"
+        );
+    }
+
+    @Operation(
+            summary = "독서 기록 조회하기",
+            description = "책장에 있는 책의 독서 기록을 년도/월에 맞게 조회합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "독서 기록 조회 성공")
+    })
+    @GetMapping
+    public ResponseDTO<List<ReadingLogResponse>> read(@RequestBody ReadingLogRequest dto,
+                                                      @AuthenticationPrincipal CustomUserDetails user) {
+        long userId = user.getUser().getId();
+        List<ReadingLogResponse> response = reportService.getReadingLog(dto, userId);
+
+        return new ResponseDTO<>(
+                response
         );
     }
 }
