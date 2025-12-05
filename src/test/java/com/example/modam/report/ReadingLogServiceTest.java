@@ -7,6 +7,8 @@ import com.example.modam.domain.report.Application.ReportService;
 import com.example.modam.domain.report.Domain.Place;
 import com.example.modam.domain.report.Domain.ReadingLogEntity;
 import com.example.modam.domain.report.Interface.ReportRepository;
+import com.example.modam.domain.report.Presentation.dto.ReadingLogRequest;
+import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
 import com.example.modam.domain.report.Presentation.dto.RecordReadingLogRequest;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
@@ -19,6 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -128,5 +132,56 @@ class ReadingLogServiceTest {
 
         verify(bookCaseRepository).findById(3L);
         verify(reportRepository).save(any());
+    }
+
+    @DisplayName("유효한 year/month로 호출 시 start~end 범위를 정확히 계산하여 Repository를 호출")
+    @Test
+    void get_reading_log_success() {
+        ReadingLogRequest dto = mock(ReadingLogRequest.class);
+        when(dto.getYear()).thenReturn(2025);
+        when(dto.getMonth()).thenReturn(12);
+
+        long userId = 10L;
+
+        YearMonth ym = YearMonth.of(2025, 12);
+
+        LocalDateTime expectedStart = ym.atDay(1).atStartOfDay();
+        LocalDateTime expectedEnd = ym.atEndOfMonth().atTime(java.time.LocalTime.MAX);
+
+        List<ReadingLogResponse> mockResponse = List.of(
+                new ReadingLogResponse(
+                        LocalDateTime.of(2025, 12, 5, 20, 30),
+                        Place.HOME
+                )
+        );
+
+        when(reportRepository.findByDate(any(), any(), eq(userId)))
+                .thenReturn(mockResponse);
+
+        ArgumentCaptor<LocalDateTime> startCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+        ArgumentCaptor<LocalDateTime> endCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+
+        List<ReadingLogResponse> result = readingLogService.getReadingLog(dto, userId);
+
+        assertEquals(1, result.size());
+        assertEquals(mockResponse, result);
+
+        verify(reportRepository, times(1))
+                .findByDate(startCaptor.capture(), endCaptor.capture(), eq(userId));
+
+        assertEquals(expectedStart, startCaptor.getValue());
+        assertEquals(expectedEnd, endCaptor.getValue());
+    }
+
+    @DisplayName("월이 1~12 범위가 아닐 때 예외 처리")
+    @Test
+    void get_reading_log_invalid_month() {
+        ReadingLogRequest dto = mock(ReadingLogRequest.class);
+        when(dto.getMonth()).thenReturn(0);
+
+        assertThrows(ApiException.class,
+                () -> readingLogService.getReadingLog(dto, 1L));
+
+        verifyNoInteractions(reportRepository);
     }
 }
