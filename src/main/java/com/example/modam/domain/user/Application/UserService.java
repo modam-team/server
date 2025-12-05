@@ -5,6 +5,7 @@ import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
 
 import com.example.modam.domain.user.Presentation.dto.OnboardingStatusResponse;
+import com.example.modam.domain.user.Presentation.dto.UpdateProfileRequest;
 import com.example.modam.domain.user.Presentation.dto.UserProfileResponse;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
@@ -82,5 +83,38 @@ public class UserService {
 
         String imageUrl = s3Uploader.uploadFile(file, "profile");
         user.updateProfileImageUrl(imageUrl);
+    }
+
+    // 프로필 사진을 제거하고 기본 이미지로 되돌림
+    @Transactional
+    public void deleteProfileImage(Long userId){
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(()-> new ApiException(ErrorDefine.USER_NOT_FOUND));
+
+        String oldImageUrl = user.getProfileImageUrl();
+
+        if (oldImageUrl != null && !oldImageUrl.isEmpty()){
+            s3Uploader.deleteFile(oldImageUrl);
+        } else {
+            return;
+        }
+        user.updateProfileImageUrl(null);
+    }
+
+    // 프로필 정보 수정
+    @Transactional
+    public void updateProfile(Long userId, UpdateProfileRequest request){
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(()-> new ApiException(ErrorDefine.USER_NOT_FOUND));
+
+        if (!user.getNickname().equals(request.getNickname()) &&
+                userRepository.existsByNickname(request.getNickname())) {
+            throw new ApiException(ErrorDefine.NICKNAME_DUPLICATION);
+        }
+
+        user.updateProfileInfo(
+                request.getNickname(),
+                request.getIsPublic()
+        );
     }
 }

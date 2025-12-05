@@ -5,13 +5,16 @@ import com.example.modam.domain.user.Presentation.dto.NicknameCheckResponse;
 import com.example.modam.domain.user.Presentation.dto.OnboardingRequest;
 import com.example.modam.domain.user.Presentation.dto.OnboardingStatusResponse;
 import com.example.modam.domain.user.Presentation.dto.UserProfileResponse;
+import com.example.modam.domain.user.Presentation.dto.UpdateProfileRequest;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.ReportAsSingleViolation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.sql.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -100,6 +103,34 @@ public class UserController {
 
         Long userId = user.getUser().getId();
         userService.updateProfileImage(userId, file);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @Operation(
+            summary = "프로필 사진 삭제",
+            description = "현재 프로필 이미지를 S3에서 삭제하고, DB URL을 null로 초기화합니다."
+    )
+    @DeleteMapping("/profile/image")
+    public ResponseEntity<Void> deleteProfileImage(
+            @AuthenticationPrincipal CustomUserDetails user) {
+
+        Long userId = user.getUser().getId();
+        userService.deleteProfileImage(userId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @Operation(
+            summary="프로필 일반 수정",
+            description = "로그인한 사용자의 닉네임, 공개 여부 등 프로필 정보를 수정합니다."
+    )
+    @PatchMapping("/profile")
+    public ResponseEntity<Void> updateProfile(
+            @RequestBody @Valid UpdateProfileRequest request,
+            @AuthenticationPrincipal CustomUserDetails user){
+        Long userId = user.getUser().getId();
+        userService.updateProfile(userId, request);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

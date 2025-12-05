@@ -3,6 +3,8 @@ package com.example.modam.domain.user.Domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -32,6 +34,10 @@ public class UserEntity {
     @Builder.Default
     private boolean isOnboardingCompleted = false;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isPublic = true;
+
     @Column(nullable=true)
     private String profileImageUrl;
 
@@ -39,11 +45,16 @@ public class UserEntity {
         this.profileImageUrl = imageUrl;
     }
 
-    public void updateOnboardingInfo(String nickname, Integer goalScore, String categories){
+    public void updateOnboardingInfo(String nickname, Integer goalScore, List<String> categories){
         this.nickname = nickname;
         this.goalScore = goalScore;
         this.isOnboardingCompleted = true;
         this.preferredCategories = String.join(",", categories);
+    }
+
+    public void updateProfileInfo(String nickname, Boolean isPublic){
+        this.nickname = nickname;
+        this.isPublic = isPublic; // 공개 여부 업데이트
     }
 }
 
