@@ -6,7 +6,7 @@ import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.report.Domain.Place;
 import com.example.modam.domain.report.Domain.ReadingLogEntity;
 import com.example.modam.domain.report.Interface.ReportRepository;
-import com.example.modam.domain.report.Presentation.RecordReadingLogRequest;
+import com.example.modam.domain.report.Presentation.dto.RecordReadingLogRequest;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;

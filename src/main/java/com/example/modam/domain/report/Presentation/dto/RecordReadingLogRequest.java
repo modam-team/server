@@ -1,4 +1,4 @@
-package com.example.modam.domain.report.Presentation;
+package com.example.modam.domain.report.Presentation.dto;
 
 import com.example.modam.domain.report.Domain.Place;
 import lombok.Getter;
