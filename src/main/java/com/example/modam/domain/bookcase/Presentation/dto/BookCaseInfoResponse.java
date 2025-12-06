@@ -7,6 +7,7 @@ import com.example.modam.domain.review.Domain.ReviewEntity;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
@@ -29,7 +30,7 @@ public class BookCaseInfoResponse {
 
     // 완독한 유저만 이거 채움
     private int userRate;
-    private String userHashTag;
+    private List<String> userHashTag;
     private String userComment;
 
     public BookCaseInfoResponse(BookInfoResponse bookInfo, BookCaseEntity bookCaseEntity, Optional<ReviewEntity> reviewEntity) {
@@ -46,7 +47,11 @@ public class BookCaseInfoResponse {
         this.startedAt = bookCaseEntity.getStartedAt();
         this.finishedAt = bookCaseEntity.getFinishedAt();
         this.userRate = reviewEntity.map(ReviewEntity::getRating).orElse(0);
-        this.userHashTag = reviewEntity.map(ReviewEntity::getHashtag).orElse(null);
+        this.userHashTag = reviewEntity
+                .map(r -> r.getHashtags().stream()
+                        .map(h -> h.getTag())
+                        .toList())
+                .orElse(null);
         this.userComment = reviewEntity.map(ReviewEntity::getComment).orElse(null);
     }
 }
