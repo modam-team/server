@@ -13,11 +13,12 @@ public interface ReportRepository extends JpaRepository<ReadingLogEntity, Long> 
 
     @Query("""
             select new com.example.modam.domain.report.Presentation.dto.ReadingLogResponse(
-            r.readAt,r.readingPlace
+            r.readAt,r.readingPlace, b.cover, b.title
             )
             from reading r
             join r.bookCase bc
             join bc.user
+            join bc.book b
             where user.id=:userId
             and r.readAt between :start and :end
             """)
