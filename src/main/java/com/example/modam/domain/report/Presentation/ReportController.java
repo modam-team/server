@@ -1,7 +1,6 @@
 package com.example.modam.domain.report.Presentation;
 
 import com.example.modam.domain.report.Application.ReportService;
-import com.example.modam.domain.report.Presentation.dto.ReadingLogRequest;
 import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
 import com.example.modam.domain.report.Presentation.dto.RecordReadingLogRequest;
 import com.example.modam.global.response.ResponseDTO;
@@ -54,10 +53,11 @@ public class ReportController {
             @ApiResponse(responseCode = "200", description = "독서 기록 조회 성공")
     })
     @GetMapping
-    public ResponseDTO<List<ReadingLogResponse>> read(@RequestBody ReadingLogRequest dto,
+    public ResponseDTO<List<ReadingLogResponse>> read(@RequestParam int year,
+                                                      @RequestParam int month,
                                                       @AuthenticationPrincipal CustomUserDetails user) {
         long userId = user.getUser().getId();
-        List<ReadingLogResponse> response = reportService.getReadingLog(dto, userId);
+        List<ReadingLogResponse> response = reportService.getReadingLog(year, month, userId);
 
         return new ResponseDTO<>(
                 response

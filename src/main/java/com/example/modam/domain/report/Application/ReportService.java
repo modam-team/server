@@ -6,7 +6,6 @@ import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.report.Domain.Place;
 import com.example.modam.domain.report.Domain.ReadingLogEntity;
 import com.example.modam.domain.report.Interface.ReportRepository;
-import com.example.modam.domain.report.Presentation.dto.ReadingLogRequest;
 import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
 import com.example.modam.domain.report.Presentation.dto.RecordReadingLogRequest;
 import com.example.modam.domain.user.Interface.UserRepository;
@@ -34,13 +33,13 @@ public class ReportService {
         this.userRepository = userRepository;
     }
 
-    public List<ReadingLogResponse> getReadingLog(ReadingLogRequest dto, long userId) {
+    public List<ReadingLogResponse> getReadingLog(int year, int month, long userId) {
 
-        if (dto.getMonth() <= 0 || 13 <= dto.getMonth()) {
+        if (month <= 0 || 13 <= month) {
             throw new ApiException(ErrorDefine.INVALID_ARGUMENT);
         }
 
-        YearMonth ym = YearMonth.of(dto.getYear(), dto.getMonth());
+        YearMonth ym = YearMonth.of(year, month);
 
         LocalDateTime start = ym.atDay(1).atStartOfDay();
         LocalDateTime end = ym.atEndOfMonth().atTime(LocalTime.MAX);

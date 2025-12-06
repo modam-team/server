@@ -7,7 +7,6 @@ import com.example.modam.domain.report.Application.ReportService;
 import com.example.modam.domain.report.Domain.Place;
 import com.example.modam.domain.report.Domain.ReadingLogEntity;
 import com.example.modam.domain.report.Interface.ReportRepository;
-import com.example.modam.domain.report.Presentation.dto.ReadingLogRequest;
 import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
 import com.example.modam.domain.report.Presentation.dto.RecordReadingLogRequest;
 import com.example.modam.domain.user.Domain.UserEntity;
@@ -137,9 +136,6 @@ class ReadingLogServiceTest {
     @DisplayName("유효한 year/month로 호출 시 start~end 범위를 정확히 계산하여 Repository를 호출")
     @Test
     void get_reading_log_success() {
-        ReadingLogRequest dto = mock(ReadingLogRequest.class);
-        when(dto.getYear()).thenReturn(2025);
-        when(dto.getMonth()).thenReturn(12);
 
         long userId = 10L;
 
@@ -161,7 +157,7 @@ class ReadingLogServiceTest {
         ArgumentCaptor<LocalDateTime> startCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
         ArgumentCaptor<LocalDateTime> endCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
 
-        List<ReadingLogResponse> result = readingLogService.getReadingLog(dto, userId);
+        List<ReadingLogResponse> result = readingLogService.getReadingLog(2025, 12, userId);
 
         assertEquals(1, result.size());
         assertEquals(mockResponse, result);
@@ -176,11 +172,11 @@ class ReadingLogServiceTest {
     @DisplayName("월이 1~12 범위가 아닐 때 예외 처리")
     @Test
     void get_reading_log_invalid_month() {
-        ReadingLogRequest dto = mock(ReadingLogRequest.class);
-        when(dto.getMonth()).thenReturn(0);
+        int month = 0;
+        int year = 2025;
 
         assertThrows(ApiException.class,
-                () -> readingLogService.getReadingLog(dto, 1L));
+                () -> readingLogService.getReadingLog(year, month, 1L));
 
         verifyNoInteractions(reportRepository);
     }

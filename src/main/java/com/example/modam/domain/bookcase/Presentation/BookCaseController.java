@@ -6,7 +6,6 @@ import com.example.modam.domain.bookcase.Facade.BookCaseFacade;
 import com.example.modam.domain.bookcase.Presentation.dto.BookCaseInfoResponse;
 import com.example.modam.domain.bookcase.Presentation.dto.BookCaseResponse;
 import com.example.modam.domain.bookcase.Presentation.dto.BookCaseSaveRequestDTO;
-import com.example.modam.domain.bookcase.Presentation.dto.BookCaseSearchRequest;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -99,11 +98,10 @@ public class BookCaseController {
             @ApiResponse(responseCode = "200", description = "책장에서 책 검색 성공")
     })
     @GetMapping("/search")
-    public ResponseDTO<List<BookCaseInfoResponse>> search(@RequestBody BookCaseSearchRequest dto,
+    public ResponseDTO<List<BookCaseInfoResponse>> search(@RequestParam String title,
+                                                          @RequestParam BookState state,
                                                           @AuthenticationPrincipal CustomUserDetails user) {
         long userId = user.getUser().getId();
-        String title = dto.getTitle();
-        BookState state = dto.getState();
 
         List<BookCaseInfoResponse> data = bookCaseFacade.searchBookCaseInfo(userId, title, state);
 
