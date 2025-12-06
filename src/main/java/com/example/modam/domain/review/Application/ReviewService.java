@@ -3,6 +3,7 @@ package com.example.modam.domain.review.Application;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
+import com.example.modam.domain.review.Domain.HashtagEntity;
 import com.example.modam.domain.review.Domain.ReviewEntity;
 import com.example.modam.domain.review.Interface.ReviewRepository;
 import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
@@ -74,16 +75,31 @@ public class ReviewService {
             throw new ApiException(ErrorDefine.EXCEED_MAX_COMMENT_LENGTH);
         }
 
-        if (!defineHashtag.isHashtag(dto.getHashtag())) {
+        if (dto.getHashtag().isEmpty() || dto.getHashtag().size() > 3) {
             throw new ApiException(ErrorDefine.INVALID_HASHTAG);
+        }
+
+        for (String s : dto.getHashtag()) {
+            if (!defineHashtag.isHashtag(s)) {
+                throw new ApiException(ErrorDefine.INVALID_HASHTAG);
+            }
         }
 
         ReviewEntity review = ReviewEntity.builder()
                 .bookCase(book)
                 .comment(dto.getComment())
-                .hashtag(dto.getHashtag())
                 .rating(dto.getRating())
                 .build();
+
+        List<HashtagEntity> hashtags = dto.getHashtag().stream()
+                .map(tag -> HashtagEntity.builder()
+                        .tag(tag)
+                        .review(review)
+                        .build()
+                )
+                .toList();
+
+        review.getHashtags().addAll(hashtags);
 
         return reviewRepository.save(review);
     }

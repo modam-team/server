@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -159,19 +160,20 @@ class ReviewServiceTest {
         when(bookCase.getStatus()).thenReturn(BookState.AFTER);
 
         when(bookCaseRepository.findById(3L)).thenReturn(Optional.of(bookCase));
-
         when(reviewRepository.existsByBookCase_Id(3L)).thenReturn(false);
 
         when(dto.getRating()).thenReturn(3);
         when(dto.getComment()).thenReturn("ok");
-        when(dto.getHashtag()).thenReturn("not-a-hashtag");
 
-        when(defineHashtag.isHashtag("not-a-hashtag")).thenReturn(false);
+        when(dto.getHashtag()).thenReturn(List.of("invalid-tag"));
+
+        when(defineHashtag.isHashtag("invalid-tag")).thenReturn(false);
 
         assertThrows(ApiException.class, () -> reviewService.saveReview(3L, dto));
+
         verify(bookCaseRepository, times(1)).findById(3L);
         verify(reviewRepository, times(1)).existsByBookCase_Id(3L);
-        verify(defineHashtag, times(1)).isHashtag("not-a-hashtag");
+        verify(defineHashtag, times(1)).isHashtag("invalid-tag");
         verify(reviewRepository, never()).save(any());
     }
 
@@ -193,8 +195,10 @@ class ReviewServiceTest {
 
         when(dto.getRating()).thenReturn(4);
         when(dto.getComment()).thenReturn("좋은 책이었어요");
-        when(dto.getHashtag()).thenReturn("웃긴");
+        when(dto.getHashtag()).thenReturn(List.of("웃긴", "따뜻한"));
+
         when(defineHashtag.isHashtag("웃긴")).thenReturn(true);
+        when(defineHashtag.isHashtag("따뜻한")).thenReturn(true);
 
         ArgumentCaptor<ReviewEntity> captor = ArgumentCaptor.forClass(ReviewEntity.class);
         when(reviewRepository.save(captor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -203,13 +207,18 @@ class ReviewServiceTest {
 
         assertNotNull(saved);
         assertEquals("좋은 책이었어요", saved.getComment());
-        assertEquals("웃긴", saved.getHashtag());
         assertEquals(4, saved.getRating());
         assertSame(bookCase, saved.getBookCase());
+
+        assertEquals(2, saved.getHashtags().size());
+        assertEquals("웃긴", saved.getHashtags().get(0).getTag());
+        assertEquals("따뜻한", saved.getHashtags().get(1).getTag());
 
         verify(bookCaseRepository, times(1)).findById(5L);
         verify(reviewRepository, times(1)).existsByBookCase_Id(5L);
         verify(defineHashtag, times(1)).isHashtag("웃긴");
+        verify(defineHashtag, times(1)).isHashtag("따뜻한");
         verify(reviewRepository, times(1)).save(any(ReviewEntity.class));
     }
+
 }
