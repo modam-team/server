@@ -39,7 +39,7 @@ public class BookController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "책 검색 성공")
     })
-    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<ResponseDTO<List<BookInfoResponse>>> searchBooks(@RequestBody BookSearchRequest dto,
                                                                               @AuthenticationPrincipal CustomUserDetails user) throws Exception {
         long userId = user.getUser().getId();
