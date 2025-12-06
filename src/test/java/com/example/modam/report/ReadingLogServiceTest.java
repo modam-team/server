@@ -147,7 +147,7 @@ class ReadingLogServiceTest {
         List<ReadingLogResponse> mockResponse = List.of(
                 new ReadingLogResponse(
                         LocalDateTime.of(2025, 12, 5, 20, 30),
-                        Place.HOME
+                        Place.HOME, "cover", "하하하"
                 )
         );
 
