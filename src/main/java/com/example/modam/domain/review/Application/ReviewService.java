@@ -9,12 +9,14 @@ import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
 import com.example.modam.global.utils.DefineHashtag;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class ReviewService {
@@ -42,6 +44,10 @@ public class ReviewService {
 
     @Transactional
     public ReviewEntity saveReview(long userId, ReviewRequestDTO dto) {
+
+        log.info("[review save request] userId={}, review bookcaseId={}, review rating={}, review comment={}",
+                userId, dto.getBookCaseId(), dto.getRating(), dto.getComment());
+
         Optional<BookCaseEntity> findBook = bookCaseRepository.findById(dto.getBookCaseId());
         if (findBook.isEmpty()) {
             throw new ApiException(ErrorDefine.BOOKCASE_NOT_FOUND);

@@ -6,7 +6,10 @@ import com.example.modam.domain.book.Presentation.dto.AladinResponse;
 import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
 import com.example.modam.domain.book.Presentation.dto.ReviewScore;
 import com.example.modam.domain.book.Presentation.dto.addBookRequest;
+import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.utils.CategoryMapping;
+import com.example.modam.global.utils.VariousFunc;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +21,11 @@ import java.util.stream.Collectors;
 public class BookDataService {
 
     private final BookRepository bookRepository;
+    private final VariousFunc variousFunc;
 
-    public BookDataService(BookRepository bookRepository) {
+    public BookDataService(BookRepository bookRepository, VariousFunc variousFunc) {
         this.bookRepository = bookRepository;
+        this.variousFunc = variousFunc;
     }
 
     public BookInfoResponse toDto(BookEntity book, ReviewScore score) {
@@ -53,6 +58,15 @@ public class BookDataService {
         List<ReviewScore> BookReview = bookRepository.findReviewScoreByBookId(bookIds);
 
         return BookReview;
+    }
+
+    public List<BookEntity> searchBook(String query) {
+
+        if (variousFunc.isInvalidQuery(query)) {
+            throw new ApiException(ErrorDefine.INVALID_ARGUMENT);
+        }
+
+        return bookRepository.searchByBookTitle(query);
     }
 
     @Transactional
