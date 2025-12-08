@@ -32,7 +32,7 @@ public class BookCaseService {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
         this.bookCaseRepository = bookCaseRepository;
-        this.variousFunc=variousFunc;
+        this.variousFunc = variousFunc;
     }
 
     public BookEntity getBook(long bookId) {
@@ -54,6 +54,15 @@ public class BookCaseService {
     public List<BookCaseEntity> searchUserBookCase(long userId, String title, BookState state) {
         title = variousFunc.toFTS(title);
         return bookCaseRepository.searchByUserAndBookTitle(userId, title, state);
+    }
+
+    public List<BookEntity> recommendBook(long userId) {
+        String category = userRepository.findUserCategory(userId);
+        List<Long> bookCaseIds = bookCaseRepository.findUserBookCaseIds(userId);
+
+        List<BookEntity> recommendBook = bookRepository.recommendByBookCategory(category, bookCaseIds);
+
+        return recommendBook;
     }
 
     @Transactional
