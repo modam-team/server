@@ -124,4 +124,20 @@ public class BookCaseFacade {
 
         return response;
     }
+
+    public List<BookInfoResponse> bookRecommend(long userId) {
+
+        List<BookEntity> books = bookCaseService.recommendBook(userId);
+        List<Long> bookIds = books.stream()
+                .map(BookEntity::getId)
+                .toList();
+
+        Map<Long, ReviewScore> scoreMap = bookDataService.getBookReviewScore(bookIds)
+                .stream()
+                .collect(Collectors.toMap(ReviewScore::BookId, Function.identity()));
+
+        return books.stream()
+                .map(book -> bookDataService.toDto(book, scoreMap.get(book.getId())))
+                .collect(Collectors.toList());
+    }
 }

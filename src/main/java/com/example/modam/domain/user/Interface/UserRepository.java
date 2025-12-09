@@ -2,6 +2,9 @@ package com.example.modam.domain.user.Interface;
 
 import com.example.modam.domain.user.Domain.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
@@ -13,5 +16,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     // 닉네임 존재 여부 확인
     boolean existsByNickname(String nickname);
+
+    @Query("""
+            select u.preferredCategories
+            from user u
+            where u.id = :userId
+            """)
+    String findUserCategory(@Param("userId") long userId);
 
 }
