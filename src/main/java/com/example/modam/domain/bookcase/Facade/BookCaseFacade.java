@@ -11,23 +11,31 @@ import com.example.modam.domain.bookcase.Presentation.dto.BookCaseInfoResponse;
 import com.example.modam.domain.bookcase.Presentation.dto.BookCaseResponse;
 import com.example.modam.domain.review.Application.ReviewService;
 import com.example.modam.domain.review.Domain.ReviewEntity;
+import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
+import com.example.modam.global.utils.VariousFunc;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class BookCaseFacade {
 
     private BookDataService bookDataService;
     private BookCaseService bookCaseService;
     private ReviewService reviewService;
+    private VariousFunc variousFunc;
 
-    public BookCaseFacade(BookDataService bookDataService, BookCaseService bookCaseService, ReviewService reviewService) {
+    public BookCaseFacade(BookDataService bookDataService, BookCaseService bookCaseService,
+                          ReviewService reviewService, VariousFunc variousFunc) {
         this.bookCaseService = bookCaseService;
         this.bookDataService = bookDataService;
         this.reviewService = reviewService;
+        this.variousFunc = variousFunc;
     }
 
     public BookCaseResponse createBookCaseInfo(long userId) {
@@ -75,6 +83,13 @@ public class BookCaseFacade {
     }
 
     public List<BookCaseInfoResponse> searchBookCaseInfo(long userId, String title, BookState state) {
+
+        log.info("[search book to bookcase] userId={}, title={}, bookState={}",
+                userId, title, state);
+        if (variousFunc.isInvalidQuery(title)) {
+            throw new ApiException(ErrorDefine.INVALID_ARGUMENT);
+        }
+
         List<BookCaseEntity> bookCases = bookCaseService.searchUserBookCase(userId, title, state);
         List<BookCaseInfoResponse> response = new ArrayList<>();
 
@@ -108,5 +123,21 @@ public class BookCaseFacade {
         }
 
         return response;
+    }
+
+    public List<BookInfoResponse> bookRecommend(long userId) {
+
+        List<BookEntity> books = bookCaseService.recommendBook(userId);
+        List<Long> bookIds = books.stream()
+                .map(BookEntity::getId)
+                .toList();
+
+        Map<Long, ReviewScore> scoreMap = bookDataService.getBookReviewScore(bookIds)
+                .stream()
+                .collect(Collectors.toMap(ReviewScore::BookId, Function.identity()));
+
+        return books.stream()
+                .map(book -> bookDataService.toDto(book, scoreMap.get(book.getId())))
+                .collect(Collectors.toList());
     }
 }

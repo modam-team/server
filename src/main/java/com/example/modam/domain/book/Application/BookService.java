@@ -98,6 +98,9 @@ public class BookService {
             }
 
             return CompletableFuture.completedFuture(result);
+        } catch (Exception e) {
+            System.err.println("Fail to Call Aladin API: " + e.getMessage());
+            return CompletableFuture.completedFuture(new ArrayList<>());
         }
     }
 

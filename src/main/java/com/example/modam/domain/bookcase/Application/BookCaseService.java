@@ -10,6 +10,7 @@ import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
+import com.example.modam.global.utils.VariousFunc;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +25,14 @@ public class BookCaseService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final BookCaseRepository bookCaseRepository;
+    private final VariousFunc variousFunc;
 
-    public BookCaseService(BookRepository bookRepository, UserRepository userRepository, BookCaseRepository bookCaseRepository) {
+    public BookCaseService(BookRepository bookRepository, UserRepository userRepository,
+                           BookCaseRepository bookCaseRepository, VariousFunc variousFunc) {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
         this.bookCaseRepository = bookCaseRepository;
+        this.variousFunc = variousFunc;
     }
 
     public BookEntity getBook(long bookId) {
@@ -47,33 +51,18 @@ public class BookCaseService {
         return data;
     }
 
-    public String toFTS(String s) {
-        s = s.trim();
-        s = s.replaceAll("[\\+\\-><()~\"@*]", " ");
-        s = s.replaceAll("[^\\p{L}\\p{N}\\s]", " ");
-        String[] tokens = s.split("\\s+");
-        StringBuilder out = new StringBuilder();
-
-        for (String t : tokens) {
-            if (t == null) {
-                continue;
-            }
-            t = t.trim();
-            if (t.isEmpty()) {
-                continue;
-            }
-
-            if (t.length() == 1) {
-                continue;
-            }
-            out.append("+").append(t).append("*").append(" ");
-        }
-        return out.toString().trim();
+    public List<BookCaseEntity> searchUserBookCase(long userId, String title, BookState state) {
+        title = variousFunc.toFTS(title);
+        return bookCaseRepository.searchByUserAndBookTitle(userId, title, state);
     }
 
-    public List<BookCaseEntity> searchUserBookCase(long userId, String title, BookState state) {
-        title = toFTS(title);
-        return bookCaseRepository.searchByUserAndBookTitle(userId, title, state);
+    public List<BookEntity> recommendBook(long userId) {
+        String category = userRepository.findUserCategory(userId);
+        List<Long> bookCaseIds = bookCaseRepository.findUserBookCaseIds(userId);
+
+        List<BookEntity> recommendBook = bookRepository.recommendByBookCategory(category, bookCaseIds);
+
+        return recommendBook;
     }
 
     @Transactional

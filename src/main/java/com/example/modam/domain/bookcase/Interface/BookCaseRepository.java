@@ -12,8 +12,6 @@ import java.util.Optional;
 public interface BookCaseRepository extends JpaRepository<BookCaseEntity, Long> {
     boolean existsByUser_IdAndBook_Id(Long userId, Long bookId);
 
-    List<BookCaseEntity> findByUser_Id(Long userId);
-
     Optional<BookCaseEntity> findByUser_IdAndBook_Id(Long userId, Long bookId);
 
     @Query(value = """
@@ -35,4 +33,11 @@ public interface BookCaseRepository extends JpaRepository<BookCaseEntity, Long> 
                 where bc.user.id = :userId
             """)
     List<BookCaseEntity> findByUserIdWithBook(@Param("userId") Long userId);
+
+    @Query("""
+            select bc.id
+            from bookcase bc
+            where bc.user.id = :userId
+            """)
+    List<Long> findUserBookCaseIds(@Param("userId") long userId);
 }
