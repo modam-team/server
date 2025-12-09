@@ -1,11 +1,7 @@
 package com.example.modam.domain.user.Presentation;
 
 import com.example.modam.domain.user.Application.UserService;
-import com.example.modam.domain.user.Presentation.dto.NicknameCheckResponse;
-import com.example.modam.domain.user.Presentation.dto.OnboardingRequest;
-import com.example.modam.domain.user.Presentation.dto.OnboardingStatusResponse;
-import com.example.modam.domain.user.Presentation.dto.UserProfileResponse;
-import com.example.modam.domain.user.Presentation.dto.UpdateProfileRequest;
+import com.example.modam.domain.user.Presentation.dto.*;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.security.CustomUserDetails;
@@ -131,6 +127,19 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails user){
         Long userId = user.getUser().getId();
         userService.updateProfile(userId, request);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @Operation(
+            summary="회원탈퇴",
+            description ="로그인한 사용자의 계정을 영구적으로 삭제하고 연관 데이터를 정리합니다."
+    )
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<Void> withdraw(
+            @AuthenticationPrincipal CustomUserDetails user) {
+        Long userId = user.getUser().getId();
+        userService.withdraw(userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
