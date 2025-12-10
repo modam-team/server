@@ -33,6 +33,11 @@ public class BookEntity {
 
     private boolean isReceivedFromAladin;
 
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
+
     // dto -> entity
     public static BookEntity toDatabase(AladinResponse dto) {
         return BookEntity.builder()
