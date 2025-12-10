@@ -26,18 +26,21 @@ public interface ReportRepository extends JpaRepository<ReadingLogEntity, Long> 
     List<ReadingLogResponse> findByDate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
                                         @Param("userId") long userId);
 
-    @Query("""
-            select new com.example.modam.domain.report.Presentation.dto.ReportResponse(
-            r.readAt,r.readingPlace,b.categoryName,string_agg(ht.tag, ' ')
-            )
+    @Query(value = """
+            select 
+                r.read_at,
+                r.reading_place,
+                b.category_name,
+                group_concat(ht.tag separator ' ')
             from reading r
-            join r.bookCase bc
-            join bc.user u
-            join bc.book b
-            left join review rev on rev.bookCase=bc
-            left join rev.hashtags ht
-            where u.id=:userId
-            group by r.readAt, r.readingPlace, b.categoryName
-            """)
-    List<ReportResponse> findReportData(@Param("userId") long userId);
+            join book_case bc on r.book_case_id = bc.id
+            join user u on bc.user_id = u.id
+            join book b on bc.book_id = b.id
+            left join review rev on rev.book_case_id = bc.id
+            left join hashtag ht on ht.review_id = rev.id
+            where u.id = :userId
+            group by r.read_at, r.reading_place, b.category_name
+            """, nativeQuery = true)
+    List<ReportResponse> findReportData(long userId);
+
 }
