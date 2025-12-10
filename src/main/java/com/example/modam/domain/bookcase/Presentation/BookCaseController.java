@@ -1,12 +1,12 @@
 package com.example.modam.domain.bookcase.Presentation;
 
+import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
 import com.example.modam.domain.bookcase.Application.BookCaseService;
 import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Facade.BookCaseFacade;
 import com.example.modam.domain.bookcase.Presentation.dto.BookCaseInfoResponse;
 import com.example.modam.domain.bookcase.Presentation.dto.BookCaseResponse;
 import com.example.modam.domain.bookcase.Presentation.dto.BookCaseSaveRequestDTO;
-import com.example.modam.domain.bookcase.Presentation.dto.BookCaseSearchRequest;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -99,13 +99,31 @@ public class BookCaseController {
             @ApiResponse(responseCode = "200", description = "책장에서 책 검색 성공")
     })
     @GetMapping("/search")
-    public ResponseDTO<List<BookCaseInfoResponse>> search(@RequestBody BookCaseSearchRequest dto,
+    public ResponseDTO<List<BookCaseInfoResponse>> search(@RequestParam String title,
+                                                          @RequestParam BookState state,
                                                           @AuthenticationPrincipal CustomUserDetails user) {
         long userId = user.getUser().getId();
-        String title = dto.getTitle();
-        BookState state = dto.getState();
 
         List<BookCaseInfoResponse> data = bookCaseFacade.searchBookCaseInfo(userId, title, state);
+
+        return new ResponseDTO<>(
+                data
+        );
+    }
+
+    @Operation(
+            summary = "홈 화면에서 책 추천",
+            description = "사용자의 관심 분야면서 책장에 없는 모든 책을 추천합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "책 추천 성공")
+    })
+    @GetMapping("/recommend")
+    public ResponseDTO<List<BookInfoResponse>> recommend(@AuthenticationPrincipal CustomUserDetails user) {
+
+        long userId = user.getUser().getId();
+
+        List<BookInfoResponse> data = bookCaseFacade.bookRecommend(userId);
 
         return new ResponseDTO<>(
                 data
