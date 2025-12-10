@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -128,5 +129,19 @@ public class UserService {
             s3Uploader.deleteFile(oldImageUrl);
         }
         userRepository.delete(user);
+    }
+
+    // 닉네임으로 사용자 목록 조회
+    @Transactional(readOnly = true)
+    public List<UserEntity> findUsersByNickname(String nickname) {
+        // Containing 쿼리를 사용하여 부분 일치 검색 수행
+        return userRepository.findByNicknameContaining(nickname);
+    }
+
+    // id로 사용자 조회
+    @Transactional(readOnly = true)
+    public UserEntity findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
     }
 }
