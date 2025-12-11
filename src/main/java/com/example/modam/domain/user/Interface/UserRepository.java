@@ -1,10 +1,13 @@
 package com.example.modam.domain.user.Interface;
 
 import com.example.modam.domain.user.Domain.UserEntity;
+import com.example.modam.domain.user.Domain.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
@@ -24,4 +27,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             """)
     String findUserCategory(@Param("userId") long userId);
 
+    List<UserEntity> findAllByStatusAndWithdrawalRequestedAtBefore(
+            UserStatus status,
+            LocalDateTime cutoffTime
+    );
 }

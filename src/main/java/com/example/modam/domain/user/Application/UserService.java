@@ -125,8 +125,11 @@ public class UserService {
 
         String oldImageUrl = user.getProfileImageUrl();
         if (oldImageUrl!=null && !oldImageUrl.isEmpty()){
-            s3Uploader.deleteFile(oldImageUrl);
+            if (s3Uploader!=null) {
+                s3Uploader.deleteFile(oldImageUrl);
+            }
         }
-        userRepository.delete(user);
+        user.requestWithdrawal();
+        userRepository.save(user);
     }
 }
