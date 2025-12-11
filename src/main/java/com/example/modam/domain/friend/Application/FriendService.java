@@ -106,8 +106,7 @@ public class FriendService {
                 )
                 .orElseThrow(()-> new ApiException(ErrorDefine.FRIEND_REQUEST_NOT_FOUND));
 
-        friendRequest.rejectRequest();
-        friendRepository.save(friendRequest);
+        friendRepository.delete(friendRequest);
     }
 
     // 친구 요청 취소
