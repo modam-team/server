@@ -1,19 +1,25 @@
 package com.example.modam.domain.report.Presentation.dto;
 
 import com.example.modam.domain.report.Domain.Place;
+import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
-public record ReportResponse(LocalDateTime readAt,
-                             Place readingPlace,
-                             String category,
-                             // 해시태그들이 ' '을 띄고 concat되있음
-                             String rawHashtags) {
-    public List<String> splitHashtags() {
-        if (rawHashtags == null || rawHashtags.isBlank()) {
-            return List.of();
-        }
-        return List.of(rawHashtags.split(" "));
+
+@Getter
+public class ReportResponse {
+    private Place manyPlace;
+    private String readingTendency;
+
+    private Map<String, Map<String, List<ReportGroup>>> data;
+
+    public void setData(Map<String, Map<String, List<ReportGroup>>> data) {
+        this.data = data;
+    }
+
+    public void setCharacter(Place manyPlace, String readingTendency) {
+        this.manyPlace = manyPlace;
+        this.readingTendency = readingTendency;
     }
 }

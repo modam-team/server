@@ -46,10 +46,10 @@ public class ReviewService {
     @Transactional
     public ReviewEntity saveReview(long userId, ReviewRequestDTO dto) {
 
-        log.info("[review save request] userId={}, review bookcaseId={}, review rating={}, review comment={}",
-                userId, dto.getBookCaseId(), dto.getRating(), dto.getComment());
+        log.info("[review save request] userId={}, review bookId={}, review rating={}, review comment={}",
+                userId, dto.getBookId(), dto.getRating(), dto.getComment());
 
-        Optional<BookCaseEntity> findBook = bookCaseRepository.findById(dto.getBookCaseId());
+        Optional<BookCaseEntity> findBook = bookCaseRepository.findUserBookCaseId(userId, dto.getBookId());
         if (findBook.isEmpty()) {
             throw new ApiException(ErrorDefine.BOOKCASE_NOT_FOUND);
         }
@@ -63,7 +63,7 @@ public class ReviewService {
             throw new ApiException(ErrorDefine.UNAUTHORIZED_STATUS);
         }
 
-        if (reviewRepository.existsByBookCase_Id(dto.getBookCaseId())) {
+        if (reviewRepository.existsByBookCase_Id(book.getId())) {
             throw new ApiException(ErrorDefine.REVIEW_ALREADY_EXISTS);
         }
 

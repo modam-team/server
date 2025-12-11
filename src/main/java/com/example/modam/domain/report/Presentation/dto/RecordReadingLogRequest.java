@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 public class RecordReadingLogRequest {
-    private long bookCaseId;
+    private long bookId;
     private Place readingPlace;
 }

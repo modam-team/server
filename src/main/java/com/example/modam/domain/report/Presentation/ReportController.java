@@ -3,6 +3,7 @@ package com.example.modam.domain.report.Presentation;
 import com.example.modam.domain.report.Application.ReportService;
 import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
 import com.example.modam.domain.report.Presentation.dto.RecordReadingLogRequest;
+import com.example.modam.domain.report.Presentation.dto.ReportResponse;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,6 +59,16 @@ public class ReportController {
                                                       @AuthenticationPrincipal CustomUserDetails user) {
         long userId = user.getUser().getId();
         List<ReadingLogResponse> response = reportService.getReadingLog(year, month, userId);
+
+        return new ResponseDTO<>(
+                response
+        );
+    }
+
+    @GetMapping("/monthly")
+    public ResponseDTO<ReportResponse> getReport(@AuthenticationPrincipal CustomUserDetails user) {
+        long userId = user.getUser().getId();
+        ReportResponse response = reportService.getReportData(userId);
 
         return new ResponseDTO<>(
                 response
