@@ -42,12 +42,12 @@ public interface BookCaseRepository extends JpaRepository<BookCaseEntity, Long> 
     List<Long> findUserBookCaseIds(@Param("userId") long userId);
 
     @Query("""
-            select bc.id
+            select bc
             from bookcase bc
             join bc.book b
             join bc.user u
             where u.id=:userId
             and b.id=:bookId
             """)
-    Optional<Long> findUserBookCaseId(@Param("userId") long userId, @Param("bookId") long bookId);
+    Optional<BookCaseEntity> findUserBookCaseId(@Param("userId") long userId, @Param("bookId") long bookId);
 }
