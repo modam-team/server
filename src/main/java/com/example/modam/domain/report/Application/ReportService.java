@@ -10,6 +10,7 @@ import com.example.modam.domain.report.Presentation.dto.*;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
+import com.example.modam.global.utils.VariousFunc;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,11 +29,14 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final BookCaseRepository bookCaseRepository;
     private final UserRepository userRepository;
+    private final VariousFunc variousFunc;
 
-    public ReportService(ReportRepository reportRepository, BookCaseRepository bookCaseRepository, UserRepository userRepository) {
+    public ReportService(ReportRepository reportRepository, BookCaseRepository bookCaseRepository,
+                         UserRepository userRepository, VariousFunc variousFunc) {
         this.reportRepository = reportRepository;
         this.bookCaseRepository = bookCaseRepository;
         this.userRepository = userRepository;
+        this.variousFunc = variousFunc;
     }
 
     public List<ReadingLogResponse> getReadingLog(int year, int month, long userId) {
@@ -85,6 +89,9 @@ public class ReportService {
                                 )
                         ));
         response.setData(data);
+        String[] forCharacter = variousFunc.decideCharacter(data);
+        response.setCharacter(Place.valueOf(forCharacter[0]), forCharacter[1]);
+
         return response;
     }
 
