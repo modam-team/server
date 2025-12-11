@@ -51,10 +51,9 @@ public class ReportService {
 
     @Transactional
     public ReadingLogEntity RecordReadingLog(RecordReadingLogRequest dto, long userId) {
-        long bookCaseId = dto.getBookCaseId();
         Place place = dto.getReadingPlace();
 
-        Optional<BookCaseEntity> bookCaseEntity = bookCaseRepository.findById(bookCaseId);
+        Optional<BookCaseEntity> bookCaseEntity = bookCaseRepository.findUserBookCaseId(userId, dto.getBookId());
 
         if (bookCaseEntity.isEmpty() || !bookCaseEntity.get().getUser().equals(userRepository.getReferenceById(userId))) {
             throw new ApiException(ErrorDefine.INVALID_ARGUMENT);
