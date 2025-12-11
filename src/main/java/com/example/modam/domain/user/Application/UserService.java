@@ -126,9 +126,19 @@ public class UserService {
 
         String oldImageUrl = user.getProfileImageUrl();
         if (oldImageUrl!=null && !oldImageUrl.isEmpty()){
-            s3Uploader.deleteFile(oldImageUrl);
+            if (s3Uploader!=null) {
+                s3Uploader.deleteFile(oldImageUrl);
+            }
         }
-        userRepository.delete(user);
+        user.requestWithdrawal();
+        userRepository.save(user);
+    }
+
+    // id로 찾기
+    @Transactional(readOnly = true)
+    public UserEntity findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
     }
 
     // 닉네임으로 사용자 목록 조회

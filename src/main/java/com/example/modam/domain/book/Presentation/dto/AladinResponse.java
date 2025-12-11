@@ -1,12 +1,9 @@
 package com.example.modam.domain.book.Presentation.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,4 +15,12 @@ public class AladinResponse {
     private String cover;
     private String categoryName;
     private String publisher;
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
 }
