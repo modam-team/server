@@ -1,14 +1,11 @@
 package com.example.modam.domain.report.Presentation.dto;
 
-import com.example.modam.domain.report.Domain.Place;
+import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
-public record ReportResponse(
-        LocalDateTime readAt,
-        Place readingPlace,
-        String category,
-        String rawHashtags
-) {
+@Getter
+public class ReportResponse {
+    private Map<String, Map<String, List<ReportGroup>>> data;
 }
