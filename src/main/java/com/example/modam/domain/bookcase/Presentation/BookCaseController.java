@@ -90,6 +90,25 @@ public class BookCaseController {
         );
     }
 
+    @Operation(
+            summary = "책장에서 책 삭제",
+            description = "사용자의 책장에 있는 책을 삭제합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "책 삭제 성공")
+    })
+    @DeleteMapping("/{bookId}")
+    public ResponseDTO delete(@AuthenticationPrincipal CustomUserDetails user,
+                              @PathVariable long bookId) {
+        long userId = user.getUser().getId();
+
+        bookCaseService.deleteUserBook(userId, bookId);
+
+        return new ResponseDTO<>(
+                "BookCase successfully deleted"
+        );
+    }
+
 
     @Operation(
             summary = "책장에서 상태 별 책 검색",
