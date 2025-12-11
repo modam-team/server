@@ -148,10 +148,4 @@ public class UserService {
         return userRepository.findByNicknameContaining(nickname);
     }
 
-    // id로 사용자 조회
-    @Transactional(readOnly = true)
-    public UserEntity findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
-    }
 }

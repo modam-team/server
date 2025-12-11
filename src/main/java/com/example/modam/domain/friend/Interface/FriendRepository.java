@@ -27,14 +27,13 @@ public interface FriendRepository extends JpaRepository<FriendEntity, Long> {
             @Param("user2Id") Long user2Id
     );
 
-    // 받은 요청 찾기 (수락/거절 시 필요)
-    Optional<FriendEntity> findByRequesterIdAndReceiverIdAndStatus(
-            Long requesterId,
-            Long receiverId,
-            FriendStatus status
-    );
 
     // 친구 목록 조회
+    List<FriendEntity> findAllByRequesterIdAndStatusOrReceiverIdAndStatus(
+            Long requesterId, FriendStatus requesterStatus,
+            Long receiverId, FriendStatus receiverStatus
+    );
+
     @Query("SELECT f FROM FriendEntity f WHERE " +
                   "(f.requester.id = :userId OR f.receiver.id = :userId) AND f.status = 'ACCEPTED'")
     List<FriendEntity> findAllFriendsByUserId(@Param("userId") Long userId);

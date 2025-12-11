@@ -103,4 +103,61 @@ public class FriendService {
 
         return FriendRelationStatus.NOT_FRIENDS;
     }
+
+    // 친구 요청 거절
+    @Transactional
+    public void rejectFriendRequest(Long requesterId, Long currentUserId){
+        FriendEntity friendRequest = friendRepository
+                .findByRequesterAndReceiverAndStatus(
+                        requesterId,
+                        currentUserId,
+                        FriendStatus.PENDING
+                )
+                .orElseThrow(()-> new ApiException(ErrorDefine.FRIEND_REQUEST_NOT_FOUND));
+
+        friendRequest.rejectRequest();
+        friendRepository.save(friendRequest);
+    }
+
+    // 친구 요청 취소
+    @Transactional
+    public void cancelFriendRequest(Long receiverId, Long currentUserId){
+        FriendEntity friendRequest = friendRepository
+                .findByRequesterAndReceiverAndStatus(
+                        currentUserId,
+                        receiverId,
+                        FriendStatus.PENDING
+                )
+                .orElseThrow(()-> new ApiException(ErrorDefine.FRIEND_REQUEST_NOT_FOUND));
+
+        friendRepository.delete(friendRequest);
+    }
+
+    // 친구 삭제
+    @Transactional
+    public void deleteFriendship(Long targetUserId, Long currentUserId){
+        FriendEntity friendship = friendRepository
+                .isFriendshipEstablished(currentUserId, targetUserId)
+                .orElseThrow(()-> new ApiException(ErrorDefine.FRIEND_REQUEST_NOT_FOUND));
+
+        friendRepository.delete(friendship);
+    }
+
+    // 친구인 목록만 조회
+    @Transactional(readOnly = true)
+    public List<FriendSearchResponse> getFriendList(Long currentUserId){
+        List<FriendEntity> acceptedFriends = friendRepository
+                .findAllByRequesterIdAndStatusOrReceiverIdAndStatus(
+                        currentUserId, FriendStatus.ACCEPTED,
+                        currentUserId, FriendStatus.ACCEPTED
+                );
+
+        return acceptedFriends.stream()
+                .map(friendship -> {
+                    UserEntity friendUser = friendship.getRequester().getId() == currentUserId ?
+                            friendship.getReceiver() : friendship.getRequester();
+                    return FriendSearchResponse.from(friendUser, FriendRelationStatus.FRIENDS);
+                })
+                .collect(Collectors.toList());
+    }
 }
