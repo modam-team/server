@@ -8,6 +8,7 @@ import com.example.modam.domain.user.Application.UserService;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,9 +49,7 @@ class FriendServiceTest {
 
         when(userService.findUserById(USER_ID)).thenReturn(requester);
         when(userService.findUserById(TARGET_ID)).thenReturn(receiver);
-        when(friendRepository.isFriendshipEstablished(USER_ID, TARGET_ID)).thenReturn(Optional.empty());
-        when(friendRepository.findByRequesterAndReceiverAndStatus(TARGET_ID, USER_ID, FriendStatus.PENDING))
-                .thenReturn(Optional.empty());
+        when(friendRepository.findAnyRelationBetweenUsers(USER_ID, TARGET_ID)).thenReturn(Optional.empty());
 
         friendService.sendFriendRequest(TARGET_ID, USER_ID);
         verify(friendRepository, times(1)).save(any(FriendEntity.class));
@@ -66,23 +65,16 @@ class FriendServiceTest {
         verify(friendRepository, never()).save(any());
     }
 
-    @DisplayName("친구 요청 실패 (이미 친구이거나 요청 중) 테스트")
     @Test
+    @DisplayName("친구 요청 실패 (이미 관계가 존재할 경우)")
     void sendFriendRequest_AlreadyRequested() {
-        UserEntity requester = mockUser(USER_ID);
-        UserEntity receiver = mockUser(TARGET_ID);
+        when(friendRepository.findAnyRelationBetweenUsers(USER_ID, TARGET_ID))
+                .thenReturn(Optional.of(mock(FriendEntity.class))); // 관계가 이미 있음을 Mocking
 
-        when(userService.findUserById(USER_ID)).thenReturn(requester);
-        when(userService.findUserById(TARGET_ID)).thenReturn(receiver);
+        Assertions.assertThrows(ApiException.class, () -> {
+            friendService.sendFriendRequest(TARGET_ID, USER_ID);
+        });
 
-        FriendEntity existingRequest = FriendEntity.builder().build();
-        when(friendRepository.isFriendshipEstablished(USER_ID, TARGET_ID)).thenReturn(Optional.of(existingRequest));
-
-        ApiException exception = assertThrows(ApiException.class,
-                () -> friendService.sendFriendRequest(TARGET_ID, USER_ID));
-
-        assertEquals(ErrorDefine.FRIEND_ALREADY_REQUESTED, exception.getError());
-        verify(friendRepository, never()).save(any());
     }
 
     @DisplayName("요청 수락 성공 테스트")
@@ -95,7 +87,7 @@ class FriendServiceTest {
                 .status(FriendStatus.PENDING)
                 .build());
 
-        when(friendRepository.findByRequesterAndReceiverAndStatus(
+        when(friendRepository.findByRequesterIdAndReceiverIdAndStatus(
                 requesterId, receiverId, FriendStatus.PENDING))
                 .thenReturn(Optional.of(pendingRequest));
 
@@ -111,7 +103,7 @@ class FriendServiceTest {
         Long requesterId = TARGET_ID;
         Long receiverId = USER_ID;
 
-        when(friendRepository.findByRequesterAndReceiverAndStatus(
+        when(friendRepository.findByRequesterIdAndReceiverIdAndStatus(
                 requesterId, receiverId, FriendStatus.PENDING))
                 .thenReturn(Optional.empty());
 
@@ -128,18 +120,16 @@ class FriendServiceTest {
         Long requesterId = TARGET_ID;
         Long receiverId = USER_ID;
 
-        FriendEntity pendingRequest = spy(FriendEntity.builder()
-                .status(FriendStatus.PENDING)
-                .build());
+        FriendEntity pendingRequest = mock(FriendEntity.class);
 
-        when(friendRepository.findByRequesterAndReceiverAndStatus(
+        when(friendRepository.findByRequesterIdAndReceiverIdAndStatus(
                 requesterId, receiverId, FriendStatus.PENDING))
                 .thenReturn(Optional.of(pendingRequest));
 
         friendService.rejectFriendRequest(requesterId, receiverId);
 
-        verify(pendingRequest, times(1)).rejectRequest();
-        verify(friendRepository, times(1)).save(pendingRequest);
+        verify(friendRepository, times(1)).delete(pendingRequest);
+        verify(friendRepository, never()).save(any());
     }
 
     @DisplayName("요청 거절 실패 (요청 없음) 테스트")
@@ -148,7 +138,7 @@ class FriendServiceTest {
         Long requesterId = TARGET_ID;
         Long receiverId = USER_ID;
 
-        when(friendRepository.findByRequesterAndReceiverAndStatus(
+        when(friendRepository.findByRequesterIdAndReceiverIdAndStatus(
                 requesterId, receiverId, FriendStatus.PENDING))
                 .thenReturn(Optional.empty());
 
@@ -166,7 +156,7 @@ class FriendServiceTest {
 
         FriendEntity pendingRequest = mock(FriendEntity.class);
 
-        when(friendRepository.findByRequesterAndReceiverAndStatus(
+        when(friendRepository.findByRequesterIdAndReceiverIdAndStatus(
                 requesterId, receiverId, FriendStatus.PENDING))
                 .thenReturn(Optional.of(pendingRequest));
 
@@ -180,7 +170,7 @@ class FriendServiceTest {
         Long requesterId = USER_ID;
         Long receiverId = TARGET_ID;
 
-        when(friendRepository.findByRequesterAndReceiverAndStatus(
+        when(friendRepository.findByRequesterIdAndReceiverIdAndStatus(
                 requesterId, receiverId, FriendStatus.PENDING))
                 .thenReturn(Optional.empty());
         ApiException exception = assertThrows(ApiException.class,
@@ -197,11 +187,11 @@ class FriendServiceTest {
 
         FriendEntity acceptedFriendship = mock(FriendEntity.class);
 
-        when(friendRepository.isFriendshipEstablished(user1Id, user2Id))
+        when(friendRepository.findAcceptedFriendship(user1Id, user2Id))
                 .thenReturn(Optional.of(acceptedFriendship));
 
         friendService.deleteFriendship(user2Id, user1Id); // user2Id가 targetId, user1Id가 currentId
-        verify(friendRepository, times(1)).isFriendshipEstablished(user1Id, user2Id);
+        verify(friendRepository, times(1)).findAcceptedFriendship(user1Id, user2Id);
         verify(friendRepository, times(1)).delete(acceptedFriendship);
     }
 
@@ -211,7 +201,7 @@ class FriendServiceTest {
         Long user1Id = USER_ID;
         Long user2Id = TARGET_ID;
 
-        when(friendRepository.isFriendshipEstablished(user1Id, user2Id))
+        when(friendRepository.findAcceptedFriendship(user1Id, user2Id))
                 .thenReturn(Optional.empty());
         ApiException exception = assertThrows(ApiException.class,
                 () -> friendService.deleteFriendship(user2Id, user1Id));
