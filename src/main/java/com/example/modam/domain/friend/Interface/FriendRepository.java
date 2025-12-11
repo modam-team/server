@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface FriendRepository extends JpaRepository<FriendEntity, Long> {
     // 요청 상태 확인
-    Optional<FriendEntity> findByRequesterAndReceiverAndStatus(
+    Optional<FriendEntity> findByRequesterIdAndReceiverIdAndStatus(
             Long requesterId,
             Long receiverId,
             FriendStatus status

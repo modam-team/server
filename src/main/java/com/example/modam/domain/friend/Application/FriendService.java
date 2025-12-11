@@ -38,7 +38,7 @@ public class FriendService {
         }
 
         // 상대가 나한테 요청을 보낸 적이 있는지
-        Optional<FriendEntity> receivedRequest = friendRepository.findByRequesterAndReceiverAndStatus(
+        Optional<FriendEntity> receivedRequest = friendRepository.findByRequesterIdAndReceiverIdAndStatus(
                 receiver.getId(), requester.getId(), FriendStatus.PENDING
         );
         // "친구가 이미 요청을 보냈으므로 수락하세요" 라는 메시지를 보내도록 중복 요청 처리하였음
@@ -58,7 +58,7 @@ public class FriendService {
     @Transactional
     public void acceptFriendRequest(Long requesterId, Long currentUserId) {
         FriendEntity friendRequest = friendRepository
-                .findByRequesterAndReceiverAndStatus(
+                .findByRequesterIdAndReceiverIdAndStatus(
                         requesterId,
                         currentUserId,
                         FriendStatus.PENDING
@@ -87,14 +87,14 @@ public class FriendService {
         if (friendRepository.isFriendshipEstablished(user1.getId(), user2.getId()).isPresent()) {
             return FriendRelationStatus.FRIENDS;
         }
-        Optional<FriendEntity> sentRequest = friendRepository.findByRequesterAndReceiverAndStatus(
+        Optional<FriendEntity> sentRequest = friendRepository.findByRequesterIdAndReceiverIdAndStatus(
                 user1.getId(), user2.getId(), FriendStatus.PENDING
         );
         if (sentRequest.isPresent()) {
             return FriendRelationStatus.REQUEST_SENT;
         }
 
-        Optional<FriendEntity> receivedRequest = friendRepository.findByRequesterAndReceiverAndStatus(
+        Optional<FriendEntity> receivedRequest = friendRepository.findByRequesterIdAndReceiverIdAndStatus(
                 user2.getId(), user1.getId(), FriendStatus.PENDING
         );
         if (receivedRequest.isPresent()) {
@@ -108,7 +108,7 @@ public class FriendService {
     @Transactional
     public void rejectFriendRequest(Long requesterId, Long currentUserId){
         FriendEntity friendRequest = friendRepository
-                .findByRequesterAndReceiverAndStatus(
+                .findByRequesterIdAndReceiverIdAndStatus(
                         requesterId,
                         currentUserId,
                         FriendStatus.PENDING
@@ -123,7 +123,7 @@ public class FriendService {
     @Transactional
     public void cancelFriendRequest(Long receiverId, Long currentUserId){
         FriendEntity friendRequest = friendRepository
-                .findByRequesterAndReceiverAndStatus(
+                .findByRequesterIdAndReceiverIdAndStatus(
                         currentUserId,
                         receiverId,
                         FriendStatus.PENDING
