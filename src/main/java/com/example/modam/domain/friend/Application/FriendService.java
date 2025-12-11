@@ -9,6 +9,7 @@ import com.example.modam.domain.user.Application.UserService;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
+import com.example.modam.global.utils.VariousFunc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class FriendService {
     private final FriendRepository friendRepository;
     private final UserService userService;
+    private final VariousFunc variousFunc;
 
     @Transactional
     public void sendFriendRequest(Long targetUserId, Long currentUserId){
@@ -61,7 +63,13 @@ public class FriendService {
     }
 
     public List<FriendSearchResponse> searchUsersByNickname(String nickname, Long currentUserId){
-        String searchKeyword = nickname + "*";
+        if (variousFunc.isInvalidQuery(nickname)) {
+            return List.of();
+        }
+        String searchKeyword = variousFunc.toFTS(nickname);
+        if (searchKeyword.isEmpty()) {
+            return List.of();
+        }
         List<UserEntity> searchResults = userService.findUsersByNicknameFullTextSearch(searchKeyword);
         UserEntity currentUser = userService.findUserById(currentUserId);
 
