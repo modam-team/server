@@ -6,7 +6,7 @@ import java.util.List;
 
 @Getter
 public class ReviewRequestDTO {
-    private long bookCaseId;
+    private long bookId;
     private int rating;
     private List<String> hashtag;
     private String comment;
