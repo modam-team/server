@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -139,4 +140,10 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
     }
+
+    // 닉네임으로 사용자 목록 조회
+    public List<UserEntity> findUsersByNicknameFullTextSearch(String keyword) {
+        return userRepository.findByNicknameFullTextSearch(keyword);
+    }
+
 }
