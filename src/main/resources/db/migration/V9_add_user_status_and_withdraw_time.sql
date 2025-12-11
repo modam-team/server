@@ -1,0 +1,5 @@
+ALTER TABLE user
+    ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'ACTIVE';
+
+ALTER TABLE user
+    ADD COLUMN withdrawal_requested_at DATETIME(6) NULL;
