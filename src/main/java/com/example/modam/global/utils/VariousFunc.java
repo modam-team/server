@@ -12,6 +12,12 @@ import java.util.Map;
 @Component
 public class VariousFunc {
 
+    private final TendencyMapping tendencyMapping;
+
+    public VariousFunc(TendencyMapping tendencyMapping) {
+        this.tendencyMapping = tendencyMapping;
+    }
+
     public String toFTS(String s) {
         s = s.trim();
         s = s.replaceAll("[\\+\\-><()~\"@*]", " ");
@@ -83,7 +89,7 @@ public class VariousFunc {
                 forCharacter[0] = "empty_data";
             }
             if (mostCategory != null) {
-                forCharacter[1] = mostCategory;
+                forCharacter[1] = tendencyMapping.mapCategory(mostCategory);
             } else {
                 forCharacter[1] = "empty_data";
             }
