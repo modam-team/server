@@ -66,6 +66,17 @@ public class BookCaseService {
     }
 
     @Transactional
+    public void deleteUserBook(long userId, long bookId) {
+        Optional<BookCaseEntity> optionalData = bookCaseRepository.findByUser_IdAndBook_Id(userId, bookId);
+        if (optionalData.isEmpty()) {
+            throw new ApiException(ErrorDefine.BOOKCASE_NOT_FOUND);
+        }
+        BookCaseEntity data = optionalData.get();
+
+        bookCaseRepository.delete(data);
+    }
+
+    @Transactional
     public BookCaseEntity changeUserBook(long userId, long bookId) {
 
         Optional<BookCaseEntity> optionalData = bookCaseRepository.findByUser_IdAndBook_Id(userId, bookId);
