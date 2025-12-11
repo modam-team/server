@@ -132,4 +132,11 @@ public class UserService {
         user.requestWithdrawal();
         userRepository.save(user);
     }
+
+    // id로 찾기
+    @Transactional(readOnly = true)
+    public UserEntity findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
+    }
 }
