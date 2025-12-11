@@ -20,6 +20,10 @@ public enum ErrorDefine {
     STATUS_NOT_FOUND("4042", HttpStatus.NOT_FOUND, "Not Found: Book Status Not Found"),
     BOOKCASE_NOT_FOUND("4043", HttpStatus.NOT_FOUND, "Not Found: Bookcase Not Found"),
 
+    // File/Image Upload
+    FILE_IS_EMPTY("4009", HttpStatus.BAD_REQUEST, "Bad Request: Upload file cannot be empty."),
+    INVALID_FILE_FORMAT("400A", HttpStatus.BAD_REQUEST, "Bad Request: Invalid file format or type."),
+
     //Already
     USER_ALREADY_HAS_BOOK("4092", HttpStatus.NOT_FOUND, "Already Has: User Already Has Book."),
     REVIEW_ALREADY_EXISTS("4093", HttpStatus.NOT_FOUND, "Already Has: Review Already Exists."),
