@@ -2,7 +2,6 @@ package com.example.modam.domain.friend.Interface;
 
 import com.example.modam.domain.friend.Domain.FriendEntity;
 import com.example.modam.domain.friend.Domain.FriendStatus;
-import com.example.modam.domain.user.Domain.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

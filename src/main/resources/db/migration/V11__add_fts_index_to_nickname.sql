@@ -1,0 +1,1 @@
+ALTER TABLE user ADD FULLTEXT INDEX idx_fts_nickname (nickname);

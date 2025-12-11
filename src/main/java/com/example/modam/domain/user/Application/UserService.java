@@ -142,10 +142,8 @@ public class UserService {
     }
 
     // 닉네임으로 사용자 목록 조회
-    @Transactional(readOnly = true)
-    public List<UserEntity> findUsersByNickname(String nickname) {
-        // Containing 쿼리를 사용하여 부분 일치 검색 수행
-        return userRepository.findByNicknameContaining(nickname);
+    public List<UserEntity> findUsersByNicknameFullTextSearch(String keyword) {
+        return userRepository.findByNicknameFullTextSearch(keyword);
     }
 
 }

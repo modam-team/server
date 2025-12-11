@@ -70,8 +70,8 @@ public class FriendService {
     }
 
     public List<FriendSearchResponse> searchUsersByNickname(String nickname, Long currentUserId){
-        List<UserEntity> searchResults = userService.findUsersByNickname(nickname);
-
+        String searchKeyword = nickname + "*";
+        List<UserEntity> searchResults = userService.findUsersByNicknameFullTextSearch(searchKeyword);
         UserEntity currentUser = userService.findUserById(currentUserId);
 
         return searchResults.stream()

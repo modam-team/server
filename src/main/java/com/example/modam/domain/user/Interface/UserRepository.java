@@ -17,11 +17,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     // 닉네임으로 UserEntity를 찾음
     Optional<UserEntity> findByNickname(String nickname);
 
+    @Query(value = "SELECT * FROM user WHERE MATCH(nickname) AGAINST(:keyword IN BOOLEAN MODE)", nativeQuery = true)
+    List<UserEntity> findByNicknameFullTextSearch(@Param("keyword") String keyword);
+
     // 닉네임 존재 여부 확인
     boolean existsByNickname(String nickname);
-
-    // 닉네임으로 사용자 목록 조회
-    List<UserEntity> findByNicknameContaining(String nickname);
 
     @Query("""
             select u.preferredCategories
