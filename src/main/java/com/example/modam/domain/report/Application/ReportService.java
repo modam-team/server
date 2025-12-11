@@ -8,6 +8,7 @@ import com.example.modam.domain.report.Domain.ReadingLogEntity;
 import com.example.modam.domain.report.Interface.ReportRepository;
 import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
 import com.example.modam.domain.report.Presentation.dto.RecordReadingLogRequest;
+import com.example.modam.domain.report.Presentation.dto.ReportResponse;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
@@ -47,6 +48,10 @@ public class ReportService {
         List<ReadingLogResponse> response = reportRepository.findByDate(start, end, userId);
 
         return response;
+    }
+
+    public List<ReportResponse> getReportData(long userId){
+        return reportRepository.findReportData(userId);
     }
 
     @Transactional
