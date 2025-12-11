@@ -33,16 +33,7 @@ public class FriendService {
         UserEntity requester = userService.findUserById(currentUserId);
         UserEntity receiver = userService.findUserById(targetUserId);
 
-        if (friendRepository.isFriendshipEstablished(currentUserId, targetUserId).isPresent()){
-            throw new ApiException(ErrorDefine.FRIEND_ALREADY_REQUESTED);
-        }
-
-        // 상대가 나한테 요청을 보낸 적이 있는지
-        Optional<FriendEntity> receivedRequest = friendRepository.findByRequesterIdAndReceiverIdAndStatus(
-                receiver.getId(), requester.getId(), FriendStatus.PENDING
-        );
-        // "친구가 이미 요청을 보냈으므로 수락하세요" 라는 메시지를 보내도록 중복 요청 처리하였음
-        if (receivedRequest.isPresent()){
+        if (friendRepository.findAnyRelationBetweenUsers(currentUserId, targetUserId).isPresent()){
             throw new ApiException(ErrorDefine.FRIEND_ALREADY_REQUESTED);
         }
 
@@ -84,7 +75,7 @@ public class FriendService {
     }
 
     private FriendRelationStatus calculateRelationStatus(UserEntity user1, UserEntity user2) {
-        if (friendRepository.isFriendshipEstablished(user1.getId(), user2.getId()).isPresent()) {
+        if (friendRepository.findAcceptedFriendship(user1.getId(), user2.getId()).isPresent()) {
             return FriendRelationStatus.FRIENDS;
         }
         Optional<FriendEntity> sentRequest = friendRepository.findByRequesterIdAndReceiverIdAndStatus(
@@ -137,7 +128,7 @@ public class FriendService {
     @Transactional
     public void deleteFriendship(Long targetUserId, Long currentUserId){
         FriendEntity friendship = friendRepository
-                .isFriendshipEstablished(currentUserId, targetUserId)
+                .findAcceptedFriendship(currentUserId, targetUserId)
                 .orElseThrow(()-> new ApiException(ErrorDefine.FRIEND_REQUEST_NOT_FOUND));
 
         friendRepository.delete(friendship);

@@ -17,15 +17,23 @@ public interface FriendRepository extends JpaRepository<FriendEntity, Long> {
             FriendStatus status
     );
 
-    // 친구 관계 확인
+    // 전체 친구 관계 확인 (요청, 승인)
     @Query("SELECT f FROM FriendEntity f WHERE " +
-            "(f.requester.id = :user1Id AND f.receiver.id = :user2Id AND f.status = 'ACCEPTED') OR " +
-            "(f.requester.id = :user2Id AND f.receiver.id = :user1Id AND f.status = 'ACCEPTED')")
-    Optional<FriendEntity> isFriendshipEstablished(
+            "(f.requester.id = :user1Id AND f.receiver.id = :user2Id) OR " +
+            "(f.requester.id = :user2Id AND f.receiver.id = :user1Id)")
+    Optional<FriendEntity> findAnyRelationBetweenUsers(
             @Param("user1Id") Long user1Id,
             @Param("user2Id") Long user2Id
     );
 
+    // 친구 관계만 확인
+    @Query("SELECT f FROM FriendEntity f WHERE " +
+            "(f.requester.id = :user1Id AND f.receiver.id = :user2Id AND f.status = 'ACCEPTED') OR " +
+            "(f.requester.id = :user2Id AND f.receiver.id = :user1Id AND f.status = 'ACCEPTED')")
+    Optional<FriendEntity> findAcceptedFriendship(
+            @Param("user1Id") Long user1Id,
+            @Param("user2Id") Long user2Id
+    );
 
     // 친구 목록 조회
     List<FriendEntity> findAllByRequesterIdAndStatusOrReceiverIdAndStatus(

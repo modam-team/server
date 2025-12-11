@@ -16,7 +16,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name="friend")
+@Table(
+        name="friend",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"request_id","receiver_id"})
+        }
+)
 @EntityListeners(AuditingEntityListener.class)
 public class FriendEntity {
 
