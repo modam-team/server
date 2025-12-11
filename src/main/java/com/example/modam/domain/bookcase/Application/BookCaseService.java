@@ -32,7 +32,7 @@ public class BookCaseService {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
         this.bookCaseRepository = bookCaseRepository;
-        this.variousFunc=variousFunc;
+        this.variousFunc = variousFunc;
     }
 
     public BookEntity getBook(long bookId) {
@@ -54,6 +54,26 @@ public class BookCaseService {
     public List<BookCaseEntity> searchUserBookCase(long userId, String title, BookState state) {
         title = variousFunc.toFTS(title);
         return bookCaseRepository.searchByUserAndBookTitle(userId, title, state);
+    }
+
+    public List<BookEntity> recommendBook(long userId) {
+        String category = userRepository.findUserCategory(userId);
+        List<Long> bookCaseIds = bookCaseRepository.findUserBookCaseIds(userId);
+
+        List<BookEntity> recommendBook = bookRepository.recommendByBookCategory(category, bookCaseIds);
+
+        return recommendBook;
+    }
+
+    @Transactional
+    public void deleteUserBook(long userId, long bookId) {
+        Optional<BookCaseEntity> optionalData = bookCaseRepository.findByUser_IdAndBook_Id(userId, bookId);
+        if (optionalData.isEmpty()) {
+            throw new ApiException(ErrorDefine.BOOKCASE_NOT_FOUND);
+        }
+        BookCaseEntity data = optionalData.get();
+
+        bookCaseRepository.delete(data);
     }
 
     @Transactional

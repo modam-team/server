@@ -28,6 +28,14 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
             from book b
             where b.is_received_from_aladin = true
             and match(b.title) against(:query in boolean mode)
-            """,nativeQuery = true)
-    List<BookEntity> searchByBookTitle(@Param("query")String query);
+            """, nativeQuery = true)
+    List<BookEntity> searchByBookTitle(@Param("query") String query);
+
+    @Query("""
+            select b
+            from book b
+            where b.categoryName=:category
+            and b.id not in :userBook
+            """)
+    List<BookEntity> recommendByBookCategory(@Param("category") String category, @Param("userBook") List<Long> userBook);
 }

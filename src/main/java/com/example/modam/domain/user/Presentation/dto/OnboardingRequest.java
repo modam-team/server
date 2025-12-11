@@ -4,10 +4,18 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class OnboardingRequest {
     @NotBlank(message="닉네임을 입력해주세요.")
     private String nickname;
@@ -18,5 +26,5 @@ public class OnboardingRequest {
 
     @NotNull(message = "선호 분야를 하나 이상 선택해야 합니다.")
     @NotEmpty(message = "선호 분야 목록은 비어있을 수 없습니다.")
-    private String categories;
+    private List<String> categories;
 }

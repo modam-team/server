@@ -1,11 +1,14 @@
 package com.example.modam.domain.bookcase.Domain;
 
 import com.example.modam.domain.book.Domain.BookEntity;
+import com.example.modam.domain.report.Domain.ReadingLogEntity;
 import com.example.modam.domain.user.Domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "bookcase")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,6 +36,9 @@ public class BookCaseEntity {
     private LocalDateTime startedAt;
 
     private LocalDateTime finishedAt;
+
+    @OneToMany(mappedBy = "bookCase", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ReadingLogEntity> logs = new ArrayList<>();
 
     public void setStatus(BookState state) {
         this.status = state;

@@ -9,6 +9,7 @@ public enum ErrorDefine {
     // Bad Request
     INVALID_ARGUMENT("4000", HttpStatus.BAD_REQUEST, "Bad Request: Invalid Arguments"),
     INVALID_HEADER_ERROR("4006", HttpStatus.BAD_REQUEST, "Bad Request: Invalid Header Error"),
+    SELF_FRIEND_REQUEST("400A", HttpStatus.BAD_REQUEST,"Bad Request: Cannot send a friend request to yourself."),
 
     // Onboarding
     USER_ALREADY_ONBOARDED("4007", HttpStatus.BAD_REQUEST, "Bad Request: User has already completed onboarding"),
@@ -19,10 +20,17 @@ public enum ErrorDefine {
     BOOK_NOT_FOUND("4041", HttpStatus.NOT_FOUND, "Not Found: Book Not Found"),
     STATUS_NOT_FOUND("4042", HttpStatus.NOT_FOUND, "Not Found: Book Status Not Found"),
     BOOKCASE_NOT_FOUND("4043", HttpStatus.NOT_FOUND, "Not Found: Bookcase Not Found"),
+    FRIEND_REQUEST_NOT_FOUND("4044", HttpStatus.NOT_FOUND, "Not Found: Friend request not found."),
+
+    // File/Image Upload
+    FILE_IS_EMPTY("4009", HttpStatus.BAD_REQUEST, "Bad Request: Upload file cannot be empty."),
+    INVALID_FILE_FORMAT("400A", HttpStatus.BAD_REQUEST, "Bad Request: Invalid file format or type."),
 
     //Already
     USER_ALREADY_HAS_BOOK("4092", HttpStatus.NOT_FOUND, "Already Has: User Already Has Book."),
     REVIEW_ALREADY_EXISTS("4093", HttpStatus.NOT_FOUND, "Already Has: Review Already Exists."),
+    FRIEND_ALREADY_REQUESTED("4094", HttpStatus.CONFLICT, "Conflict: Friend request has already been sent."),
+    ALREADY_FRIENDS("4095", HttpStatus.CONFLICT, "Conflict: Users are already friends."),
 
     // Forbidden
     UNAUTHORIZED_USER("4030", HttpStatus.FORBIDDEN, "Forbidden: Unauthorized User"),

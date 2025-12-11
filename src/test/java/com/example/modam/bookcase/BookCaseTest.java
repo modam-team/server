@@ -130,4 +130,39 @@ public class BookCaseTest {
         verify(userRepository, never()).findById(any());
     }
 
+    @DisplayName("올바르게 책장 삭제 테스트")
+    @Test
+    void delete_user_book() {
+        long userId = 1L;
+        long bookId = 123L;
+
+        BookCaseEntity bookCase = BookCaseEntity.builder()
+                .id(10L)
+                .build();
+
+        when(bookCaseRepository.findByUser_IdAndBook_Id(userId, bookId))
+                .thenReturn(Optional.of(bookCase));
+
+        bookCaseService.deleteUserBook(userId, bookId);
+
+        verify(bookCaseRepository, times(1)).delete(bookCase);
+    }
+
+    @DisplayName("책장에 유저와 책이 매칭 안될 때 예외처리")
+    @Test
+    void delete_user_book_not_found() {
+        long userId = 1L;
+        long bookId = 123L;
+
+        when(bookCaseRepository.findByUser_IdAndBook_Id(userId, bookId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ApiException.class,
+                () -> bookCaseService.deleteUserBook(userId, bookId)
+        );
+
+        verify(bookCaseRepository, never()).delete(any());
+    }
+
+
 }

@@ -85,6 +85,7 @@ public class BookService {
                     String newCategory = preprocessCategory(book.getCategoryName());
                     if (!newCategory.equals("impossible category")) {
                         book.setCategoryName(newCategory);
+                        book.setCover(preprocessCover(book.getCover()));
                         result.add(book);
                     }
                 }
@@ -92,14 +93,34 @@ public class BookService {
                 AladinResponse book = jsonMapper.convertValue(itemsNode, AladinResponse.class);
                 String newCategory = preprocessCategory(book.getCategoryName());
                 if (!newCategory.equals("impossible category")) {
+                    book.setCover(preprocessCover(book.getCover()));
                     book.setCategoryName(newCategory);
                     result.add(book);
                 }
             }
 
             return CompletableFuture.completedFuture(result);
+        } catch (Exception e) {
+            System.err.println("Fail to Call Aladin API: " + e.getMessage());
+            return CompletableFuture.completedFuture(new ArrayList<>());
         }
     }
+
+    public String preprocessCover(String cover) {
+
+        String[] parts = cover.split("/");
+
+        String coverPart = parts[parts.length - 2];
+
+        if (coverPart.startsWith("cover")) {
+            parts[parts.length - 2] = "cover500";
+        } else {
+            return cover;
+        }
+
+        return String.join("/", parts);
+    }
+
 
     // 입력데이터는 가공되지 않은 카테고리 데이터
     // ex) 국내도서>소설/시/희곡>추리/미스터리소설>영미 추리/미스터리소설

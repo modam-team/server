@@ -1,5 +1,6 @@
 package com.example.modam.domain.bookcase.Presentation;
 
+import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
 import com.example.modam.domain.bookcase.Application.BookCaseService;
 import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Facade.BookCaseFacade;
@@ -89,6 +90,25 @@ public class BookCaseController {
         );
     }
 
+    @Operation(
+            summary = "책장에서 책 삭제",
+            description = "사용자의 책장에 있는 책을 삭제합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "책 삭제 성공")
+    })
+    @DeleteMapping("/{bookId}")
+    public ResponseDTO delete(@AuthenticationPrincipal CustomUserDetails user,
+                              @PathVariable long bookId) {
+        long userId = user.getUser().getId();
+
+        bookCaseService.deleteUserBook(userId, bookId);
+
+        return new ResponseDTO<>(
+                "BookCase successfully deleted"
+        );
+    }
+
 
     @Operation(
             summary = "책장에서 상태 별 책 검색",
@@ -104,6 +124,25 @@ public class BookCaseController {
         long userId = user.getUser().getId();
 
         List<BookCaseInfoResponse> data = bookCaseFacade.searchBookCaseInfo(userId, title, state);
+
+        return new ResponseDTO<>(
+                data
+        );
+    }
+
+    @Operation(
+            summary = "홈 화면에서 책 추천",
+            description = "사용자의 관심 분야면서 책장에 없는 모든 책을 추천합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "책 추천 성공")
+    })
+    @GetMapping("/recommend")
+    public ResponseDTO<List<BookInfoResponse>> recommend(@AuthenticationPrincipal CustomUserDetails user) {
+
+        long userId = user.getUser().getId();
+
+        List<BookInfoResponse> data = bookCaseFacade.bookRecommend(userId);
 
         return new ResponseDTO<>(
                 data

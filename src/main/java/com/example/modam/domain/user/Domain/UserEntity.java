@@ -3,6 +3,9 @@ package com.example.modam.domain.user.Domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -32,11 +35,45 @@ public class UserEntity {
     @Builder.Default
     private boolean isOnboardingCompleted = false;
 
-    public void updateOnboardingInfo(String nickname, Integer goalScore, String categories){
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isPublic = true;
+
+    @Column(nullable=true)
+    private String profileImageUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    @Column(nullable = false)
+    private UserStatus status = UserStatus.ACTIVE;
+
+    @Column(nullable = true)
+    private LocalDateTime withdrawalRequestedAt;
+
+    public void updateProfileImageUrl(String imageUrl){
+        this.profileImageUrl = imageUrl;
+    }
+
+    public void updateOnboardingInfo(String nickname, Integer goalScore, List<String> categories){
         this.nickname = nickname;
         this.goalScore = goalScore;
         this.isOnboardingCompleted = true;
         this.preferredCategories = String.join(",", categories);
+    }
+
+    public void updateProfileInfo(String nickname, Boolean isPublic){
+        this.nickname = nickname;
+        this.isPublic = isPublic; // 공개 여부 업데이트
+    }
+
+    public void requestWithdrawal(){
+        this.status = UserStatus.WITHDRAWAL_PENDING;
+        this.withdrawalRequestedAt = LocalDateTime.now();
+    }
+
+    public void active(){
+        this.status = UserStatus.ACTIVE;
+        this.withdrawalRequestedAt = null;
     }
 }
 
