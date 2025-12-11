@@ -6,9 +6,7 @@ import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.report.Domain.Place;
 import com.example.modam.domain.report.Domain.ReadingLogEntity;
 import com.example.modam.domain.report.Interface.ReportRepository;
-import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
-import com.example.modam.domain.report.Presentation.dto.RecordReadingLogRequest;
-import com.example.modam.domain.report.Presentation.dto.ReportRawData;
+import com.example.modam.domain.report.Presentation.dto.*;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
@@ -19,7 +17,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -50,9 +51,43 @@ public class ReportService {
         return response;
     }
 
-    public List<ReportRawData> getReportData(long userId){
-        return reportRepository.findReportData(userId);
+    public ReportResponse getReportData(long userId) {
+
+        List<ReportRawData> rawList = reportRepository.findReportData(userId);
+
+        Map<GroupKey, List<String>> merged = rawList.stream()
+                .collect(Collectors.groupingBy(
+                        r -> new GroupKey(r.readAt(), r.readingPlace(), r.category()),
+                        Collectors.mapping(
+                                r -> r.rawHashtags() == null ? null : r.rawHashtags(),
+                                Collectors.toList()
+                        )
+                ));
+
+        List<ReportGroup> groupedList = merged.entrySet().stream()
+                .map(e -> new ReportGroup(
+                        e.getKey().readAt(),
+                        e.getKey().readingPlace(),
+                        e.getKey().category(),
+                        e.getValue().stream()
+                                .filter(Objects::nonNull)
+                                .toList()
+                ))
+                .toList();
+
+        ReportResponse response = new ReportResponse();
+        Map<String, Map<String, List<ReportGroup>>> data =
+                groupedList.stream()
+                        .collect(Collectors.groupingBy(
+                                g -> String.valueOf(g.getReadAt().getYear()),
+                                Collectors.groupingBy(
+                                        g -> String.valueOf(g.getReadAt().getMonthValue())
+                                )
+                        ));
+        response.setData(data);
+        return response;
     }
+
 
     @Transactional
     public ReadingLogEntity RecordReadingLog(RecordReadingLogRequest dto, long userId) {
