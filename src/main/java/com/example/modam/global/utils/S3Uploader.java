@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,8 +41,7 @@ public class S3Uploader {
     }
 
     private String putS3(File uploadFile, String fileName) {
-        amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile)
-                .withCannedAcl(CannedAccessControlList.PublicRead)); // Public Read 권한 부여
+        amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile));
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
@@ -74,13 +74,12 @@ public class S3Uploader {
     }
     private String extractKeyFromUrl(String fileUrl) {
         try {
-            String decodedUrl = java.net.URLDecoder.decode(fileUrl, "UTF-8");
+            URL url = new URL(fileUrl);
+            String path = url.getPath();
 
-            String bucketPath = "/" + bucket + "/";
-            if (decodedUrl.contains(bucketPath)) {
-                return decodedUrl.substring(decodedUrl.indexOf(bucketPath) + bucketPath.length());
+            if (path != null && path.length() > 0 && path.startsWith("/")) {
+                return path.substring(1);
             }
-
         } catch (Exception e) {
             log.error("S3 Key 디코딩 또는 파싱 오류: URL={}", fileUrl, e);
         }
