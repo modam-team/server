@@ -26,6 +26,7 @@ public class NotificationService {
         }
     }
 
+    // 앱 알림 -> data만 보냄
     private Message createMessage(String title, String body, String fcmToken) {
         return Message.builder()
                 .putData("title", title)
@@ -33,4 +34,18 @@ public class NotificationService {
                 .setToken(fcmToken)
                 .build();
     }
+
+    // 웹 알림
+    /*
+    private Message createMessage(String title, String body, String fcmToken) {
+        return Message.builder()
+                .setNotification(
+                        Notification.builder()
+                                .setTitle(title)
+                                .setBody(body)
+                                .build()
+                )
+                .setToken(fcmToken)
+                .build();
+    }*/
 }
