@@ -45,4 +45,9 @@ public interface FriendRepository extends JpaRepository<FriendEntity, Long> {
                   "(f.requester.id = :userId OR f.receiver.id = :userId) AND f.status = 'ACCEPTED'")
     List<FriendEntity> findAllFriendsByUserId(@Param("userId") Long userId);
 
+    // 특정 사용자에게 온 PENDING 상태의 요청 목록 조회
+    List<FriendEntity> findAllByReceiverIdAndStatus(
+            Long receiverId,
+            FriendStatus status
+    );
 }
