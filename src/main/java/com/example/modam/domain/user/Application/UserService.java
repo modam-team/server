@@ -115,7 +115,8 @@ public class UserService {
 
         user.updateProfileInfo(
                 request.getNickname(),
-                request.getIsPublic()
+                request.getIsPublic(),
+                request.getGoalScore()
         );
     }
     // 회원 탈퇴
