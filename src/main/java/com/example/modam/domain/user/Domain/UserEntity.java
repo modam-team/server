@@ -61,9 +61,16 @@ public class UserEntity {
         this.preferredCategories = String.join(",", categories);
     }
 
-    public void updateProfileInfo(String nickname, Boolean isPublic){
-        this.nickname = nickname;
-        this.isPublic = isPublic; // 공개 여부 업데이트
+    public void updateProfileInfo(String nickname, Boolean isPublic, Integer goalScore){
+        if (nickname!=null){
+            this.nickname = nickname;
+        }
+        if (isPublic!=null){
+            this.isPublic = isPublic;
+        }
+        if (goalScore!=null){
+            this.goalScore = goalScore;
+        }
     }
 
     public void requestWithdrawal(){
