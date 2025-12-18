@@ -38,4 +38,14 @@ public class RedisStringClient implements RedisClient<String> {
             throw new ApiException(ErrorDefine.INVALID_ACCESS_TO_REDIS);
         }
     }
+
+    @Override
+    public void delete(String key) {
+        redisTemplate.delete(key);
+    }
+
+    @Override
+    public boolean read(String key) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
 }
