@@ -7,5 +7,5 @@ public interface RedisClient<T> {
 
     void delete(String key);
 
-    boolean read(String key);
+    boolean exists(String key);
 }

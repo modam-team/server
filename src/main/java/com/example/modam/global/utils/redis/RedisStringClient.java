@@ -45,7 +45,7 @@ public class RedisStringClient implements RedisClient<String> {
     }
 
     @Override
-    public boolean read(String key) {
+    public boolean exists(String key) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 }
