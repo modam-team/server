@@ -91,7 +91,7 @@ public class BookDataTest {
                 .author("황록")
                 .publisher("모담")
                 .categoryName("소설")
-                .isReceivedFromAladin(false)
+                .receivedFromAladin(false)
                 .build();
 
         when(bookRepository.save(any(BookEntity.class))).thenReturn(savedEntity);
