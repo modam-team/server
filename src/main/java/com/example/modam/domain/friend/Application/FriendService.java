@@ -158,4 +158,19 @@ public class FriendService {
                 })
                 .collect(Collectors.toList());
     }
+
+    // 받은 친구 요청 목록 조회
+    @Transactional(readOnly = true)
+    public List<FriendSearchResponse> getReceivedRequestList(Long currentUserId){
+        List<FriendEntity> receivedRequests = friendRepository
+                .findAllByReceiverIdAndStatus(currentUserId, FriendStatus.PENDING);
+
+        return receivedRequests.stream()
+                .map(friendship->{
+                    UserEntity friendUser = friendship.getRequester();
+
+                    return FriendSearchResponse.from(friendUser, FriendRelationStatus.REQUEST_RECEIVED);
+                })
+                .collect(Collectors.toList());
+    }
 }

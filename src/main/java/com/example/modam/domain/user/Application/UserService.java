@@ -108,14 +108,16 @@ public class UserService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(()-> new ApiException(ErrorDefine.USER_NOT_FOUND));
 
-        if (!user.getNickname().equals(request.getNickname()) &&
+        if (request.getNickname()!=null&&
+                !user.getNickname().equals(request.getNickname()) &&
                 userRepository.existsByNickname(request.getNickname())) {
             throw new ApiException(ErrorDefine.NICKNAME_DUPLICATION);
         }
 
         user.updateProfileInfo(
                 request.getNickname(),
-                request.getIsPublic()
+                request.getIsPublic(),
+                request.getGoalScore()
         );
     }
     // 회원 탈퇴

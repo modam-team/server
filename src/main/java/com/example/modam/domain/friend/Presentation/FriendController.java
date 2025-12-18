@@ -5,6 +5,7 @@ import com.example.modam.domain.friend.Presentation.dto.FriendRequestDto;
 import com.example.modam.domain.friend.Presentation.dto.FriendSearchResponse;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/friend")
+@Tag(name = "Friend", description = "친구 관련 API")
 public class FriendController {
 
     private final FriendService friendService;
@@ -129,5 +131,18 @@ public class FriendController {
         friendService.deleteFriendship(targetUserId, currentUserId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "받은 친구 요청 목록 조회",
+            description = "현재 로그인한 사용자에게 들어온 PENDING 상태의 친구 요청 목록을 조회합니다."
+    )
+    @GetMapping("/requests/received")
+    public ResponseEntity<List<FriendSearchResponse>> getReceivedRequests(
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        Long currentUserId = user.getUser().getId();
+        List<FriendSearchResponse> receivedRequests = friendService.getReceivedRequestList(currentUserId);
+        return ResponseEntity.ok(receivedRequests);
     }
 }
