@@ -1,5 +1,7 @@
 package com.example.modam.global.utils;
 
+import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -17,14 +19,24 @@ public class RedisRepository {
     }
 
     public void setToRedis(String key, Object value, long ttl) {
-        Duration duration = Duration.ofSeconds(ttl);
-        log.info("save to Redis:" + "key:" + key + ", value: " + value + " , ttl: " + ttl);
-        redisTemplate.opsForValue().set(key, value, duration);
+        try {
+            Duration duration = Duration.ofSeconds(ttl);
+            log.info("save to Redis:" + "key:" + key + ", value: " + value + " , ttl: " + ttl);
+            redisTemplate.opsForValue().set(key, value, duration);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ApiException(ErrorDefine.INVALID_ACCESS_TO_REDIS);
+        }
     }
 
     public Object getRedisData(String key) {
-        Object data = redisTemplate.opsForValue().get(key);
-        log.info("read to Redis:" + key + " : " + data);
-        return data;
+        try {
+            Object data = redisTemplate.opsForValue().get(key);
+            log.info("read to Redis:" + key + " : " + data);
+            return data;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ApiException(ErrorDefine.INVALID_ACCESS_TO_REDIS);
+        }
     }
 }
