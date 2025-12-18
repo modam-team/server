@@ -10,8 +10,9 @@ import com.example.modam.domain.book.Presentation.dto.addBookRequest;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.utils.BestSellerCache;
-import com.example.modam.global.utils.PreviousQuery;
 import com.example.modam.global.utils.VariousFunc;
+import com.example.modam.global.utils.redis.RedisStringClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -23,21 +24,15 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class BookFacade {
     private final BookService bookService;
     private final BookDataService bookDataService;
     private final BestSellerCache bestSellerCache;
-    private final PreviousQuery previousQuery;
     private final VariousFunc variousFunc;
 
-    public BookFacade(BookService bookService, BookDataService bookDataService,
-                      BestSellerCache bestSellerCache, PreviousQuery previousQuery, VariousFunc variousFunc) {
-        this.bookService = bookService;
-        this.bookDataService = bookDataService;
-        this.bestSellerCache = bestSellerCache;
-        this.previousQuery = previousQuery;
-        this.variousFunc = variousFunc;
-    }
+    private final long BOOK_SEARCH_TTL_SECONDS = 259_200L; // 3일
+    private final RedisStringClient redisStringClient;
 
     // 알라딘 검색한 스레드가 이어서 DB에 저장하도록 연결하는 퍼사드, 베스트셀러는 서버 캐시에 저장
     public CompletableFuture<List<BookInfoResponse>> searchBook(BookSearchRequest dto, long userId) throws Exception {
@@ -60,7 +55,7 @@ public class BookFacade {
 
         }
 
-        if (!isBestseller && previousQuery.done(dto.getQuery())) {
+        if (!isBestseller && redisStringClient.exists(dto.getQuery())) {
             log.info("[Previous Query] Fast DB Search for query={}", dto.getQuery());
 
             return CompletableFuture.supplyAsync(() -> {
@@ -78,7 +73,7 @@ public class BookFacade {
         }
 
         if (!isBestseller) {
-            previousQuery.update(dto.getQuery());
+            redisStringClient.set(dto.getQuery(), "book search query", BOOK_SEARCH_TTL_SECONDS);
         }
 
         CompletableFuture<List<BookInfoResponse>> response =

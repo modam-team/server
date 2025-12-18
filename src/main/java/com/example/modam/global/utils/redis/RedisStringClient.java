@@ -21,6 +21,7 @@ public class RedisStringClient implements RedisClient<String> {
     public void set(String key, String value, long time) {
         try {
             Duration ttl = Duration.ofSeconds(time);
+            log.info("save to redis : " + value);
             redisTemplate.opsForValue().set(key, value, ttl);
         } catch (Exception e) {
             log.error("Redis String set failed. key={}", key, e);
@@ -32,6 +33,7 @@ public class RedisStringClient implements RedisClient<String> {
     public String get(String key) {
         try {
             String data = redisTemplate.opsForValue().get(key);
+            log.info("get to redis: " + key);
             return data;
         } catch (Exception e) {
             log.error("Redis String get failed. key={}", key, e);
