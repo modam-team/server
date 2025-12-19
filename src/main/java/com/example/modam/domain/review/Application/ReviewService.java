@@ -6,6 +6,7 @@ import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.review.Domain.HashtagEntity;
 import com.example.modam.domain.review.Domain.ReviewEntity;
 import com.example.modam.domain.review.Interface.ReviewRepository;
+import com.example.modam.domain.review.Presentation.dto.BookSearchReviewResponse;
 import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
 import com.example.modam.domain.review.Presentation.dto.ReviewResponse;
 import com.example.modam.global.utils.DefineHashtag;
@@ -56,6 +57,12 @@ public class ReviewService {
                 .map(HashtagEntity::getTag).toList();
 
         ReviewResponse response = new ReviewResponse(review.getRating(), review.getComment(), hashtags);
+
+        return response;
+    }
+
+    public List<BookSearchReviewResponse> readBookReview(long bookId) {
+        List<BookSearchReviewResponse> response = reviewRepository.findBookSearchData(bookId);
 
         return response;
     }

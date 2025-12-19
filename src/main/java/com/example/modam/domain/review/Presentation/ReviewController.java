@@ -1,6 +1,7 @@
 package com.example.modam.domain.review.Presentation;
 
 import com.example.modam.domain.review.Application.ReviewService;
+import com.example.modam.domain.review.Presentation.dto.BookSearchReviewResponse;
 import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
 import com.example.modam.domain.review.Presentation.dto.ReviewResponse;
 import com.example.modam.global.response.ResponseDTO;
@@ -11,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -59,6 +62,16 @@ public class ReviewController {
         long userId = user.getUser().getId();
 
         ReviewResponse response = reviewService.readReview(userId, bookId);
+
+        return new ResponseDTO(
+                response
+        );
+    }
+
+    @GetMapping("/search")
+    public ResponseDTO<List<BookSearchReviewResponse>> search(@RequestParam long bookId,
+                                                              @AuthenticationPrincipal CustomUserDetails user) {
+        List<BookSearchReviewResponse> response = reviewService.readBookReview(bookId);
 
         return new ResponseDTO(
                 response
