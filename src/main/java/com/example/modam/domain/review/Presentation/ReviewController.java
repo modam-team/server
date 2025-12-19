@@ -50,11 +50,11 @@ public class ReviewController {
     }
 
     @Operation(
-            summary = "리뷰 조회",
+            summary = "책장에서 리뷰 조회",
             description = "완독 책장에서 완독된 책의 리뷰 정보를 불러옵니다."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "리뷰 조회 성공")
+            @ApiResponse(responseCode = "200", description = "책장 리뷰 조회 성공")
     })
     @GetMapping
     public ResponseDTO<ReviewResponse> read(@RequestParam long bookId,
@@ -68,6 +68,13 @@ public class ReviewController {
         );
     }
 
+    @Operation(
+            summary = "책 검색 시 리뷰 조회",
+            description = "책 검색하고 나온 책에 대한 다른 유저들의 리뷰 확인"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "검색 리뷰 조회 성공")
+    })
     @GetMapping("/search")
     public ResponseDTO<List<BookSearchReviewResponse>> search(@RequestParam long bookId,
                                                               @AuthenticationPrincipal CustomUserDetails user) {
