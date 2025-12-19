@@ -33,7 +33,7 @@ public class BookCaseController {
 
     @Operation(
             summary = "책장에 책 넣기",
-            description = "사용자가 책장에 넣을 책을 넣습니다."
+            description = "사용자가 책장에 넣을 책을 넣습니다. 완독일 때는 시작 날짜, 종료 날짜가 필요하고 형식은 YYYY-MM-DD 입니다."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "책장에 책 넣기 성공")

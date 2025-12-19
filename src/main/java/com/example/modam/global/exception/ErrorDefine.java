@@ -48,7 +48,10 @@ public enum ErrorDefine {
     // REVIEW
     EXCEED_MAX_COMMENT_LENGTH("4038", HttpStatus.FORBIDDEN, "Forbidden: Comment Exceed Max Length"),
     EXCEED_MAX_RATING_NUM("4030", HttpStatus.FORBIDDEN, "Forbidden: Rating Exceed Max Number"),
-    INVALID_HASHTAG("4039", HttpStatus.FORBIDDEN, "Forbidden: Invalid Hashtag");
+    INVALID_HASHTAG("4039", HttpStatus.FORBIDDEN, "Forbidden: Invalid Hashtag"),
+
+    //Date
+    INVALID_DATE("4038",HttpStatus.FORBIDDEN,"Forbidden: Date Invalid");
 
 
 
