@@ -2,6 +2,7 @@ package com.example.modam.domain.review.Presentation;
 
 import com.example.modam.domain.review.Application.ReviewService;
 import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
+import com.example.modam.domain.review.Presentation.dto.ReviewResponse;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,10 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -46,5 +44,24 @@ public class ReviewController {
                 "Review Successfully created"
         );
 
+    }
+
+    @Operation(
+            summary = "리뷰 조회",
+            description = "완독 책장에서 완독된 책의 리뷰 정보를 불러옵니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "리뷰 조회 성공")
+    })
+    @GetMapping
+    public ResponseDTO<ReviewResponse> read(@RequestParam long bookId,
+                                            @AuthenticationPrincipal CustomUserDetails user) {
+        long userId = user.getUser().getId();
+
+        ReviewResponse response = reviewService.readReview(userId, bookId);
+
+        return new ResponseDTO(
+                response
+        );
     }
 }

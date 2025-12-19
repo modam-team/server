@@ -1,8 +1,10 @@
 package com.example.modam.domain.review.Interface;
 
 import com.example.modam.domain.review.Domain.ReviewEntity;
+import com.example.modam.domain.review.Presentation.dto.ReviewResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,5 +19,13 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
             from review r
             where r.bookCase.id in :BookCaseId
             """)
-    List<ReviewEntity> findByBookCaseIds(List<Long>BookCaseId);
+    List<ReviewEntity> findByBookCaseIds(List<Long> BookCaseId);
+
+    @Query("""
+            select r
+            from review r
+            where r.bookCase.book.id = :bookId
+            and r.bookCase.user.id = :userId
+            """)
+    ReviewEntity findByBookIdAndUserId(@Param("bookId") long bookId, @Param("userId") long userId);
 }
