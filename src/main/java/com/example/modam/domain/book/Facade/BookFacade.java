@@ -10,8 +10,9 @@ import com.example.modam.domain.book.Presentation.dto.addBookRequest;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.utils.BestSellerCache;
-import com.example.modam.global.utils.PreviousQuery;
 import com.example.modam.global.utils.VariousFunc;
+import com.example.modam.global.utils.redis.RedisBookDataClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -23,21 +24,14 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class BookFacade {
     private final BookService bookService;
     private final BookDataService bookDataService;
     private final BestSellerCache bestSellerCache;
-    private final PreviousQuery previousQuery;
     private final VariousFunc variousFunc;
-
-    public BookFacade(BookService bookService, BookDataService bookDataService,
-                      BestSellerCache bestSellerCache, PreviousQuery previousQuery, VariousFunc variousFunc) {
-        this.bookService = bookService;
-        this.bookDataService = bookDataService;
-        this.bestSellerCache = bestSellerCache;
-        this.previousQuery = previousQuery;
-        this.variousFunc = variousFunc;
-    }
+    private final RedisBookDataClient redisBookDataClient;
+    private final long BOOK_SEARCH_TTL_SECONDS = 259_200L; // 3일
 
     // 알라딘 검색한 스레드가 이어서 DB에 저장하도록 연결하는 퍼사드, 베스트셀러는 서버 캐시에 저장
     public CompletableFuture<List<BookInfoResponse>> searchBook(BookSearchRequest dto, long userId) throws Exception {
@@ -60,11 +54,11 @@ public class BookFacade {
 
         }
 
-        if (!isBestseller && previousQuery.done(dto.getQuery())) {
+        if (!isBestseller && redisBookDataClient.exists(dto.getQuery())) {
             log.info("[Previous Query] Fast DB Search for query={}", dto.getQuery());
 
             return CompletableFuture.supplyAsync(() -> {
-                List<BookEntity> entities = bookDataService.searchBook(dto.getQuery());
+                List<BookEntity> entities = redisBookDataClient.get(dto.getQuery());
 
                 List<Long> bookIds = entities.stream().map(BookEntity::getId).toList();
                 Map<Long, ReviewScore> scoreMap =
@@ -75,10 +69,6 @@ public class BookFacade {
                         .map(book -> bookDataService.toDto(book, scoreMap.get(book.getId())))
                         .collect(Collectors.toList());
             });
-        }
-
-        if (!isBestseller) {
-            previousQuery.update(dto.getQuery());
         }
 
         CompletableFuture<List<BookInfoResponse>> response =
@@ -92,6 +82,7 @@ public class BookFacade {
                             } else {
                                 bookDataService.saveBook(bookData);
                                 entities = bookDataService.searchBook(dto.getQuery());
+                                redisBookDataClient.set(dto.getQuery(), entities, BOOK_SEARCH_TTL_SECONDS);
                             }
 
                             List<Long> bookIds = entities.stream()

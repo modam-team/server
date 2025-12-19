@@ -76,7 +76,7 @@ public class BookDataService {
                 .author(dto.getAuthor())
                 .publisher(dto.getPublisher())
                 .categoryName(dto.getCategory())
-                .isReceivedFromAladin(false)
+                .receivedFromAladin(false)
                 .build();
 
         return bookRepository.save(book);

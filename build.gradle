@@ -58,6 +58,12 @@ dependencies {
 	// firebase
 	implementation 'com.google.firebase:firebase-admin:9.7.0'
 
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	//prometheous
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {

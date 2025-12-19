@@ -61,6 +61,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**", "/v1/auth/**").permitAll()
                         // error PermitAll
                         .requestMatchers("/error/**").permitAll()
+                        // metric 수집 엔드포인트
+                        .requestMatchers("/actuator/prometheus").permitAll()
                         // 임시 테스트를 위해 모든 요청을 인증 없이 변경
                         .anyRequest().permitAll());
 
