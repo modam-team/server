@@ -98,7 +98,6 @@ public class BookCaseService {
         return data;
     }
 
-
     @Transactional
     public BookCaseEntity saveUserBook(long userId, BookCaseSaveRequestDTO dto) {
         long bookId = dto.getBookId();
@@ -132,13 +131,18 @@ public class BookCaseService {
 
             return bookCaseRepository.save(userBook);
         } else {
+
+            if (dto.getStartDate() == null || dto.getEndDate() == null || dto.getStartDate().isAfter(dto.getEndDate())) {
+                throw new ApiException(ErrorDefine.INVALID_DATE);
+            }
+
             BookCaseEntity userBook = BookCaseEntity.builder()
                     .book(book)
                     .user(user)
                     .status(BookState.AFTER)
                     .enrollAt(LocalDateTime.now())
-                    .startedAt(LocalDateTime.now())
-                    .finishedAt(LocalDateTime.now())
+                    .startedAt(dto.getStartDate().atStartOfDay())
+                    .finishedAt(dto.getEndDate().atStartOfDay())
                     .build();
 
             return bookCaseRepository.save(userBook);

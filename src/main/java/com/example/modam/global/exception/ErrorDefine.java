@@ -9,7 +9,7 @@ public enum ErrorDefine {
     // Bad Request
     INVALID_ARGUMENT("4000", HttpStatus.BAD_REQUEST, "Bad Request: Invalid Arguments"),
     INVALID_HEADER_ERROR("4006", HttpStatus.BAD_REQUEST, "Bad Request: Invalid Header Error"),
-    SELF_FRIEND_REQUEST("400A", HttpStatus.BAD_REQUEST, "Bad Request: Cannot send a friend request to yourself."),
+    SELF_FRIEND_REQUEST("400A", HttpStatus.BAD_REQUEST,"Bad Request: Cannot send a friend request to yourself."),
 
     // Onboarding
     USER_ALREADY_ONBOARDED("4007", HttpStatus.BAD_REQUEST, "Bad Request: User has already completed onboarding"),
@@ -50,8 +50,9 @@ public enum ErrorDefine {
     EXCEED_MAX_RATING_NUM("4030", HttpStatus.FORBIDDEN, "Forbidden: Rating Exceed Max Number"),
     INVALID_HASHTAG("4039", HttpStatus.FORBIDDEN, "Forbidden: Invalid Hashtag"),
 
-    //Redis
-    INVALID_ACCESS_TO_REDIS("R401", HttpStatus.NOT_FOUND, "Invalid: Can Not access to Redis");
+    //Date
+    INVALID_DATE("4038",HttpStatus.FORBIDDEN,"Forbidden: Date Invalid");
+
 
 
     private final String errorCode;
