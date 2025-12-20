@@ -6,7 +6,9 @@ import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.review.Domain.HashtagEntity;
 import com.example.modam.domain.review.Domain.ReviewEntity;
 import com.example.modam.domain.review.Interface.ReviewRepository;
+import com.example.modam.domain.review.Presentation.dto.BookSearchReviewResponse;
 import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
+import com.example.modam.domain.review.Presentation.dto.ReviewResponse;
 import com.example.modam.global.utils.DefineHashtag;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
@@ -41,6 +43,28 @@ public class ReviewService {
             return List.of();
         }
         return reviewRepository.findByBookCaseIds(caseIds);
+    }
+
+    public ReviewResponse readReview(long userId, long bookId) {
+        ReviewEntity review = reviewRepository.findByBookIdAndUserId(bookId, userId);
+        BookCaseEntity bc = review.getBookCase();
+
+        if (bc.getStatus() != BookState.AFTER) {
+            throw new ApiException(ErrorDefine.UNAUTHORIZED_STATUS);
+        }
+
+        List<String> hashtags = review.getHashtags().stream()
+                .map(HashtagEntity::getTag).toList();
+
+        ReviewResponse response = new ReviewResponse(review.getRating(), review.getComment(), hashtags);
+
+        return response;
+    }
+
+    public List<BookSearchReviewResponse> readBookReview(long bookId) {
+        List<BookSearchReviewResponse> response = reviewRepository.findBookSearchData(bookId);
+
+        return response;
     }
 
     @Transactional

@@ -1,7 +1,9 @@
 package com.example.modam.domain.review.Presentation;
 
 import com.example.modam.domain.review.Application.ReviewService;
+import com.example.modam.domain.review.Presentation.dto.BookSearchReviewResponse;
 import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
+import com.example.modam.domain.review.Presentation.dto.ReviewResponse;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,10 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -46,5 +47,41 @@ public class ReviewController {
                 "Review Successfully created"
         );
 
+    }
+
+    @Operation(
+            summary = "책장에서 리뷰 조회",
+            description = "완독 책장에서 완독된 책의 리뷰 정보를 불러옵니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "책장 리뷰 조회 성공")
+    })
+    @GetMapping
+    public ResponseDTO<ReviewResponse> read(@RequestParam long bookId,
+                                            @AuthenticationPrincipal CustomUserDetails user) {
+        long userId = user.getUser().getId();
+
+        ReviewResponse response = reviewService.readReview(userId, bookId);
+
+        return new ResponseDTO(
+                response
+        );
+    }
+
+    @Operation(
+            summary = "책 검색 시 리뷰 조회",
+            description = "책 검색하고 나온 책에 대한 다른 유저들의 리뷰 확인"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "검색 리뷰 조회 성공")
+    })
+    @GetMapping("/search")
+    public ResponseDTO<List<BookSearchReviewResponse>> search(@RequestParam long bookId,
+                                                              @AuthenticationPrincipal CustomUserDetails user) {
+        List<BookSearchReviewResponse> response = reviewService.readBookReview(bookId);
+
+        return new ResponseDTO(
+                response
+        );
     }
 }
