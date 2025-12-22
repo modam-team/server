@@ -2,6 +2,7 @@ package com.example.modam.domain.review.Presentation;
 
 import com.example.modam.domain.review.Application.ReviewService;
 import com.example.modam.domain.review.Presentation.dto.BookSearchReviewResponse;
+import com.example.modam.domain.review.Presentation.dto.ChangeCommentRequest;
 import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
 import com.example.modam.domain.review.Presentation.dto.ReviewResponse;
 import com.example.modam.global.response.ResponseDTO;
@@ -82,6 +83,24 @@ public class ReviewController {
 
         return new ResponseDTO(
                 response
+        );
+    }
+
+    @Operation(
+            summary = "리뷰 코멘트 수정",
+            description = "완독 책장에서 리뷰 코멘트를 수정합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "리뷰 수정 성공")
+    })
+    @PatchMapping
+    public ResponseDTO update(@AuthenticationPrincipal CustomUserDetails user,
+                              @RequestBody ChangeCommentRequest dto){
+        long userId=user.getUser().getId();
+        reviewService.changeReviewComment(userId,dto);
+
+        return new ResponseDTO(
+                "Comment Successfully changed"
         );
     }
 }
