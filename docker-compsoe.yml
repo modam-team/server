@@ -1,19 +1,27 @@
-
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: hwangrock/modam:latest
+
     ports:
       - "8080:8080"
+
     environment:
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
+
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
+      ALADIN: ${ALADIN}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+      KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+
     depends_on:
       redis:
         condition: service_healthy
-    networks:
-      - default
 
   redis:
     image: redis:7.0
@@ -25,9 +33,3 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
-    networks:
-      - default
-
-networks:
-  default:
-    driver: bridge

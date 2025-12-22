@@ -105,7 +105,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Deploy to EC2 via SSH (pull image & restart)
+      - name: Deploy to EC2 via SSH (docker compose)
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -115,44 +115,26 @@ jobs:
           script: |
             set -euo pipefail
 
-            # 환경 변수 설정 (GitHub Secrets에서 가져옴)
-            ALADIN_SECRET="${{ secrets.ALADIN }}"
-            DB_URL="${{ secrets.DB_URL }}"
-            DB_USERNAME="${{ secrets.DB_USERNAME }}"
-            DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
-            KAKAO_CLIENT_ID="${{ secrets.KAKAO_CLIENT_ID }}"
-            KAKAO_CLIENT_SECRET="${{ secrets.KAKAO_CLIENT_SECRET }}"
-            KAKAO_REDIRECT_URI="${{ secrets.KAKAO_REDIRECT_URI }}"
-            JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}"
-            
-            
-            # 1) Docker Hub 로그인
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            # Docker Hub 로그인
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
+              -u "${{ secrets.DOCKER_USERNAME }}" \
+              --password-stdin
 
-            # 2) 최신 이미지 pull
-            docker pull hwangrock/modam:latest
+            # ec2 내에 .env 파일 생성
+            cat << EOF > .env
+            ALADIN=${{ secrets.ALADIN }}
+            DB_URL=${{ secrets.DB_URL }}
+            DB_USERNAME=${{ secrets.DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
+            KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}
+            KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}
+            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            EOF
 
-            # 3) 실행 중인 기존 컨테이너 정리
-            EXISTING="$(docker ps -a -q -f name=modam_server || true)"
-            if [ -n "$EXISTING" ]; then
-              docker stop modam_server || true
-              docker rm modam_server || true
-            fi
+            docker compose pull
+            docker compose down
+            docker compose up -d
 
-            # 4) 새 컨테이너 실행 (DB 변수 주입)
-            docker run -d \
-              --name modam_server \
-              -p 8080:8080 \
-              -e ALADIN="$ALADIN_SECRET" \
-              -e SPRING_DATASOURCE_URL="$DB_URL" \
-              -e SPRING_DATASOURCE_USERNAME="$DB_USERNAME" \
-              -e SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD" \
-              -e KAKAO_CLIENT_ID="$KAKAO_CLIENT_ID" \
-              -e KAKAO_CLIENT_SECRET="$KAKAO_CLIENT_SECRET" \
-              -e KAKAO_REDIRECT_URI="$KAKAO_REDIRECT_URI" \
-              -e JWT_SECRET_KEY="$JWT_SECRET_KEY" \
-              --restart unless-stopped \
-              hwangrock/modam:latest
-
-            # 5) 로그아웃
             docker logout
+
