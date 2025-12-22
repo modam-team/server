@@ -38,3 +38,6 @@ out/
 .vscode/
 
 src/main/resources/firebase/
+
+### mac
+.DS_Store
