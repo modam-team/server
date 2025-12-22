@@ -115,12 +115,24 @@ jobs:
           script: |
             set -euo pipefail
 
+            # 프로젝트 디렉토리
+            cd /home/ubuntu/modam
+
+            # docker compose 설치 여부 확인 및 설치
+            if ! docker compose version >/dev/null 2>&1; then
+              sudo mkdir -p /usr/local/lib/docker/cli-plugins
+              sudo curl -SL \
+                https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64 \
+                -o /usr/local/lib/docker/cli-plugins/docker-compose
+              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+            fi
+
             # Docker Hub 로그인
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
               -u "${{ secrets.DOCKER_USERNAME }}" \
               --password-stdin
 
-            # ec2 내에 .env 파일 생성
+            # .env 파일 생성
             cat << EOF > .env
             ALADIN=${{ secrets.ALADIN }}
             DB_URL=${{ secrets.DB_URL }}
@@ -132,10 +144,17 @@ jobs:
             JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
             EOF
 
-            docker-compose down
+            # 기존 컨테이너 종료
+            docker compose down || true
+
+            # 사용하지 않는 이미지 정리
             docker image prune -f
-            docker-compose pull
-            docker-compose up -d
-            
+
+            # 최신 이미지 pull 및 실행
+            docker compose pull
+            docker compose up -d
+
+            # 로그아웃
             docker logout
+
 
