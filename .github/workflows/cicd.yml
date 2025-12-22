@@ -108,7 +108,11 @@ jobs:
           key: ${{ secrets.AWS_SSH_KEY }}
           timeout: 120s
           script: |
-            set -euo pipefail
+            set -e
+
+            # 8080 포트 사용 중인 컨테이너 전부 종료
+            docker ps --format "{{.ID}} {{.Ports}}" | grep "0.0.0.0:8080" | awk '{print $1}' | xargs -r docker stop
+            docker ps -a --format "{{.ID}} {{.Ports}}" | grep "0.0.0.0:8080" | awk '{print $1}' | xargs -r docker rm
 
             # 도커 허브 로그인
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
@@ -142,10 +146,8 @@ jobs:
             EOF
 
             # 재배포
+            docker compose down --remove-orphans || true
             docker compose pull
-            docker compose down || true
             docker compose up -d
 
             docker logout
-
-
