@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +58,7 @@ public class BookCaseService {
     }
 
     public List<BookEntity> recommendBook(long userId) {
-        String category = userRepository.findUserCategory(userId);
+        List<String> category = Arrays.stream(userRepository.findUserCategory(userId).split(",")).toList();
         List<Long> bookCaseIds = bookCaseRepository.findUserBookCaseIds(userId);
 
         List<BookEntity> recommendBook = bookRepository.recommendByBookCategory(category, bookCaseIds);
