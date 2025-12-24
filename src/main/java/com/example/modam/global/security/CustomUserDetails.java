@@ -74,4 +74,8 @@ public class CustomUserDetails implements UserDetails, OAuth2User{
     public String getName() {
         return user.getProviderId(); // 식별자로 providerid 사용
     }
+
+    public Long getUserId() {
+        return user.getId();
+    }
 }

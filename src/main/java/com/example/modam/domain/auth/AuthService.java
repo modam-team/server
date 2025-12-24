@@ -12,6 +12,7 @@ import com.example.modam.global.security.jwt.JwtProvider;
 
 import com.example.modam.global.utils.redis.RedisStringClient;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -20,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -135,6 +137,17 @@ public class AuthService {
                     .providerId(providerId)
                     .build();
             return userRepository.save(newUser);
+        }
+    }
+
+    // 로그아웃
+    public void logout(Long userId){
+        String redisKey = "RT:"+ userId;
+
+        if (redisStringClient.exists(redisKey)){
+            redisStringClient.delete(redisKey);
+        } else {
+            throw new ApiException(ErrorDefine.TOKEN_INVALID);
         }
     }
 }
