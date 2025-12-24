@@ -78,7 +78,7 @@ public class UserEntity {
         this.withdrawalRequestedAt = LocalDateTime.now();
     }
 
-    public void active(){
+    public void activateAccount(){
         this.status = UserStatus.ACTIVE;
         this.withdrawalRequestedAt = null;
     }

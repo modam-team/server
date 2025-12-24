@@ -4,6 +4,7 @@ import com.example.modam.domain.user.Application.UserService;
 import com.example.modam.domain.user.Presentation.dto.*;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
+import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -142,5 +143,16 @@ public class UserController {
         userService.withdraw(userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @Operation(
+            summary = "계정 활성화",
+            description = "사용자 상태를 ACTIVE로 변경하고 탈퇴 신청을 철회합니다."
+    )
+    @PatchMapping("/activate")
+    public ResponseEntity<ResponseDTO<String>> activateUser(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        userService.activateUserStatus(userDetails.getUserId());
+        return ResponseEntity.ok(new ResponseDTO<>("계정이 성공적으로 활성화되었습니다."));
     }
 }
