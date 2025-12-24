@@ -60,10 +60,10 @@ public class AuthService {
         }
 
         TokenResponse newTokenResponse = jwtProvider.createToken(userId, "USER");
-        long newExpirationTime = jwtProvider.getRefreshTokenExpireTime() / 1000;
+        long newExpirationTime = jwtProvider.getRefreshTokenExpirationTime() / 1000;
 
         redisStringClient.set(
-                "RT: "+ userId,
+                "RT:"+ userId,
                 newTokenResponse.getRefreshToken(),
                 newExpirationTime
         );

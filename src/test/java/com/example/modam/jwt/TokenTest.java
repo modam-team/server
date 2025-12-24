@@ -41,7 +41,7 @@ public class TokenTest {
                 .signWith(key)
                 .compact();
 
-        String result = jwtProvider.getUserId(token);
+        Long result = jwtProvider.getUserId(token);
         assertThat(result).isEqualTo(id);
     }
 }

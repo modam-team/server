@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // JWT 유효성 검증
         if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
-            String userSubject = jwtProvider.getUserId(token);
+            Long userSubject = jwtProvider.getUserId(token);
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(userSubject);
 
             if (userDetails != null) {
