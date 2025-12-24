@@ -61,7 +61,7 @@ public class UserController {
 
     @Operation(
             summary = "사용자 프로필 조회",
-            description = "로그인한 사용자의 현재 프로필 정보(닉네임, 목표 권수 등)를 조회합니다."
+            description = "로그인한 사용자의 현재 프로필 정보를 조회합니다."
     )
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getUserProfile(
