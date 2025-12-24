@@ -7,6 +7,7 @@ import com.example.modam.domain.review.Domain.HashtagEntity;
 import com.example.modam.domain.review.Domain.ReviewEntity;
 import com.example.modam.domain.review.Interface.ReviewRepository;
 import com.example.modam.domain.review.Presentation.dto.BookSearchReviewResponse;
+import com.example.modam.domain.review.Presentation.dto.ChangeCommentRequest;
 import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
 import com.example.modam.domain.review.Presentation.dto.ReviewResponse;
 import com.example.modam.global.utils.DefineHashtag;
@@ -65,6 +66,22 @@ public class ReviewService {
         List<BookSearchReviewResponse> response = reviewRepository.findBookSearchData(bookId);
 
         return response;
+    }
+
+    @Transactional
+    public ReviewEntity changeReviewComment(long userId, ChangeCommentRequest dto) {
+        if (dto.getComment() == null || dto.getComment().isBlank()) {
+            throw new ApiException(ErrorDefine.INVALID_HEADER_ERROR);
+        }
+
+        if (dto.getComment().length() > COMMENT_MAX_LEN) {
+            throw new ApiException(ErrorDefine.EXCEED_MAX_COMMENT_LENGTH);
+        }
+
+        ReviewEntity review = reviewRepository.findByBookIdAndUserId(dto.getBookId(), userId);
+        review.setComment(dto.getComment());
+
+        return review;
     }
 
     @Transactional

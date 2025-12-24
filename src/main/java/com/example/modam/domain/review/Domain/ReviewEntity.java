@@ -33,4 +33,8 @@ public class ReviewEntity {
         this.comment = comment;
         this.hashtags = new ArrayList<>();
     }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 }

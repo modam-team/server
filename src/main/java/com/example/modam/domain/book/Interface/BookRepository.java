@@ -34,8 +34,9 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
     @Query("""
             select b
             from book b
-            where b.categoryName=:category
+            where b.categoryName in :category
             and b.id not in :userBook
             """)
-    List<BookEntity> recommendByBookCategory(@Param("category") String category, @Param("userBook") List<Long> userBook);
+    List<BookEntity> recommendByBookCategory(@Param("category") List<String> category,
+                                             @Param("userBook") List<Long> userBook);
 }

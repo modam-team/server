@@ -54,7 +54,11 @@ public enum ErrorDefine {
     INVALID_DATE("4038", HttpStatus.FORBIDDEN, "Forbidden: Date Invalid"),
 
     //Redis
-    INVALID_ACCESS_TO_REDIS("R401", HttpStatus.NOT_FOUND, "Invalid: Can Not access to Redis");
+    INVALID_ACCESS_TO_REDIS("R401", HttpStatus.NOT_FOUND, "Invalid: Can Not access to Redis"),
+
+    // Report
+    REPORT_DATA_EMPTY("RR404", HttpStatus.NOT_FOUND, "Report: User has no report data");
+
 
     private final String errorCode;
     private final HttpStatus httpStatus;

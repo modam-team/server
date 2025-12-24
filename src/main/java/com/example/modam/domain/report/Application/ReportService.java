@@ -59,6 +59,10 @@ public class ReportService {
 
         List<ReportRawData> rawList = reportRepository.findReportData(userId);
 
+        if (rawList.isEmpty()) {
+            throw new ApiException(ErrorDefine.REPORT_DATA_EMPTY);
+        }
+
         Map<GroupKey, List<String>> merged = rawList.stream()
                 .collect(Collectors.groupingBy(
                         r -> new GroupKey(r.readAt(), r.readingPlace(), r.category()),

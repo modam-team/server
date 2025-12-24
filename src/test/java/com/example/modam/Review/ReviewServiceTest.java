@@ -5,6 +5,7 @@ import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.review.Application.ReviewService;
 import com.example.modam.domain.review.Interface.ReviewRepository;
+import com.example.modam.domain.review.Presentation.dto.ChangeCommentRequest;
 import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
 import com.example.modam.domain.review.Domain.ReviewEntity;
 import com.example.modam.domain.user.Domain.UserEntity;
@@ -246,4 +247,58 @@ class ReviewServiceTest {
         verify(reviewRepository, times(1)).existsByBookCase_Id(5L);
         verify(reviewRepository, times(1)).save(any(ReviewEntity.class));
     }
+
+    @DisplayName("리뷰 코멘트가 null 또는 blank면 INVALID_HEADER_ERROR 예외")
+    @Test
+    void change_comment_invalid_test() {
+
+        ChangeCommentRequest dto = mock(ChangeCommentRequest.class);
+        when(dto.getComment()).thenReturn("   "); // blank
+
+        assertThrows(
+                ApiException.class,
+                () -> reviewService.changeReviewComment(1L, dto)
+        );
+
+        verifyNoInteractions(reviewRepository);
+    }
+
+    @DisplayName("리뷰 코멘트 길이 초과 시 EXCEED_MAX_COMMENT_LENGTH 예외")
+    @Test
+    void change_comment_length_exceed_test() {
+
+        ChangeCommentRequest dto = mock(ChangeCommentRequest.class);
+        when(dto.getComment()).thenReturn("a".repeat(1000 + 1));
+
+        assertThrows(
+                ApiException.class,
+                () -> reviewService.changeReviewComment(1L, dto)
+        );
+
+        verifyNoInteractions(reviewRepository);
+    }
+
+    @DisplayName("리뷰 코멘트 정상 수정")
+    @Test
+    void change_comment_success_test() {
+
+        ChangeCommentRequest dto = mock(ChangeCommentRequest.class);
+        when(dto.getBookId()).thenReturn(10L);
+        when(dto.getComment()).thenReturn("사실 이 책은 재밌어요");
+
+        ReviewEntity review = mock(ReviewEntity.class);
+        when(reviewRepository.findByBookIdAndUserId(10L, 1L))
+                .thenReturn(review);
+
+        ReviewEntity result = reviewService.changeReviewComment(1L, dto);
+
+        assertNotNull(result);
+        assertSame(review, result);
+
+        verify(reviewRepository, times(1))
+                .findByBookIdAndUserId(10L, 1L);
+        verify(review, times(1))
+                .setComment("사실 이 책은 재밌어요");
+    }
+
 }
