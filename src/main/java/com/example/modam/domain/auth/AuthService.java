@@ -49,7 +49,7 @@ public class AuthService {
     // 토큰 재발급
     public TokenResponse reissue(String refreshToken){
         if (!jwtProvider.validateToken(refreshToken)){
-            throw new ApiException(ErrorDefine.INVALID_TOKEN);
+            throw new ApiException(ErrorDefine.TOKEN_INVALID);
         }
 
         Long userId = jwtProvider.getUserId(refreshToken);
