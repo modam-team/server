@@ -27,15 +27,16 @@ public class TokenTest {
         String base64Secret = Encoders.BASE64.encode(key.getEncoded());
 
         ReflectionTestUtils.setField(jwtProvider, "secretkey", base64Secret);
-        ReflectionTestUtils.setField(jwtProvider, "expirationTime", 100000L);
+        ReflectionTestUtils.setField(jwtProvider, "accessTokenExpirationTime", 100000L);
+        ReflectionTestUtils.setField(jwtProvider, "refreshTokenExpirationTime", 200000L);
 
         Method initMethod = JwtProvider.class.getDeclaredMethod("init");
         initMethod.setAccessible(true);
         initMethod.invoke(jwtProvider);
 
-        String id = "4553622369";
+        Long id = 4553622369L;
         String token = Jwts.builder()
-                .setSubject(id)
+                .setSubject(String.valueOf(id))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 100000L))
                 .signWith(key)
