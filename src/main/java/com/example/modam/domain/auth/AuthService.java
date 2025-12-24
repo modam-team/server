@@ -6,8 +6,11 @@ import com.example.modam.domain.auth.dto.TokenResponse;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.config.KakaoOauthConfig;
+import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.security.jwt.JwtProvider;
 
+import com.example.modam.global.utils.redis.RedisStringClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -24,13 +27,48 @@ public class AuthService {
     private final KakaoOauthConfig kakaoOauthConfig;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final RedisStringClient redisStringClient;
 
     public TokenResponse kakaoLogin(String code) {
         KakaoTokenResponse kakaoToken = getKakaoToken(code);
         KakaoUserInfo kakaoUser = getKakaoUserInfo(kakaoToken.getAccessToken());
         UserEntity user = findOrCreateUser(kakaoUser);
-        // 서비스 자체 토큰 발급 (Principal: providerId, Role: "USER")
-        return (TokenResponse) jwtProvider.createToken(user.getProviderId(), "USER");
+
+        TokenResponse tokenResponse = jwtProvider.createToken(user.getId(), "USER");
+        long refreshTokenExpirationTime = jwtProvider.getRefreshTokenExpirationTime()/1000;
+
+        redisStringClient.set(
+                "RT:"+ user.getId(),
+                tokenResponse.getRefreshToken(),
+                refreshTokenExpirationTime
+        );
+
+        return tokenResponse;
+    }
+
+    // 토큰 재발급
+    public TokenResponse reissue(String refreshToken){
+        if (!jwtProvider.validateToken(refreshToken)){
+            throw new ApiException(ErrorDefine.INVALID_TOKEN);
+        }
+
+        Long userId = jwtProvider.getUserId(refreshToken);
+        String savedToken = redisStringClient.get("RT:"+ userId);
+
+        if (savedToken == null || !savedToken.equals(refreshToken)){
+            throw new ApiException(ErrorDefine.USER_NOT_FOUND);
+        }
+
+        TokenResponse newTokenResponse = jwtProvider.createToken(userId, "USER");
+        long newExpirationTime = jwtProvider.getRefreshTokenExpireTime() / 1000;
+
+        redisStringClient.set(
+                "RT: "+ userId,
+                newTokenResponse.getRefreshToken(),
+                newExpirationTime
+        );
+
+        return newTokenResponse;
     }
 
     private KakaoTokenResponse getKakaoToken(String code){
