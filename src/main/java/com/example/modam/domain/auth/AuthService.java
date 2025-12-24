@@ -58,7 +58,7 @@ public class AuthService {
         String savedToken = redisStringClient.get("RT:"+ userId);
 
         if (savedToken == null || !savedToken.equals(refreshToken)){
-            throw new ApiException(ErrorDefine.USER_NOT_FOUND);
+            throw new ApiException(ErrorDefine.TOKEN_INVALID);
         }
 
         TokenResponse newTokenResponse = jwtProvider.createToken(userId, "USER");
@@ -143,11 +143,13 @@ public class AuthService {
     // 로그아웃
     public void logout(Long userId){
         String redisKey = "RT:"+ userId;
+        log.info("로그아웃 시도 - 삭제 대상 키: {}", redisKey);
 
         if (redisStringClient.exists(redisKey)){
             redisStringClient.delete(redisKey);
+            log.info("로그아웃 성공 - 키 삭제 완료: {}", redisKey);
         } else {
-            throw new ApiException(ErrorDefine.TOKEN_INVALID);
+            log.warn("로그아웃 실패 - Redis에 해당 키가 존재하지 않음: {}", redisKey);
         }
     }
 }
