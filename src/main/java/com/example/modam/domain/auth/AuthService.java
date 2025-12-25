@@ -6,9 +6,13 @@ import com.example.modam.domain.auth.dto.TokenResponse;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.config.KakaoOauthConfig;
+import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.security.jwt.JwtProvider;
 
+import com.example.modam.global.utils.redis.RedisStringClient;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -17,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -24,13 +29,48 @@ public class AuthService {
     private final KakaoOauthConfig kakaoOauthConfig;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final RedisStringClient redisStringClient;
 
     public TokenResponse kakaoLogin(String code) {
         KakaoTokenResponse kakaoToken = getKakaoToken(code);
         KakaoUserInfo kakaoUser = getKakaoUserInfo(kakaoToken.getAccessToken());
         UserEntity user = findOrCreateUser(kakaoUser);
-        // 서비스 자체 토큰 발급 (Principal: providerId, Role: "USER")
-        return (TokenResponse) jwtProvider.createToken(user.getProviderId(), "USER");
+
+        TokenResponse tokenResponse = jwtProvider.createToken(user.getId(), "USER");
+        long refreshTokenExpirationTime = jwtProvider.getRefreshTokenExpirationTime()/1000;
+
+        redisStringClient.set(
+                "RT:"+ user.getId(),
+                tokenResponse.getRefreshToken(),
+                refreshTokenExpirationTime
+        );
+
+        return tokenResponse;
+    }
+
+    // 토큰 재발급
+    public TokenResponse reissue(String refreshToken){
+        if (!jwtProvider.validateToken(refreshToken)){
+            throw new ApiException(ErrorDefine.TOKEN_INVALID);
+        }
+
+        Long userId = jwtProvider.getUserId(refreshToken);
+        String savedToken = redisStringClient.get("RT:"+ userId);
+
+        if (savedToken == null || !savedToken.equals(refreshToken)){
+            throw new ApiException(ErrorDefine.TOKEN_INVALID);
+        }
+
+        TokenResponse newTokenResponse = jwtProvider.createToken(userId, "USER");
+        long newExpirationTime = jwtProvider.getRefreshTokenExpirationTime() / 1000;
+
+        redisStringClient.set(
+                "RT:"+ userId,
+                newTokenResponse.getRefreshToken(),
+                newExpirationTime
+        );
+
+        return newTokenResponse;
     }
 
     private KakaoTokenResponse getKakaoToken(String code){
@@ -97,6 +137,19 @@ public class AuthService {
                     .providerId(providerId)
                     .build();
             return userRepository.save(newUser);
+        }
+    }
+
+    // 로그아웃
+    public void logout(Long userId){
+        String redisKey = "RT:"+ userId;
+        log.info("로그아웃 시도 - 삭제 대상 키: {}", redisKey);
+
+        if (redisStringClient.exists(redisKey)){
+            redisStringClient.delete(redisKey);
+            log.info("로그아웃 성공 - 키 삭제 완료: {}", redisKey);
+        } else {
+            log.warn("로그아웃 실패 - Redis에 해당 키가 존재하지 않음: {}", redisKey);
         }
     }
 }

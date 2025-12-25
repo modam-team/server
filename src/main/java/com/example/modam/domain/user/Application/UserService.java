@@ -148,4 +148,13 @@ public class UserService {
         return userRepository.findByNicknameFullTextSearch(keyword);
     }
 
+    // 계정 상태를 active로 변경
+    @Transactional
+    public void activateUserStatus(Long userId){
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(()-> new ApiException(ErrorDefine.USER_NOT_FOUND));
+
+        user.activateAccount();
+    }
+
 }

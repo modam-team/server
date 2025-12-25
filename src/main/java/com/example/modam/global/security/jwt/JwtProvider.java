@@ -3,14 +3,12 @@ package com.example.modam.global.security.jwt;
 import com.example.modam.domain.auth.dto.TokenResponse;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
-import com.example.modam.global.security.CustomUserDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -25,21 +23,35 @@ public class JwtProvider {
     private SecretKey key;
 
     @Value("${jwt.expiration-time}")
-    private long expirationTime;
+    private long accessTokenExpirationTime;
+
+    @Value("${jwt.refresh-expiration-time}")
+    private long refreshTokenExpirationTime;
 
     @PostConstruct
     protected void init() {
         byte[] secretKeyBytes = Decoders.BASE64.decode(secretkey);
         this.key = Keys.hmacShaKeyFor(secretKeyBytes);
     }
-    public TokenResponse createToken(String principalId, String role){
-        String accessToken = createTokenInternal(principalId, role, expirationTime);
+
+    public TokenResponse createToken(Long userId, String role){
+        String principalId = String.valueOf(userId);
+
+        String accessToken = createTokenInternal(principalId, role, accessTokenExpirationTime);
+        String refreshToken = createTokenInternal(principalId, role, refreshTokenExpirationTime);
 
         return TokenResponse.builder()
                 .accessToken(accessToken)
-                .expiresIn(expirationTime)
+                .refreshToken(refreshToken)
+                .expiresIn(accessTokenExpirationTime)
                 .build();
     }
+
+    // 리프레시 토큰 만료 시간을 반환
+    public long getRefreshTokenExpirationTime(){
+        return refreshTokenExpirationTime;
+    }
+
     // jwt 생성
     public String createTokenInternal(String principalId, String role, long expirationTime) {
         Date now = new Date();
@@ -75,12 +87,13 @@ public class JwtProvider {
     }
 
     // 토큰에서 아이디(Subject) 추출
-    public String getUserId(String token) {
-        return Jwts.parser()
+    public Long getUserId(String token) {
+        String subject = Jwts.parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+        return Long.valueOf(subject);
     }
 }

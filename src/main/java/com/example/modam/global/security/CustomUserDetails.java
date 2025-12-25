@@ -67,11 +67,15 @@ public class CustomUserDetails implements UserDetails, OAuth2User{
 
     @Override
     public Map<String, Object> getAttributes() {
-        return attributes; // 카카오에서 받은 정보 반환
+        return attributes;
     }
 
     @Override
     public String getName() {
-        return user.getProviderId(); // 식별자로 providerid 사용
+        return String.valueOf(user.getId());
+    }
+
+    public Long getUserId() {
+        return user.getId();
     }
 }
