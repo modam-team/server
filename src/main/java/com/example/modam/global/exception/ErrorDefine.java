@@ -57,8 +57,10 @@ public enum ErrorDefine {
     INVALID_ACCESS_TO_REDIS("R401", HttpStatus.NOT_FOUND, "Invalid: Can Not access to Redis"),
 
     // Report
-    REPORT_DATA_EMPTY("RR404", HttpStatus.NOT_FOUND, "Report: User has no report data");
+    REPORT_DATA_EMPTY("RR404", HttpStatus.NOT_FOUND, "Report: User has no report data"),
 
+    //Many Request
+    MANY_REQUEST("SM429", HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests");
 
     private final String errorCode;
     private final HttpStatus httpStatus;
