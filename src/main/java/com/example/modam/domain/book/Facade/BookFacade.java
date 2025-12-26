@@ -39,7 +39,7 @@ public class BookFacade {
         log.info("[search book to Exterior API] userId={}, queryType={}, query={} ",
                 userId, dto.getQueryType(), dto.getQuery());
 
-        boolean isBestseller = "Bestseller".equals(dto.getQueryType());
+        boolean isBestseller = "Bestseller".equals(String.valueOf(dto.getQueryType()));
 
         if (!isBestseller && variousFunc.isInvalidQuery(dto.getQuery())) {
             throw new ApiException(ErrorDefine.INVALID_ARGUMENT);
@@ -53,7 +53,7 @@ public class BookFacade {
             }
 
         }
-
+/*
         if (!isBestseller && redisBookDataClient.exists(dto.getQuery())) {
             log.info("[Previous Query] Fast DB Search for query={}", dto.getQuery());
 
@@ -70,7 +70,7 @@ public class BookFacade {
                         .collect(Collectors.toList());
             });
         }
-
+*/
         CompletableFuture<List<BookInfoResponse>> response =
                 bookService.parseBookData(dto)
                         .thenApply(bookData -> {
