@@ -21,6 +21,7 @@ public class ReviewEntity {
 
     private int rating;
 
+    @Column(columnDefinition = "TEXT")
     private String comment;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
