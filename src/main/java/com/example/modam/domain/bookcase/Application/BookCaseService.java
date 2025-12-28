@@ -6,11 +6,14 @@ import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Presentation.dto.BookCaseSaveRequestDTO;
+import com.example.modam.domain.review.Domain.ReviewEntity;
+import com.example.modam.domain.review.Interface.ReviewRepository;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.utils.VariousFunc;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BookCaseService {
 
@@ -27,14 +31,7 @@ public class BookCaseService {
     private final UserRepository userRepository;
     private final BookCaseRepository bookCaseRepository;
     private final VariousFunc variousFunc;
-
-    public BookCaseService(BookRepository bookRepository, UserRepository userRepository,
-                           BookCaseRepository bookCaseRepository, VariousFunc variousFunc) {
-        this.bookRepository = bookRepository;
-        this.userRepository = userRepository;
-        this.bookCaseRepository = bookCaseRepository;
-        this.variousFunc = variousFunc;
-    }
+    private final ReviewRepository reviewRepository;
 
     public BookEntity getBook(long bookId) {
         return bookRepository.findById(bookId)
@@ -146,7 +143,13 @@ public class BookCaseService {
                     .finishedAt(dto.getEndDate().atStartOfDay())
                     .build();
 
-            return bookCaseRepository.save(userBook);
+            ReviewEntity review = ReviewEntity.builder()
+                    .bookCase(userBook)
+                    .build();
+            bookCaseRepository.save(userBook);
+            reviewRepository.save(review);
+
+            return userBook;
         }
 
     }
