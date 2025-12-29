@@ -54,7 +54,7 @@ public class BookFacade {
         this.variousFunc = variousFunc;
         this.redisBookDataClient = redisBookDataClient;
         this.bookData = bookData;
-        this.aladinSemaphore=aladinSemaphore;
+        this.aladinSemaphore = aladinSemaphore;
     }
 
     // 알라딘 검색한 스레드가 이어서 DB에 저장하도록 연결하는 퍼사드, 베스트셀러는 서버 캐시에 저장
@@ -63,7 +63,7 @@ public class BookFacade {
         log.info("[search book to Exterior API] userId={}, queryType={}, query={} ",
                 userId, dto.getQueryType(), dto.getQuery());
 
-        boolean isBestseller = "Bestseller".equals(dto.getQueryType());
+        boolean isBestseller = "Bestseller".equals(String.valueOf(dto.getQueryType()));
 
         if (!isBestseller && variousFunc.isInvalidQuery(dto.getQuery())) {
             throw new ApiException(ErrorDefine.INVALID_ARGUMENT);
@@ -146,16 +146,27 @@ public class BookFacade {
         }
 
         if (isBestseller) {
-            synchronized (bestSellerCache) {
-                if (bestSellerCache.isExist()) {
-                    CompletableFuture<List<BookInfoResponse>> already = bestSellerCache.get();
-                    if (already != null) {
-                        return already;
+            response.whenComplete((result, ex) -> {
+                if (ex != null) {
+                    log.warn("[Bestseller Cache Skip] exception", ex);
+                    return;
+                }
+
+                if (result == null || result.isEmpty()) {
+                    log.warn("[Bestseller Cache Skip] empty result");
+                    return;
+                }
+
+                synchronized (bestSellerCache) {
+                    if (!bestSellerCache.isExist()) {
+                        bestSellerCache.saveFuture(
+                                CompletableFuture.completedFuture(result)
+                        );
                     }
                 }
-                bestSellerCache.saveFuture(response);
-            }
+            });
         }
+
 
         return response;
     }
