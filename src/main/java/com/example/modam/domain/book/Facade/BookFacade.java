@@ -146,16 +146,27 @@ public class BookFacade {
         }
 
         if (isBestseller) {
-            synchronized (bestSellerCache) {
-                if (bestSellerCache.isExist()) {
-                    CompletableFuture<List<BookInfoResponse>> already = bestSellerCache.get();
-                    if (already != null) {
-                        return already;
+            response.whenComplete((result, ex) -> {
+                if (ex != null) {
+                    log.warn("[Bestseller Cache Skip] exception", ex);
+                    return;
+                }
+
+                if (result == null || result.isEmpty()) {
+                    log.warn("[Bestseller Cache Skip] empty result");
+                    return;
+                }
+
+                synchronized (bestSellerCache) {
+                    if (!bestSellerCache.isExist()) {
+                        bestSellerCache.saveFuture(
+                                CompletableFuture.completedFuture(result)
+                        );
                     }
                 }
-                bestSellerCache.saveFuture(response);
-            }
+            });
         }
+
 
         return response;
     }
