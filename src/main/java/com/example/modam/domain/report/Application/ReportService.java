@@ -11,6 +11,8 @@ import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.utils.VariousFunc;
+import com.example.modam.global.utils.redis.RedisStringClient;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,21 +25,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class ReportService {
+
     private final ReportRepository reportRepository;
     private final BookCaseRepository bookCaseRepository;
     private final UserRepository userRepository;
     private final VariousFunc variousFunc;
-
-    public ReportService(ReportRepository reportRepository, BookCaseRepository bookCaseRepository,
-                         UserRepository userRepository, VariousFunc variousFunc) {
-        this.reportRepository = reportRepository;
-        this.bookCaseRepository = bookCaseRepository;
-        this.userRepository = userRepository;
-        this.variousFunc = variousFunc;
-    }
+    private final RedisStringClient redisStringClient;
 
     public List<ReadingLogResponse> getReadingLog(int year, int month, long userId) {
 
@@ -57,6 +54,41 @@ public class ReportService {
 
     public ReportResponse getReportData(long userId) {
 
+
+        Map<String, Map<String, List<ReportGroup>>> data = calculateReadingLog(userId);
+
+        String[] forCharacter = variousFunc.decideCharacter(data);
+        long userNum = 0;
+        long characterNum = 0;
+
+        if (!forCharacter[0].equals("empty_data") && !forCharacter[1].equals("empty_data")) {
+            userNum = userRepository.count();
+
+            LocalDateTime current = LocalDateTime.now();
+            String year = String.valueOf(current.getYear());
+            String month = String.valueOf(current.getMonthValue());
+
+            String key = year + month + forCharacter[0] + "_" + forCharacter[1];
+
+            if (!redisStringClient.exists(key)) {
+                setReportRatio();
+            }
+
+            characterNum = Long.parseLong(redisStringClient.get(key));
+        }
+
+        ReportResponse response = ReportResponse.builder()
+                .manyPlace(Place.valueOf(forCharacter[0]))
+                .readingTendency(forCharacter[1])
+                .data(data)
+                .userTotalNum(userNum)
+                .characterNum(characterNum)
+                .build();
+
+        return response;
+    }
+
+    private Map<String, Map<String, List<ReportGroup>>> calculateReadingLog(long userId) {
         List<ReportRawData> rawList = reportRepository.findReportData(userId);
 
         if (rawList.isEmpty()) {
@@ -83,7 +115,6 @@ public class ReportService {
                 ))
                 .toList();
 
-        ReportResponse response = new ReportResponse();
         Map<String, Map<String, List<ReportGroup>>> data =
                 groupedList.stream()
                         .collect(Collectors.groupingBy(
@@ -92,11 +123,36 @@ public class ReportService {
                                         g -> String.valueOf(g.getReadAt().getMonthValue())
                                 )
                         ));
-        response.setData(data);
-        String[] forCharacter = variousFunc.decideCharacter(data);
-        response.setCharacter(Place.valueOf(forCharacter[0]), forCharacter[1]);
 
-        return response;
+        return data;
+    }
+
+    private void setReportRatio() {
+
+        LocalDateTime now = LocalDateTime.now();
+        String year = String.valueOf(now.getYear());
+        String month = String.valueOf(now.getMonthValue());
+
+        List<Long> userIds = userRepository.findAllUserIds();
+
+        for (Long userId : userIds) {
+            try {
+                Map<String, Map<String, List<ReportGroup>>> data = calculateReadingLog(userId);
+
+                String[] character = variousFunc.decideCharacter(data);
+
+                if ("empty_data".equals(character[0]) || "empty_data".equals(character[1])) {
+                    continue;
+                }
+
+                String key = year + month + character[0] + "_" + character[1];
+                redisStringClient.increment(key);
+
+            } catch (ApiException e) {
+                // 읽기 데이터가 없을 때
+                continue;
+            }
+        }
     }
 
 
