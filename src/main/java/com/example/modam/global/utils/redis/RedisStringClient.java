@@ -41,6 +41,16 @@ public class RedisStringClient implements RedisClient<String> {
         }
     }
 
+    public Long increment(String key) {
+        try {
+            return redisTemplate.opsForValue().increment(key);
+        } catch (Exception e) {
+            log.error("Redis String increment failed. key={}", key, e);
+            throw new ApiException(ErrorDefine.INVALID_ACCESS_TO_REDIS);
+        }
+    }
+
+
     @Override
     public void delete(String key) {
         redisTemplate.delete(key);

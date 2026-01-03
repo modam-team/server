@@ -34,4 +34,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             UserStatus status,
             LocalDateTime cutoffTime
     );
+
+    @Query("""
+            select u.id
+            from user u
+            """)
+    List<Long> findAllUserIds();
+
 }
