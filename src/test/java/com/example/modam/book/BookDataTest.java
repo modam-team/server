@@ -32,9 +32,9 @@ public class BookDataTest {
     @Test
     @DisplayName("DB에 중복 책을 저장하지 않는 테스트입니다.")
     void book_save_test() {
-        AladinResponse b1 = new AladinResponse("123", "황록1", "하하하", "황", "소설/문학", "a");
-        AladinResponse b2 = new AladinResponse("456", "황록1", "하하하", "황", "소설/문학", "a");
-        AladinResponse b3 = new AladinResponse("789", "황록1", "하하하", "황", "소설/문학", "a");
+        AladinResponse b1 = new AladinResponse("123", "황록1", "하하하", "황", "소설/문학", "a","b");
+        AladinResponse b2 = new AladinResponse("456", "황록1", "하하하", "황", "소설/문학", "a","b");
+        AladinResponse b3 = new AladinResponse("789", "황록1", "하하하", "황", "소설/문학", "a","b");
         List<AladinResponse> input = List.of(b1, b2, b3);
 
         List<String> ids = List.of("123", "456", "789");
