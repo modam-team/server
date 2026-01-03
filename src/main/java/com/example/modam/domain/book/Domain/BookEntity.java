@@ -33,6 +33,8 @@ public class BookEntity {
 
     private boolean receivedFromAladin;
 
+    private String link;
+
     // dto -> entity
     public static BookEntity toDatabase(AladinResponse dto) {
         return BookEntity.builder()
@@ -43,6 +45,7 @@ public class BookEntity {
                 .categoryName(dto.getCategoryName())
                 .cover(dto.getCover())
                 .receivedFromAladin(true)
+                .link(dto.getLink())
                 .build();
     }
 }

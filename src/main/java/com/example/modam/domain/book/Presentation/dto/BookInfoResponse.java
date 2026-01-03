@@ -14,4 +14,5 @@ public class BookInfoResponse {
     private String publisher;
     private double rate;
     private long totalReview;
+    private String link;
 }
