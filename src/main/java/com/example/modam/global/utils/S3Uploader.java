@@ -1,7 +1,6 @@
 package com.example.modam.global.utils;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +25,9 @@ public class S3Uploader {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${cloud.aws.s3.cdn}")
+    private String domain;
+
     public String uploadFile(MultipartFile multipartFile, String dirName) throws IOException {
         File uploadFile = convert(multipartFile)
                 .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 변환 실패"));
@@ -42,7 +44,7 @@ public class S3Uploader {
 
     private String putS3(File uploadFile, String fileName) {
         amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile));
-        return amazonS3.getUrl(bucket, fileName).toString();
+        return domain + "/" + fileName;
     }
 
     private void removeNewFile(File targetFile) {
@@ -55,7 +57,7 @@ public class S3Uploader {
 
     private Optional<File> convert(MultipartFile file) throws IOException {
         File convertFile = new File(System.getProperty("java.io.tmpdir") + "/" + file.getOriginalFilename());
-        if(convertFile.createNewFile()) {
+        if (convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
             }
@@ -72,6 +74,7 @@ public class S3Uploader {
         amazonS3.deleteObject(bucket, key);
 
     }
+
     private String extractKeyFromUrl(String fileUrl) {
         try {
             URL url = new URL(fileUrl);
