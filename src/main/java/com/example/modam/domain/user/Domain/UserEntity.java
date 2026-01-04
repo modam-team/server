@@ -50,6 +50,10 @@ public class UserEntity {
     @Column(nullable = true)
     private LocalDateTime withdrawalRequestedAt;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private String themeColor="#608540";
+
     public void updateProfileImageUrl(String imageUrl){
         this.profileImageUrl = imageUrl;
     }
