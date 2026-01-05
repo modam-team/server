@@ -21,6 +21,7 @@ public class UserProfileResponse {
     private boolean isPublic;
     private boolean isOnboardingCompleted;
     private UserStatus status;
+    private String themeColor;
 
     public static UserProfileResponse from(UserEntity user){
         return UserProfileResponse.builder()
@@ -33,6 +34,7 @@ public class UserProfileResponse {
                 .isPublic(user.isPublic())
                 .isOnboardingCompleted(user.isOnboardingCompleted())
                 .status(user.getStatus())
+                .themeColor(user.getThemeColor())
                 .build();
     }
 }

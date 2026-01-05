@@ -155,4 +155,18 @@ public class UserController {
         userService.activateUserStatus(userDetails.getUserId());
         return ResponseEntity.ok(new ResponseDTO<>("계정이 성공적으로 활성화되었습니다."));
     }
+
+    @Operation(
+            summary = "테마 색상 변경",
+            description = "로그인한 사용자의 앱 테마 색상(Hex Code ex. #608540)을 변경합니다."
+    )
+    @PatchMapping("/theme")
+    public ResponseEntity<Void> updateThemeColor(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody @Valid UpdateThemeRequest request){
+        Long userId = userDetails.getUser().getId();
+        userService.updateThemeColor(userId, request.getThemeColor());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

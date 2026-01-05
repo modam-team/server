@@ -1,5 +1,7 @@
 package com.example.modam.domain.user.Domain;
 
+import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -50,6 +52,10 @@ public class UserEntity {
     @Column(nullable = true)
     private LocalDateTime withdrawalRequestedAt;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private String themeColor="#608540";
+
     public void updateProfileImageUrl(String imageUrl){
         this.profileImageUrl = imageUrl;
     }
@@ -70,6 +76,17 @@ public class UserEntity {
         }
         if (goalScore!=null){
             this.goalScore = goalScore;
+        }
+    }
+
+    public void updateThemeColor(String themeColor){
+        if (themeColor == null || themeColor.isBlank()){
+            throw new ApiException(ErrorDefine.INVALID_THEME_COLOR);
+        }
+        if (!themeColor.startsWith("#")){
+            this.themeColor = "#" + themeColor;
+        } else {
+            this.themeColor = themeColor;
         }
     }
 

@@ -157,4 +157,16 @@ public class UserService {
         user.activateAccount();
     }
 
+    // 테마 색상 수정
+    @Transactional
+    public void updateThemeColor(Long userId, String themeColor){
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(()-> new ApiException(ErrorDefine.USER_NOT_FOUND));
+
+        if (themeColor == null || !themeColor.matches("^#([A-Fa-f0-9]{6})$")){
+            throw new ApiException(ErrorDefine.INVALID_THEME_COLOR);
+        }
+
+        user.updateThemeColor(themeColor);
+    }
 }
