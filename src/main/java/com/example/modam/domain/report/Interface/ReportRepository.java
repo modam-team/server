@@ -21,10 +21,8 @@ public interface ReportRepository extends JpaRepository<ReadingLogEntity, Long> 
             join bc.user
             join bc.book b
             where user.id=:userId
-            and r.readAt between :start and :end
             """)
-    List<ReadingLogResponse> findByDate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
-                                        @Param("userId") long userId);
+    List<ReadingLogResponse> findByDate(@Param("userId") long userId);
 
     @Query("""
     select new com.example.modam.domain.report.Presentation.dto.ReportRawData(

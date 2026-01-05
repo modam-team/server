@@ -1,12 +1,9 @@
 package com.example.modam.domain.book.Facade;
 
 import com.example.modam.domain.book.Application.BookDataService;
-import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.*;
 import com.example.modam.domain.book.Application.BookService;
 import com.example.modam.domain.book.Domain.BookEntity;
-import com.example.modam.domain.book.Presentation.dto.BookSearchRequest;
-import com.example.modam.domain.book.Presentation.dto.ReviewScore;
-import com.example.modam.domain.book.Presentation.dto.addBookRequest;
 import com.example.modam.global.config.Semaphore.AladinSemaphore;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
@@ -85,9 +82,9 @@ public class BookFacade {
                 List<BookEntity> entities = redisBookDataClient.get(dto.getQuery());
 
                 List<Long> bookIds = entities.stream().map(BookEntity::getId).toList();
-                Map<Long, ReviewScore> scoreMap =
+                Map<Long, BookReviewResponse> scoreMap =
                         bookDataService.getBookReviewScore(bookIds).stream()
-                                .collect(Collectors.toMap(ReviewScore::BookId, Function.identity()));
+                                .collect(Collectors.toMap(BookReviewResponse::bookId, Function.identity()));
 
                 return entities.stream()
                         .map(book -> bookDataService.toDto(book, scoreMap.get(book.getId())))
@@ -121,10 +118,10 @@ public class BookFacade {
                                 .distinct()
                                 .toList();
 
-                        Map<Long, ReviewScore> scoreMap =
+                        Map<Long, BookReviewResponse> scoreMap =
                                 bookDataService.getBookReviewScore(bookIds).stream()
                                         .collect(Collectors.toMap(
-                                                ReviewScore::BookId,
+                                                BookReviewResponse::bookId,
                                                 Function.identity()
                                         ));
 

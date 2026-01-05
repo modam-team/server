@@ -3,6 +3,7 @@ package com.example.modam.bookcase;
 import com.example.modam.domain.book.Application.BookDataService;
 import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
+import com.example.modam.domain.book.Presentation.dto.BookReviewResponse;
 import com.example.modam.domain.book.Presentation.dto.ReviewScore;
 import com.example.modam.domain.bookcase.Application.BookCaseService;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
@@ -85,7 +86,7 @@ public class BookCaseFacadeTest {
                 .publisher("Publisher").rate(4.0).totalReview(7L)
                 .build();
 
-        when(bookDataService.toDto(any(BookEntity.class), nullable(ReviewScore.class)))
+        when(bookDataService.toDto(any(BookEntity.class), nullable(BookReviewResponse.class)))
                 .thenReturn(info1, info2, info3);
 
         ReviewEntity reviewForBefore = mock(ReviewEntity.class);
@@ -115,7 +116,7 @@ public class BookCaseFacadeTest {
 
         assertEquals(5, before.get(0).getUserRate());
 
-        verify(bookDataService, times(3)).toDto(any(BookEntity.class), nullable(ReviewScore.class));
+        verify(bookDataService, times(3)).toDto(any(BookEntity.class), nullable(BookReviewResponse.class));
         verify(reviewService).getByBookCaseIds(Arrays.asList(1L, 2L, 3L));
         verify(bookCaseService).getUserBookCase(123L);
     }

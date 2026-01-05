@@ -133,44 +133,4 @@ class ReadingLogServiceTest {
         verify(bookCaseRepository).findUserBookCaseId(3L, 3L);
         verify(reportRepository).save(any());
     }
-
-    @DisplayName("유효한 year/month로 올바르게 리포지토리 호출")
-    @Test
-    void get_reading_log_success() {
-        long userId = 10L;
-        YearMonth ym = YearMonth.of(2025, 12);
-
-        LocalDateTime expectedStart = ym.atDay(1).atStartOfDay();
-        LocalDateTime expectedEnd = ym.atEndOfMonth().atTime(java.time.LocalTime.MAX);
-
-        List<ReadingLogResponse> mockResponse = List.of(
-                new ReadingLogResponse(
-                        LocalDateTime.of(2025, 12, 5, 20, 30),
-                        Place.HOME, "cover", "하하하"
-                )
-        );
-
-        when(reportRepository.findByDate(any(), any(), eq(userId)))
-                .thenReturn(mockResponse);
-
-        List<ReadingLogResponse> result =
-                readingLogService.getReadingLog(2025, 12, userId);
-
-        assertEquals(mockResponse, result);
-
-        verify(reportRepository).findByDate(
-                eq(expectedStart),
-                eq(expectedEnd),
-                eq(userId)
-        );
-    }
-
-    @DisplayName("월이 1~12 범위가 아니면 예외")
-    @Test
-    void get_reading_log_invalid_month() {
-        assertThrows(ApiException.class,
-                () -> readingLogService.getReadingLog(2025, 0, 1L));
-
-        verifyNoInteractions(reportRepository);
-    }
 }

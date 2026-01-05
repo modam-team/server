@@ -51,14 +51,30 @@ public class ReportController {
             description = "책장에 있는 책의 독서 기록을 년도/월에 맞게 조회합니다."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "독서 기록 조회 성공")
+            @ApiResponse(responseCode = "200", description = "자신의 독서 기록 조회 성공")
     })
     @GetMapping
-    public ResponseDTO<List<ReadingLogResponse>> read(@RequestParam int year,
-                                                      @RequestParam int month,
-                                                      @AuthenticationPrincipal CustomUserDetails user) {
+    public ResponseDTO<List<ReadingLogResponse>> read(@AuthenticationPrincipal CustomUserDetails user) {
         long userId = user.getUser().getId();
-        List<ReadingLogResponse> response = reportService.getReadingLog(year, month, userId);
+        List<ReadingLogResponse> response = reportService.getReadingLog(userId, true);
+
+        return new ResponseDTO<>(
+                response
+        );
+    }
+
+    @Operation(
+            summary = "다른 유저의 독서 기록 조회하기",
+            description = "다른 유저의 독서 기록을 조회할 수 있습니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "유저의 독서 기록 조회 성공")
+    })
+    @GetMapping("/others")
+    public ResponseDTO<List<ReadingLogResponse>> userLog(@RequestParam long userId,
+                                                         @AuthenticationPrincipal CustomUserDetails user) {
+
+        List<ReadingLogResponse> response = reportService.getReadingLog(userId, false);
 
         return new ResponseDTO<>(
                 response

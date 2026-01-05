@@ -6,4 +6,5 @@ import lombok.Getter;
 public class ChangeCommentRequest {
     private long bookId;
     private String comment;
+    private Integer rating;
 }
