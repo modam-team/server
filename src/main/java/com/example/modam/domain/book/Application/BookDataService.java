@@ -45,6 +45,7 @@ public class BookDataService {
                 .publisher(book.getPublisher())
                 .rate(rate)
                 .totalReview(count)
+                .link(book.getLink())
                 .build();
     }
 

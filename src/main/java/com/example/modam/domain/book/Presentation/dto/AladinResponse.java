@@ -15,6 +15,7 @@ public class AladinResponse {
     private String cover;
     private String categoryName;
     private String publisher;
+    private String link;
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;

@@ -50,7 +50,7 @@ public class BookCaseTest {
                 .providerId("12345")
                 .isOnboardingCompleted(true)
                 .build();
-        BookEntity book = new BookEntity(12345, "황록1", "하하하", "황", "소설/문학", "a", "123", true);
+        BookEntity book = new BookEntity(12345, "황록1", "하하하", "황", "소설/문학", "a", "123", true,"b");
 
         BookCaseSaveRequestDTO dto = mock(BookCaseSaveRequestDTO.class);
         when(dto.getBookId()).thenReturn(bookId);
@@ -99,7 +99,7 @@ public class BookCaseTest {
     void save_test_userNotFound() {
         long userId = 1L;
         long bookId = 99999L;
-        BookEntity book = new BookEntity(bookId, "제목", "설명", "저자", "카테고리", "출판사", "isbn", true);
+        BookEntity book = new BookEntity(bookId, "제목", "설명", "저자", "카테고리", "출판사", "isbn", true,"b");
 
         BookCaseSaveRequestDTO dto = mock(BookCaseSaveRequestDTO.class);
         when(dto.getBookId()).thenReturn(bookId);
