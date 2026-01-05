@@ -169,4 +169,13 @@ public class UserService {
 
         user.updateThemeColor(themeColor);
     }
+
+    // 선호 카테고리 수정
+    @Transactional
+    public void updatePreferredCategories(Long userId, List<String> categories){
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(()-> new ApiException(ErrorDefine.USER_NOT_FOUND));
+
+        user.updatePreferredCategories(categories);
+    }
 }
