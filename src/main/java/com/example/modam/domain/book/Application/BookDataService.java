@@ -95,11 +95,11 @@ public class BookDataService {
         return bookRepository.searchByBookTitle(query);
     }
 
-    private List<String> getThreeHashtag(List<String> hasgtags) {
+    private List<String> getThreeHashtag(List<String> hashtags) {
 
         HashMap<String, Long> map = new HashMap<>();
 
-        for (String s : hasgtags) {
+        for (String s : hashtags) {
             map.merge(s, 1L, Long::sum);
         }
 
