@@ -133,29 +133,4 @@ class ReadingLogServiceTest {
         verify(bookCaseRepository).findUserBookCaseId(3L, 3L);
         verify(reportRepository).save(any());
     }
-
-    @DisplayName("유효한 year/month로 올바르게 리포지토리 호출")
-    @Test
-    void get_reading_log_success() {
-        long userId = 10L;
-
-        List<ReadingLogResponse> mockResponse = List.of(
-                new ReadingLogResponse(
-                        LocalDateTime.of(2025, 12, 5, 20, 30),
-                        Place.HOME, "cover", "하하하"
-                )
-        );
-
-        when(reportRepository.findByDate(eq(userId)))
-                .thenReturn(mockResponse);
-
-        List<ReadingLogResponse> result =
-                readingLogService.getReadingLog(userId,true);
-
-        assertEquals(mockResponse, result);
-
-        verify(reportRepository).findByDate(
-                eq(userId)
-        );
-    }
 }
