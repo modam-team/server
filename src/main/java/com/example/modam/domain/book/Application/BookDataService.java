@@ -2,19 +2,14 @@ package com.example.modam.domain.book.Application;
 
 import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.book.Interface.BookRepository;
-import com.example.modam.domain.book.Presentation.dto.AladinResponse;
-import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
-import com.example.modam.domain.book.Presentation.dto.ReviewScore;
-import com.example.modam.domain.book.Presentation.dto.addBookRequest;
+import com.example.modam.domain.book.Presentation.dto.*;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
-import com.example.modam.global.utils.CategoryMapping;
 import com.example.modam.global.utils.VariousFunc;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,12 +23,17 @@ public class BookDataService {
         this.variousFunc = variousFunc;
     }
 
-    public BookInfoResponse toDto(BookEntity book, ReviewScore score) {
+    public BookInfoResponse toDto(BookEntity book, BookReviewResponse review) {
         long count = 0;
         double rate = 0;
-        if (score != null && score.reviewCount() > 0) {
-            count = score.reviewCount();
-            rate = Math.round((score.totalRate() / (double) score.reviewCount()) * 10) / 10.0;
+        if (review != null && review.reviewScore() != null && review.reviewScore().reviewCount() > 0) {
+            count = review.reviewScore().reviewCount();
+            rate = Math.round((review.reviewScore().totalRate() / (double) review.reviewScore().reviewCount()) * 10) / 10.0;
+        }
+
+        List<String> hashtags = new ArrayList<>();
+        if (review != null && review.hashtags() != null) {
+            hashtags = review.hashtags();
         }
 
         return BookInfoResponse.builder()
@@ -46,20 +46,45 @@ public class BookDataService {
                 .rate(rate)
                 .totalReview(count)
                 .link(book.getLink())
+                .hashtags(hashtags)
                 .build();
     }
 
 
-    public List<ReviewScore> getBookReviewScore(List<Long> bookIds) {
+    public List<BookReviewResponse> getBookReviewScore(List<Long> bookIds) {
 
         if (bookIds == null || bookIds.isEmpty()) {
             return List.of();
         }
 
-        List<ReviewScore> BookReview = bookRepository.findReviewScoreByBookId(bookIds);
+        List<ReviewScore> scores = bookRepository.findReviewScoreByBookId(bookIds);
+        List<BookHashtagRecord> hashtagRows = bookRepository.findHashtagByBookIds(bookIds);
+        Map<Long, List<String>> hashtagMap =
+                hashtagRows.stream()
+                        .collect(Collectors.groupingBy(
+                                row -> row.bookId(),
+                                Collectors.mapping(
+                                        row -> row.hashtag(),
+                                        Collectors.toList()
+                                )
+                        ));
 
-        return BookReview;
+        Map<Long, List<String>> topHashtag = new HashMap<>();
+        for (Long l : hashtagMap.keySet()) {
+            List<String> hashtagSet = hashtagMap.get(l);
+            List<String> topSet = getThreeHashtag(hashtagSet);
+            topHashtag.put(l, topSet);
+        }
+
+        return scores.stream()
+                .map(score -> new BookReviewResponse(
+                        score.BookId(),
+                        score,
+                        topHashtag.getOrDefault(score.BookId(), List.of())
+                ))
+                .toList();
     }
+
 
     public List<BookEntity> searchBook(String query) {
 
@@ -68,6 +93,21 @@ public class BookDataService {
         }
 
         return bookRepository.searchByBookTitle(query);
+    }
+
+    private List<String> getThreeHashtag(List<String> hasgtags) {
+
+        HashMap<String, Long> map = new HashMap<>();
+
+        for (String s : hasgtags) {
+            map.merge(s, 1L, Long::sum);
+        }
+
+        return map.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(3)
+                .map(Map.Entry::getKey)
+                .toList();
     }
 
     @Transactional

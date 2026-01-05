@@ -3,7 +3,7 @@ package com.example.modam.domain.bookcase.Facade;
 import com.example.modam.domain.book.Application.BookDataService;
 import com.example.modam.domain.book.Domain.BookEntity;
 import com.example.modam.domain.book.Presentation.dto.BookInfoResponse;
-import com.example.modam.domain.book.Presentation.dto.ReviewScore;
+import com.example.modam.domain.book.Presentation.dto.BookReviewResponse;
 import com.example.modam.domain.bookcase.Application.BookCaseService;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
@@ -49,9 +49,9 @@ public class BookCaseFacade {
                 .distinct()
                 .toList();
 
-        List<ReviewScore> scores = bookDataService.getBookReviewScore(bookIds);
-        Map<Long, ReviewScore> scoreMap = scores.stream()
-                .collect(Collectors.toMap(ReviewScore::BookId, Function.identity()));
+        List<BookReviewResponse> scores = bookDataService.getBookReviewScore(bookIds);
+        Map<Long, BookReviewResponse> scoreMap = scores.stream()
+                .collect(Collectors.toMap(BookReviewResponse::bookId, Function.identity()));
 
         List<Long> caseIds = bookCases.stream().map(BookCaseEntity::getId).toList();
         List<ReviewEntity> reviews = reviewService.getByBookCaseIds(caseIds);
@@ -64,7 +64,7 @@ public class BookCaseFacade {
 
         for (BookCaseEntity bc : bookCases) {
             BookEntity book = bc.getBook();
-            ReviewScore score = scoreMap.get(book.getId());
+            BookReviewResponse score = scoreMap.get(book.getId());
             BookInfoResponse bookInfo = bookDataService.toDto(book, score);
 
             Optional<ReviewEntity> reviewOpt = Optional.ofNullable(reviewMap.get(bc.getId()));
@@ -102,9 +102,9 @@ public class BookCaseFacade {
                 .distinct()
                 .toList();
 
-        List<ReviewScore> scores = bookDataService.getBookReviewScore(bookIds);
-        Map<Long, ReviewScore> scoreMap = scores.stream()
-                .collect(Collectors.toMap(ReviewScore::BookId, Function.identity()));
+        List<BookReviewResponse> scores = bookDataService.getBookReviewScore(bookIds);
+        Map<Long, BookReviewResponse> scoreMap = scores.stream()
+                .collect(Collectors.toMap(BookReviewResponse::bookId, Function.identity()));
 
         List<Long> caseIds = bookCases.stream().map(BookCaseEntity::getId).toList();
         List<ReviewEntity> reviews = reviewService.getByBookCaseIds(caseIds);
@@ -113,7 +113,7 @@ public class BookCaseFacade {
 
         for (BookCaseEntity bc : bookCases) {
             BookEntity book = bc.getBook();
-            ReviewScore score = scoreMap.get(book.getId());
+            BookReviewResponse score = scoreMap.get(book.getId());
             BookInfoResponse bookInfo = bookDataService.toDto(book, score);
 
             Optional<ReviewEntity> reviewOpt = Optional.ofNullable(reviewMap.get(bc.getId()));
@@ -132,9 +132,9 @@ public class BookCaseFacade {
                 .map(BookEntity::getId)
                 .toList();
 
-        Map<Long, ReviewScore> scoreMap = bookDataService.getBookReviewScore(bookIds)
+        Map<Long, BookReviewResponse> scoreMap = bookDataService.getBookReviewScore(bookIds)
                 .stream()
-                .collect(Collectors.toMap(ReviewScore::BookId, Function.identity()));
+                .collect(Collectors.toMap(BookReviewResponse::bookId, Function.identity()));
 
         return books.stream()
                 .map(book -> bookDataService.toDto(book, scoreMap.get(book.getId())))

@@ -1,6 +1,7 @@
 package com.example.modam.domain.book.Interface;
 
 import com.example.modam.domain.book.Domain.BookEntity;
+import com.example.modam.domain.book.Presentation.dto.BookHashtagRecord;
 import com.example.modam.domain.book.Presentation.dto.ReviewScore;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -39,4 +40,16 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
             """)
     List<BookEntity> recommendByBookCategory(@Param("category") List<String> category,
                                              @Param("userBook") List<Long> userBook);
+
+    @Query("""
+            select new com.example.modam.domain.book.Presentation.dto.BookHashtagRecord(
+                        b.id, h.tag
+                        )
+            from hashtag h
+            join h.review r
+            join r.bookCase bc
+            join bc.book b
+            where b.id in :bookIds
+            """)
+    List<BookHashtagRecord> findHashtagByBookIds(@Param("bookIds") List<Long>bookIds);
 }
