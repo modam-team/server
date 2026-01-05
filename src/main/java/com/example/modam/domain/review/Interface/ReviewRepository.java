@@ -29,7 +29,7 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     ReviewEntity findByBookIdAndUserId(@Param("bookId") long bookId, @Param("userId") long userId);
 
     @Query("""
-            select u.nickname,r.rating, r.comment
+            select u.nickname,r.rating, r.comment, u.profileImageUrl
             from review r
             join r.bookCase bc
             join bc.book b
