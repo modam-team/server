@@ -70,16 +70,27 @@ public class ReviewService {
 
     @Transactional
     public ReviewEntity changeReviewComment(long userId, ChangeCommentRequest dto) {
-        if (dto.getComment() == null || dto.getComment().isBlank()) {
-            throw new ApiException(ErrorDefine.INVALID_HEADER_ERROR);
-        }
-
-        if (dto.getComment().length() > COMMENT_MAX_LEN) {
-            throw new ApiException(ErrorDefine.EXCEED_MAX_COMMENT_LENGTH);
-        }
 
         ReviewEntity review = reviewRepository.findByBookIdAndUserId(dto.getBookId(), userId);
-        review.setComment(dto.getComment());
+
+        if (dto.getComment() != null) {
+            if (dto.getComment().isBlank()) {
+                throw new ApiException(ErrorDefine.INVALID_HEADER_ERROR);
+            }
+
+            if (dto.getComment().length() > COMMENT_MAX_LEN) {
+                throw new ApiException(ErrorDefine.EXCEED_MAX_COMMENT_LENGTH);
+            }
+
+            review.setComment(dto.getComment());
+        }
+
+        if (dto.getRating() != null) {
+            if (dto.getRating() > RATING_MAX_NUM) {
+                throw new ApiException(ErrorDefine.EXCEED_MAX_RATING_NUM);
+            }
+            review.setRating(dto.getRating());
+        }
 
         return review;
     }
