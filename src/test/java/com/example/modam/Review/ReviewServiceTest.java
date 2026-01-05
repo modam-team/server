@@ -10,6 +10,7 @@ import com.example.modam.domain.review.Presentation.dto.ReviewRequestDTO;
 import com.example.modam.domain.review.Domain.ReviewEntity;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.utils.DefineHashtag;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -248,35 +249,50 @@ class ReviewServiceTest {
         verify(reviewRepository, times(1)).save(any(ReviewEntity.class));
     }
 
-    @DisplayName("리뷰 코멘트가 null 또는 blank면 INVALID_HEADER_ERROR 예외")
+    @DisplayName("리뷰 코멘트가 blank면 INVALID_HEADER_ERROR 예외")
     @Test
     void change_comment_invalid_test() {
 
         ChangeCommentRequest dto = mock(ChangeCommentRequest.class);
+        when(dto.getBookId()).thenReturn(1L);
         when(dto.getComment()).thenReturn("   "); // blank
 
-        assertThrows(
+        when(reviewRepository.findByBookIdAndUserId(1L, 1L))
+                .thenReturn(mock(ReviewEntity.class));
+
+        ApiException exception = assertThrows(
                 ApiException.class,
                 () -> reviewService.changeReviewComment(1L, dto)
         );
 
-        verifyNoInteractions(reviewRepository);
+        assertEquals(ErrorDefine.INVALID_HEADER_ERROR, exception.getError());
+
+        verify(reviewRepository).findByBookIdAndUserId(1L, 1L);
     }
+
 
     @DisplayName("리뷰 코멘트 길이 초과 시 EXCEED_MAX_COMMENT_LENGTH 예외")
     @Test
     void change_comment_length_exceed_test() {
 
         ChangeCommentRequest dto = mock(ChangeCommentRequest.class);
-        when(dto.getComment()).thenReturn("a".repeat(1000 + 1));
+        when(dto.getBookId()).thenReturn(1L);
+        when(dto.getComment()).thenReturn("a".repeat(1001));
 
-        assertThrows(
+        when(reviewRepository.findByBookIdAndUserId(1L, 1L))
+                .thenReturn(mock(ReviewEntity.class));
+
+        ApiException exception = assertThrows(
                 ApiException.class,
                 () -> reviewService.changeReviewComment(1L, dto)
         );
 
-        verifyNoInteractions(reviewRepository);
+        assertEquals(ErrorDefine.EXCEED_MAX_COMMENT_LENGTH, exception.getError());
+
+        verify(reviewRepository).findByBookIdAndUserId(1L, 1L);
     }
+
+
 
     @DisplayName("리뷰 코멘트 정상 수정")
     @Test
