@@ -7,6 +7,7 @@ import com.example.modam.domain.report.Domain.Place;
 import com.example.modam.domain.report.Domain.ReadingLogEntity;
 import com.example.modam.domain.report.Interface.ReportRepository;
 import com.example.modam.domain.report.Presentation.dto.*;
+import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
@@ -19,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -36,18 +34,16 @@ public class ReportService {
     private final VariousFunc variousFunc;
     private final RedisStringClient redisStringClient;
 
-    public List<ReadingLogResponse> getReadingLog(int year, int month, long userId) {
+    public List<ReadingLogResponse> getReadingLog(long userId, boolean state) {
 
-        if (month <= 0 || 13 <= month) {
-            throw new ApiException(ErrorDefine.INVALID_ARGUMENT);
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
+
+        if (!state && !user.isPublic()) {
+            return Collections.emptyList();
         }
 
-        YearMonth ym = YearMonth.of(year, month);
-
-        LocalDateTime start = ym.atDay(1).atStartOfDay();
-        LocalDateTime end = ym.atEndOfMonth().atTime(LocalTime.MAX);
-
-        List<ReadingLogResponse> response = reportRepository.findByDate(start, end, userId);
+        List<ReadingLogResponse> response = reportRepository.findByDate(userId);
 
         return response;
     }

@@ -138,10 +138,6 @@ class ReadingLogServiceTest {
     @Test
     void get_reading_log_success() {
         long userId = 10L;
-        YearMonth ym = YearMonth.of(2025, 12);
-
-        LocalDateTime expectedStart = ym.atDay(1).atStartOfDay();
-        LocalDateTime expectedEnd = ym.atEndOfMonth().atTime(java.time.LocalTime.MAX);
 
         List<ReadingLogResponse> mockResponse = List.of(
                 new ReadingLogResponse(
@@ -150,27 +146,16 @@ class ReadingLogServiceTest {
                 )
         );
 
-        when(reportRepository.findByDate(any(), any(), eq(userId)))
+        when(reportRepository.findByDate(eq(userId)))
                 .thenReturn(mockResponse);
 
         List<ReadingLogResponse> result =
-                readingLogService.getReadingLog(2025, 12, userId);
+                readingLogService.getReadingLog(userId,true);
 
         assertEquals(mockResponse, result);
 
         verify(reportRepository).findByDate(
-                eq(expectedStart),
-                eq(expectedEnd),
                 eq(userId)
         );
-    }
-
-    @DisplayName("월이 1~12 범위가 아니면 예외")
-    @Test
-    void get_reading_log_invalid_month() {
-        assertThrows(ApiException.class,
-                () -> readingLogService.getReadingLog(2025, 0, 1L));
-
-        verifyNoInteractions(reportRepository);
     }
 }
