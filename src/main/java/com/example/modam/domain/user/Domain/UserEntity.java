@@ -90,6 +90,10 @@ public class UserEntity {
         }
     }
 
+    public void updatePreferredCategories(List<String> categories){
+        this.preferredCategories = String.join(",",categories);
+    }
+
     public void requestWithdrawal(){
         this.status = UserStatus.WITHDRAWAL_PENDING;
         this.withdrawalRequestedAt = LocalDateTime.now();

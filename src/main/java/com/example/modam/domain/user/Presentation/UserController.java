@@ -169,4 +169,18 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @Operation(
+            summary = "선호 카테고리 수정",
+            description = "로그인한 사용자의 선호 카테고리 목록을 업데이트합니다."
+    )
+    @PatchMapping("/categories")
+    public ResponseEntity<Void> updatePreferredCategories(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody UpdateCategoryRequest request){
+        Long userId = userDetails.getUser().getId();
+        userService.updatePreferredCategories(userId, request.getCategories());
+
+        return  ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
