@@ -6,8 +6,6 @@ import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Presentation.dto.BookCaseSaveRequestDTO;
-import com.example.modam.domain.review.Domain.ReviewEntity;
-import com.example.modam.domain.review.Interface.ReviewRepository;
 import com.example.modam.domain.user.Domain.UserEntity;
 import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
@@ -31,7 +29,6 @@ public class BookCaseService {
     private final UserRepository userRepository;
     private final BookCaseRepository bookCaseRepository;
     private final VariousFunc variousFunc;
-    private final ReviewRepository reviewRepository;
 
     public BookEntity getBook(long bookId) {
         return bookRepository.findById(bookId)
@@ -143,11 +140,7 @@ public class BookCaseService {
                     .finishedAt(dto.getEndDate().atStartOfDay())
                     .build();
 
-            ReviewEntity review = ReviewEntity.builder()
-                    .bookCase(userBook)
-                    .build();
             bookCaseRepository.save(userBook);
-            reviewRepository.save(review);
 
             return userBook;
         }

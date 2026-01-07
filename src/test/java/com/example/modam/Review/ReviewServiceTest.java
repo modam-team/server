@@ -254,11 +254,7 @@ class ReviewServiceTest {
     void change_comment_invalid_test() {
 
         ChangeCommentRequest dto = mock(ChangeCommentRequest.class);
-        when(dto.getBookId()).thenReturn(1L);
         when(dto.getComment()).thenReturn("   "); // blank
-
-        when(reviewRepository.findByBookIdAndUserId(1L, 1L))
-                .thenReturn(mock(ReviewEntity.class));
 
         ApiException exception = assertThrows(
                 ApiException.class,
@@ -267,20 +263,16 @@ class ReviewServiceTest {
 
         assertEquals(ErrorDefine.INVALID_HEADER_ERROR, exception.getError());
 
-        verify(reviewRepository).findByBookIdAndUserId(1L, 1L);
+        verify(reviewRepository, never())
+                .findByBookIdAndUserId(anyLong(), anyLong());
     }
-
 
     @DisplayName("리뷰 코멘트 길이 초과 시 EXCEED_MAX_COMMENT_LENGTH 예외")
     @Test
     void change_comment_length_exceed_test() {
 
         ChangeCommentRequest dto = mock(ChangeCommentRequest.class);
-        when(dto.getBookId()).thenReturn(1L);
         when(dto.getComment()).thenReturn("a".repeat(1001));
-
-        when(reviewRepository.findByBookIdAndUserId(1L, 1L))
-                .thenReturn(mock(ReviewEntity.class));
 
         ApiException exception = assertThrows(
                 ApiException.class,
@@ -289,7 +281,8 @@ class ReviewServiceTest {
 
         assertEquals(ErrorDefine.EXCEED_MAX_COMMENT_LENGTH, exception.getError());
 
-        verify(reviewRepository).findByBookIdAndUserId(1L, 1L);
+        verify(reviewRepository, never())
+                .findByBookIdAndUserId(anyLong(), anyLong());
     }
 
 
