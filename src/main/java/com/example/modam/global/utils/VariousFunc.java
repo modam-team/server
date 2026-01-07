@@ -8,11 +8,16 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Component
 public class VariousFunc {
 
     private final TendencyMapping tendencyMapping;
+
+    private static final Pattern SEARCH_PATTERN =
+            Pattern.compile("^[a-zA-Z0-9가-힣\\s\\-:.,()!?&']+$");
+
 
     public VariousFunc(TendencyMapping tendencyMapping) {
         this.tendencyMapping = tendencyMapping;
@@ -43,12 +48,19 @@ public class VariousFunc {
     }
 
     public boolean isInvalidQuery(String query) {
-        if (query == null || query.trim().isEmpty() || query.length() < 2 || !query.matches("^[a-zA-Z0-9가-힣\\s]+$")) {
+        if (query == null) {
             return true;
         }
 
-        return false;
+        String trimmed = query.trim();
+
+        if (trimmed.isEmpty() || trimmed.length() < 2 || trimmed.length() > 100) {
+            return true;
+        }
+
+        return !SEARCH_PATTERN.matcher(trimmed).matches();
     }
+
 
     public String[] decideCharacter(Map<String, Map<String, List<ReportGroup>>> data) {
 
