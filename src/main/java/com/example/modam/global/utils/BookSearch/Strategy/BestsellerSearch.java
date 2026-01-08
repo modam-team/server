@@ -28,7 +28,7 @@ public class BestsellerSearch implements BookSearchStrategy {
         sb.append("?ttbkey=").append(ttbKey);
         sb.append("&QueryType=").append(queryType);
         sb.append("&SearchTarget=Book");
-        sb.append("&MaxResults=6");
+        sb.append("&MaxResults=10");
         sb.append("&start=1");
         sb.append("&output=xml");
         sb.append("&Version=20131101");

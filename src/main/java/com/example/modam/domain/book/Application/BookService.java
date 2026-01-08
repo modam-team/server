@@ -10,6 +10,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,6 +45,9 @@ public class BookService {
                         book.setCategoryName(newCategory);
                         book.setCover(preprocessCover(book.getCover()));
                         result.add(book);
+                    }
+                    if (dto.getQueryType().toString().equals("Bestseller") && result.size() == 5) {
+                        break;
                     }
                 }
             } else if (itemsNode.isObject()) { // 데이터가 1개만 오는 경우
