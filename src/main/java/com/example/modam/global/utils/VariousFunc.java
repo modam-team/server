@@ -54,7 +54,7 @@ public class VariousFunc {
 
         String trimmed = query.trim();
 
-        if (trimmed.isEmpty() || trimmed.length() < 2 || trimmed.length() > 100) {
+        if (trimmed.isEmpty() || trimmed.length() > 100) {
             return true;
         }
 
