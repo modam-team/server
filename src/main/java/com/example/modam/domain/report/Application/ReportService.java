@@ -3,6 +3,7 @@ package com.example.modam.domain.report.Application;
 import com.example.modam.domain.bookcase.Domain.BookCaseEntity;
 import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.bookcase.Interface.BookCaseRepository;
+import com.example.modam.domain.friend.Interface.FriendRepository;
 import com.example.modam.domain.report.Domain.Place;
 import com.example.modam.domain.report.Domain.ReadingLogEntity;
 import com.example.modam.domain.report.Interface.ReportRepository;
@@ -31,19 +32,35 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final BookCaseRepository bookCaseRepository;
     private final UserRepository userRepository;
+    private final FriendRepository friendRepository;
     private final VariousFunc variousFunc;
     private final RedisStringClient redisStringClient;
 
-    public List<ReadingLogResponse> getReadingLog(long userId, boolean state) {
+    public List<ReadingLogResponse> getReadingLog(long userId) {
 
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
 
-        if (!state && !user.isPublic()) {
-            return Collections.emptyList();
+        List<ReadingLogResponse> response = reportRepository.findByDate(userId);
+
+        return response;
+    }
+
+    public ReadingLogResponseWithTheme getReadingLog(long masterId, long otherId) {
+
+        UserEntity user = userRepository.findById(masterId)
+                .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
+
+        UserEntity other = userRepository.findById(otherId)
+                .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
+
+        if (!other.isPublic() && friendRepository.findAcceptedFriendship(masterId, otherId).isEmpty()) {
+            throw new ApiException(ErrorDefine.PRIVATE_RESOURCE_FORBIDDEN);
         }
 
-        List<ReadingLogResponse> response = reportRepository.findByDate(userId);
+        List<ReadingLogResponse> readingLog = reportRepository.findByDate(otherId);
+        String theme = other.getThemeColor();
+        ReadingLogResponseWithTheme response = new ReadingLogResponseWithTheme(readingLog, theme);
 
         return response;
     }

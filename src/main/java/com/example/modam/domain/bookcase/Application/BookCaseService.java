@@ -67,6 +67,9 @@ public class BookCaseService {
             throw new ApiException(ErrorDefine.BOOKCASE_NOT_FOUND);
         }
         BookCaseEntity data = optionalData.get();
+        if (data.getStatus() == BookState.AFTER) {
+            throw new ApiException(ErrorDefine.UNAUTHORIZED_STATUS);
+        }
 
         bookCaseRepository.delete(data);
     }

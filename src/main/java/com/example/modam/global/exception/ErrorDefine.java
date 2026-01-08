@@ -10,7 +10,7 @@ public enum ErrorDefine {
     INVALID_ARGUMENT("4000", HttpStatus.BAD_REQUEST, "Bad Request: Invalid Arguments"),
     INVALID_HEADER_ERROR("4006", HttpStatus.BAD_REQUEST, "Bad Request: Invalid Header Error"),
     SELF_FRIEND_REQUEST("400A", HttpStatus.BAD_REQUEST, "Bad Request: Cannot send a friend request to yourself."),
-    INVALID_THEME_COLOR("400B", HttpStatus.BAD_REQUEST,"Bad Request: Invalid Hex Color format." ),
+    INVALID_THEME_COLOR("400B", HttpStatus.BAD_REQUEST, "Bad Request: Invalid Hex Color format."),
     // Onboarding
     USER_ALREADY_ONBOARDED("4007", HttpStatus.BAD_REQUEST, "Bad Request: User has already completed onboarding"),
     NICKNAME_DUPLICATION("4008", HttpStatus.BAD_REQUEST, "Bad Request: The nickname is already in already in use."),
@@ -35,6 +35,7 @@ public enum ErrorDefine {
     // Forbidden
     UNAUTHORIZED_USER("4030", HttpStatus.FORBIDDEN, "Forbidden: Unauthorized User"),
     UNAUTHORIZED_STATUS("4091", HttpStatus.FORBIDDEN, "Forbidden: Unauthorized Book Status"),
+    PRIVATE_RESOURCE_FORBIDDEN("F403", HttpStatus.FORBIDDEN, "Forbidden: This resource is only available to friends"),
 
     // social login
     LOGIN_ACCESS_DENIED("4031", HttpStatus.FORBIDDEN, "Forbidden: Login Access Denied"),
