@@ -1,5 +1,6 @@
 package com.example.modam.domain.report.Interface;
 
+import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.report.Domain.ReadingLogEntity;
 import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
 import com.example.modam.domain.report.Presentation.dto.ReportRawData;
@@ -23,6 +24,19 @@ public interface ReportRepository extends JpaRepository<ReadingLogEntity, Long> 
             where user.id=:userId
             """)
     List<ReadingLogResponse> findByDate(@Param("userId") long userId);
+
+    @Query("""
+            select new com.example.modam.domain.report.Presentation.dto.ReadingLogResponse(
+            r.readAt,r.readingPlace, b.cover, b.title
+            )
+            from reading r
+            join r.bookCase bc
+            join bc.user
+            join bc.book b
+            where user.id=:userId and bc.status=:status
+            """)
+    List<ReadingLogResponse> getFinishReadingLog(@Param("userId") long userId,
+                                                 @Param("status") BookState status);
 
     @Query("""
     select new com.example.modam.domain.report.Presentation.dto.ReportRawData(

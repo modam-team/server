@@ -58,7 +58,7 @@ public class ReportService {
             throw new ApiException(ErrorDefine.PRIVATE_RESOURCE_FORBIDDEN);
         }
 
-        List<ReadingLogResponse> readingLog = reportRepository.findByDate(otherId);
+        List<ReadingLogResponse> readingLog = reportRepository.getFinishReadingLog(otherId, BookState.AFTER);
         String theme = other.getThemeColor();
         ReadingLogResponseWithTheme response = new ReadingLogResponseWithTheme(readingLog, theme);
 
