@@ -70,6 +70,26 @@ public class ReviewController {
     }
 
     @Operation(
+            summary = "다른 사람의 리뷰 조회",
+            description = "다른 사람의 히스토리에서 완독 책의 카드를 조회할 수 있습니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다른 사람 리뷰 조회 성공")
+    })
+    @GetMapping("/other")
+    public ResponseDTO<ReviewResponse> readOther(@RequestParam long bookId,
+                                                 @RequestParam long otherId,
+                                                 @AuthenticationPrincipal CustomUserDetails user) {
+        long userId = user.getUser().getId();
+
+        ReviewResponse response = reviewService.readReview(otherId, bookId);
+
+        return new ResponseDTO(
+                response
+        );
+    }
+
+    @Operation(
             summary = "책 검색 시 리뷰 조회",
             description = "책 검색하고 나온 책에 대한 다른 유저들의 리뷰 확인"
     )
@@ -95,9 +115,9 @@ public class ReviewController {
     })
     @PatchMapping
     public ResponseDTO update(@AuthenticationPrincipal CustomUserDetails user,
-                              @RequestBody ChangeCommentRequest dto){
-        long userId=user.getUser().getId();
-        reviewService.changeReviewComment(userId,dto);
+                              @RequestBody ChangeCommentRequest dto) {
+        long userId = user.getUser().getId();
+        reviewService.changeReviewComment(userId, dto);
 
         return new ResponseDTO(
                 "Comment Successfully changed"
