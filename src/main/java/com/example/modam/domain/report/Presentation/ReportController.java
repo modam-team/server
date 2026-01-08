@@ -56,7 +56,7 @@ public class ReportController {
     @GetMapping
     public ResponseDTO<List<ReadingLogResponse>> read(@AuthenticationPrincipal CustomUserDetails user) {
         long userId = user.getUser().getId();
-        List<ReadingLogResponse> response = reportService.getReadingLog(userId, true);
+        List<ReadingLogResponse> response = reportService.getReadingLog(userId);
 
         return new ResponseDTO<>(
                 response
@@ -65,16 +65,17 @@ public class ReportController {
 
     @Operation(
             summary = "다른 유저의 독서 기록 조회하기",
-            description = "다른 유저의 독서 기록을 조회할 수 있습니다."
+            description = "다른 유저의 독서 기록을 조회할 수 있습니다. 다른 유저의 상태가 비공개이면서 친구 관계가 아니라면 F403을 반환합니다."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "유저의 독서 기록 조회 성공")
     })
     @GetMapping("/others")
-    public ResponseDTO<List<ReadingLogResponse>> userLog(@RequestParam long userId,
+    public ResponseDTO<List<ReadingLogResponse>> userLog(@RequestParam long otherId,
                                                          @AuthenticationPrincipal CustomUserDetails user) {
 
-        List<ReadingLogResponse> response = reportService.getReadingLog(userId, false);
+        long userId = user.getUser().getId();
+        List<ReadingLogResponse> response = reportService.getReadingLog(userId, otherId);
 
         return new ResponseDTO<>(
                 response
