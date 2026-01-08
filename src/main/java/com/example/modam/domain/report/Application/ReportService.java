@@ -46,7 +46,7 @@ public class ReportService {
         return response;
     }
 
-    public List<ReadingLogResponse> getReadingLog(long masterId, long otherId) {
+    public ReadingLogResponseWithTheme getReadingLog(long masterId, long otherId) {
 
         UserEntity user = userRepository.findById(masterId)
                 .orElseThrow(() -> new ApiException(ErrorDefine.USER_NOT_FOUND));
@@ -58,7 +58,9 @@ public class ReportService {
             throw new ApiException(ErrorDefine.PRIVATE_RESOURCE_FORBIDDEN);
         }
 
-        List<ReadingLogResponse> response = reportRepository.findByDate(otherId);
+        List<ReadingLogResponse> readingLog = reportRepository.findByDate(otherId);
+        String theme = other.getThemeColor();
+        ReadingLogResponseWithTheme response = new ReadingLogResponseWithTheme(readingLog, theme);
 
         return response;
     }
