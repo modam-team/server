@@ -3,6 +3,7 @@ package com.example.modam.domain.report.Interface;
 import com.example.modam.domain.bookcase.Domain.BookState;
 import com.example.modam.domain.report.Domain.ReadingLogEntity;
 import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
+import com.example.modam.domain.report.Presentation.dto.ReportLogRawData;
 import com.example.modam.domain.report.Presentation.dto.ReportRawData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -39,20 +40,35 @@ public interface ReportRepository extends JpaRepository<ReadingLogEntity, Long> 
                                                  @Param("status") BookState status);
 
     @Query("""
-    select new com.example.modam.domain.report.Presentation.dto.ReportRawData(
-        r.readAt,
-        r.readingPlace,
-        b.categoryName,
-        ht.tag
-    )
-    from reading r
-    join bookcase bc on r.bookCase.id = bc.id
-    join user u on bc.user.id = u.id
-    join book b on bc.book.id = b.id
-    left join review rev on rev.bookCase.id = bc.id
-    left join hashtag ht on ht.review.id = rev.id
-    where u.id = :userId
-""")
-    List<ReportRawData> findReportData(@Param("userId") long userId);
+            select new com.example.modam.domain.report.Presentation.dto.ReportRawData(
+                bc.finishedAt,
+                b.categoryName,
+                ht.tag
+            )
+            from bookcase bc
+            join user u on bc.user.id = u.id
+            join book b on bc.book.id = b.id
+            left join review rev on rev.bookCase.id = bc.id
+            left join hashtag ht on ht.review.id = rev.id
+            where u.id = :userId
+            and bc.status = :status
+            """)
+    List<ReportRawData> findReportData(@Param("userId") long userId,
+                                       @Param("status") BookState status);
+
+
+    @Query("""
+            select new com.example.modam.domain.report.Presentation.dto.ReportLogRawData(
+                        r.readAt,
+                        b.categoryName,
+                        r.readingPlace
+                        )
+                        from reading r
+                        join r.bookCase bc
+                        join bc.book b
+                        join bc.user u
+                        where u.id=:userId
+            """)
+    List<ReportLogRawData> findReadingLogData(@Param("userId") long userId);
 
 }

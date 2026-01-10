@@ -16,4 +16,5 @@ public class ReportResponse {
     private long characterNum;
     private long userTotalNum;
     private Map<String, Map<String, List<ReportGroup>>> data;
+    private Map<String, Map<String, List<ReadReportGroup>>> logData;
 }
