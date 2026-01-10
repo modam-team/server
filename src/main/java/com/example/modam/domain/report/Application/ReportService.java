@@ -68,9 +68,10 @@ public class ReportService {
     public ReportResponse getReportData(long userId) {
 
 
-        Map<String, Map<String, List<ReportGroup>>> data = calculateReadingLog(userId);
+        ReportBlock<Map<String, Map<String, List<ReportGroup>>>> data = calculateFinishLog(userId);
+        ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> LogData = calculateReadingLog(userId);
 
-        String[] forCharacter = variousFunc.decideCharacter(data);
+        String[] forCharacter = variousFunc.decideCharacter(LogData);
         long userNum = 0;
         long characterNum = 0;
 
@@ -94,6 +95,7 @@ public class ReportService {
                 .manyPlace(Place.valueOf(forCharacter[0]))
                 .readingTendency(forCharacter[1])
                 .data(data)
+                .logData(LogData)
                 .userTotalNum(userNum)
                 .characterNum(characterNum)
                 .build();
@@ -101,16 +103,16 @@ public class ReportService {
         return response;
     }
 
-    private Map<String, Map<String, List<ReportGroup>>> calculateReadingLog(long userId) {
-        List<ReportRawData> rawList = reportRepository.findReportData(userId);
+    private ReportBlock<Map<String, Map<String, List<ReportGroup>>>> calculateFinishLog(long userId) {
+        List<ReportRawData> rawList = reportRepository.findReportData(userId, BookState.AFTER);
 
         if (rawList.isEmpty()) {
-            throw new ApiException(ErrorDefine.REPORT_DATA_EMPTY);
+            return new ReportBlock<>("EMPTY_FINISH", Map.of());
         }
 
         Map<GroupKey, List<String>> merged = rawList.stream()
                 .collect(Collectors.groupingBy(
-                        r -> new GroupKey(r.readAt(), r.readingPlace(), r.category()),
+                        r -> new GroupKey(r.finishAt(), r.category()),
                         Collectors.mapping(
                                 r -> r.rawHashtags() == null ? null : r.rawHashtags(),
                                 Collectors.toList()
@@ -119,8 +121,7 @@ public class ReportService {
 
         List<ReportGroup> groupedList = merged.entrySet().stream()
                 .map(e -> new ReportGroup(
-                        e.getKey().readAt(),
-                        e.getKey().readingPlace(),
+                        e.getKey().finishAt(),
                         e.getKey().category(),
                         e.getValue().stream()
                                 .filter(Objects::nonNull)
@@ -131,14 +132,43 @@ public class ReportService {
         Map<String, Map<String, List<ReportGroup>>> data =
                 groupedList.stream()
                         .collect(Collectors.groupingBy(
-                                g -> String.valueOf(g.getReadAt().getYear()),
+                                g -> String.valueOf(g.getFinishAt().getYear()),
                                 Collectors.groupingBy(
-                                        g -> String.valueOf(g.getReadAt().getMonthValue())
+                                        g -> String.valueOf(g.getFinishAt().getMonthValue())
                                 )
                         ));
 
-        return data;
+        return new ReportBlock<>("OK", data);
     }
+
+    private ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> calculateReadingLog(long userId) {
+
+        List<ReportLogRawData> rawList = reportRepository.findReadingLogData(userId);
+
+        if (rawList.isEmpty()) {
+            return new ReportBlock<>("EMPTY_LOG", Map.of());
+        }
+
+        Map<String, Map<String, List<ReadReportGroup>>> logData =
+                rawList.stream()
+                        .map(r -> new ReadReportGroup(
+                                r.readAt(),
+                                r.category(),
+                                r.place()
+                        ))
+                        .collect(
+                                Collectors.groupingBy(
+                                        r -> String.valueOf(r.getReadAt().getYear()),
+                                        Collectors.groupingBy(
+                                                r -> String.valueOf(r.getReadAt().getMonthValue())
+                                        )
+                                )
+                        );
+
+        return new ReportBlock<>("OK", logData);
+    }
+
+
 
     private void setReportRatio() {
 
@@ -150,7 +180,7 @@ public class ReportService {
 
         for (Long userId : userIds) {
             try {
-                Map<String, Map<String, List<ReportGroup>>> data = calculateReadingLog(userId);
+                ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> data = calculateReadingLog(userId);
 
                 String[] character = variousFunc.decideCharacter(data);
 

@@ -1,7 +1,8 @@
 package com.example.modam.global.utils;
 
 import com.example.modam.domain.report.Domain.Place;
-import com.example.modam.domain.report.Presentation.dto.ReportGroup;
+import com.example.modam.domain.report.Presentation.dto.ReadReportGroup;
+import com.example.modam.domain.report.Presentation.dto.ReportBlock;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -62,9 +63,17 @@ public class VariousFunc {
     }
 
 
-    public String[] decideCharacter(Map<String, Map<String, List<ReportGroup>>> data) {
+    public String[] decideCharacter(ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> block) {
 
         String forCharacter[] = new String[2];
+
+        if (block == null || !"OK".equals(block.getCode())) {
+            forCharacter[0] = "empty_data";
+            forCharacter[1] = "empty_data";
+            return forCharacter;
+        }
+
+        Map<String, Map<String, List<ReadReportGroup>>> data = block.getData();
 
         HashMap<String, Integer> categoryNum = new HashMap<>();
         HashMap<Place, Integer> placeNum = new HashMap<>();
@@ -73,14 +82,14 @@ public class VariousFunc {
         String year = String.valueOf(current.getYear());
         String month = String.valueOf(current.getMonthValue());
 
-        List<ReportGroup> reportData = data.get(year).get(month);
+        List<ReadReportGroup> reportData = data.get(year).get(month);
         if (reportData.isEmpty()) {
             forCharacter[0] = "empty_data";
             forCharacter[1] = "empty_data";
         } else {
-            for (ReportGroup r : reportData) {
+            for (ReadReportGroup r : reportData) {
                 String currentCategory = r.getCategory();
-                Place currentPlace = r.getReadingPlace();
+                Place currentPlace = r.getPlace();
                 categoryNum.merge(currentCategory, 1, Integer::sum);
                 placeNum.merge(currentPlace, 1, Integer::sum);
             }

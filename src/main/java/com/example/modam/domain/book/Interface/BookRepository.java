@@ -37,6 +37,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
             from book b
             where b.categoryName in :category
             and b.id not in :userBook
+            and b.receivedFromAladin=true
             """)
     List<BookEntity> recommendByBookCategory(@Param("category") List<String> category,
                                              @Param("userBook") List<Long> userBook);
