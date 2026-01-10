@@ -2,6 +2,7 @@ package com.example.modam.global.utils;
 
 import com.example.modam.domain.report.Domain.Place;
 import com.example.modam.domain.report.Presentation.dto.ReadReportGroup;
+import com.example.modam.domain.report.Presentation.dto.ReportBlock;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -62,9 +63,17 @@ public class VariousFunc {
     }
 
 
-    public String[] decideCharacter(Map<String, Map<String, List<ReadReportGroup>>> data) {
+    public String[] decideCharacter(ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> block) {
 
         String forCharacter[] = new String[2];
+
+        if (block == null || !"OK".equals(block.getCode())) {
+            forCharacter[0] = "empty_data";
+            forCharacter[1] = "empty_data";
+            return forCharacter;
+        }
+
+        Map<String, Map<String, List<ReadReportGroup>>> data = block.getData();
 
         HashMap<String, Integer> categoryNum = new HashMap<>();
         HashMap<Place, Integer> placeNum = new HashMap<>();

@@ -15,6 +15,6 @@ public class ReportResponse {
     private String readingTendency;
     private long characterNum;
     private long userTotalNum;
-    private Map<String, Map<String, List<ReportGroup>>> data;
-    private Map<String, Map<String, List<ReadReportGroup>>> logData;
+    private ReportBlock<Map<String, Map<String, List<ReportGroup>>>> data;
+    private ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> logData;
 }
