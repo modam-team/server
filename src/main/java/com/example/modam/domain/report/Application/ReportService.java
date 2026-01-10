@@ -110,7 +110,7 @@ public class ReportService {
 
         Map<GroupKey, List<String>> merged = rawList.stream()
                 .collect(Collectors.groupingBy(
-                        r -> new GroupKey(r.readAt(), r.readingPlace(), r.category(), r.state()),
+                        r -> new GroupKey(r.readAt(), r.readingPlace(), r.category()),
                         Collectors.mapping(
                                 r -> r.rawHashtags() == null ? null : r.rawHashtags(),
                                 Collectors.toList()
@@ -122,7 +122,6 @@ public class ReportService {
                         e.getKey().readAt(),
                         e.getKey().readingPlace(),
                         e.getKey().category(),
-                        e.getKey().state(),
                         e.getValue().stream()
                                 .filter(Objects::nonNull)
                                 .toList()

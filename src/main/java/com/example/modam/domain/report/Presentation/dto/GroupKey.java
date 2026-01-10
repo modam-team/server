@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 public record GroupKey(
         LocalDateTime readAt,
         Place readingPlace,
-        String category,
-        BookState state
+        String category
 ) {
 }

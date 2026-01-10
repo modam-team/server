@@ -9,7 +9,6 @@ public record ReportRawData(
         LocalDateTime readAt,
         Place readingPlace,
         String category,
-        BookState state,
         String rawHashtags
 ) {
 }

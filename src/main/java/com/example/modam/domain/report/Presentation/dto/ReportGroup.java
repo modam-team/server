@@ -14,6 +14,5 @@ public class ReportGroup {
     private LocalDateTime readAt;
     private Place readingPlace;
     private String category;
-    private BookState state;
     private List<String> hashtags;
 }
