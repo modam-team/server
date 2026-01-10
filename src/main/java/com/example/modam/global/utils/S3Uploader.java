@@ -2,6 +2,8 @@ package com.example.modam.global.utils;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +30,12 @@ public class S3Uploader {
     @Value("${cloud.aws.s3.cdn}")
     private String domain;
 
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
     public String uploadFile(MultipartFile multipartFile, String dirName) throws IOException {
+
+        validateFileSize(multipartFile);
+
         File uploadFile = convert(multipartFile)
                 .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 변환 실패"));
 
@@ -88,5 +95,15 @@ public class S3Uploader {
         }
 
         return "";
+    }
+
+    private void validateFileSize(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new ApiException(ErrorDefine.EMPTY_FILE);
+        }
+
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new ApiException(ErrorDefine.LARGE_FILE);
+        }
     }
 }

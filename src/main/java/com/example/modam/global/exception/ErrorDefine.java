@@ -61,7 +61,12 @@ public enum ErrorDefine {
     REPORT_DATA_EMPTY("RR404", HttpStatus.NOT_FOUND, "Report: User has no report data"),
 
     //Many Request
-    MANY_REQUEST("SM429", HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests");
+    MANY_REQUEST("SM429", HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests"),
+
+    //File upload
+    EMPTY_FILE("SM400", HttpStatus.BAD_REQUEST, "File: file is empty"),
+    LARGE_FILE("SM413", HttpStatus.PAYLOAD_TOO_LARGE, "File: exceed capacity");
+
 
     private final String errorCode;
     private final HttpStatus httpStatus;
