@@ -43,6 +43,7 @@ public interface ReportRepository extends JpaRepository<ReadingLogEntity, Long> 
         r.readAt,
         r.readingPlace,
         b.categoryName,
+        bc.status,
         ht.tag
     )
     from reading r
