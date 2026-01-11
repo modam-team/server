@@ -22,6 +22,7 @@ public class UserProfileResponse {
     private boolean isOnboardingCompleted;
     private UserStatus status;
     private String themeColor;
+    private java.time.LocalDateTime createdAt;
 
     public static UserProfileResponse from(UserEntity user){
         return UserProfileResponse.builder()
@@ -35,6 +36,7 @@ public class UserProfileResponse {
                 .isOnboardingCompleted(user.isOnboardingCompleted())
                 .status(user.getStatus())
                 .themeColor(user.getThemeColor())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 }

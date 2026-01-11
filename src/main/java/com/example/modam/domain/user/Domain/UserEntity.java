@@ -58,7 +58,7 @@ public class UserEntity {
     @Builder.Default
     private String themeColor="#608540";
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
