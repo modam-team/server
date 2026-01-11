@@ -1,10 +1,7 @@
 package com.example.modam.domain.report.Presentation;
 
 import com.example.modam.domain.report.Application.ReportService;
-import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
-import com.example.modam.domain.report.Presentation.dto.ReadingLogResponseWithTheme;
-import com.example.modam.domain.report.Presentation.dto.RecordReadingLogRequest;
-import com.example.modam.domain.report.Presentation.dto.ReportResponse;
+import com.example.modam.domain.report.Presentation.dto.*;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -73,7 +70,7 @@ public class ReportController {
     })
     @GetMapping("/others")
     public ResponseDTO<ReadingLogResponseWithTheme> userLog(@RequestParam long otherId,
-                                                                  @AuthenticationPrincipal CustomUserDetails user) {
+                                                            @AuthenticationPrincipal CustomUserDetails user) {
 
         long userId = user.getUser().getId();
         ReadingLogResponseWithTheme response = reportService.getReadingLog(userId, otherId);
@@ -83,10 +80,35 @@ public class ReportController {
         );
     }
 
+    @Operation(
+            summary = "리포트 조회하기",
+            description = "저번 달 케릭터와 독서 기록이 담긴 리포트를 조회합니다. 만약 케릭터에 대응되는 것이 비었다면 empty_data를 반환합니다." +
+                    "완독이 비었다면 data에 EMPTY_FINISH, 기록이 비었다면 logData에 EMPTY_LOG를 반환합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "독서 리포트 조회 성공")
+    })
     @GetMapping("/monthly")
     public ResponseDTO<ReportResponse> getReport(@AuthenticationPrincipal CustomUserDetails user) {
         long userId = user.getUser().getId();
         ReportResponse response = reportService.getReportData(userId);
+
+        return new ResponseDTO<>(
+                response
+        );
+    }
+
+    @Operation(
+            summary = "지난 달 케릭터 조회하기",
+            description = "지난 달 케릭터를 조회합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "유저의 케릭터")
+    })
+    @GetMapping("/character")
+    public ResponseDTO<CharacterResponse> getCharacter(@AuthenticationPrincipal CustomUserDetails user) {
+        long userId = user.getUser().getId();
+        CharacterResponse response = reportService.getCharacter(userId);
 
         return new ResponseDTO<>(
                 response
