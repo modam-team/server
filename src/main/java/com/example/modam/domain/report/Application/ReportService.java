@@ -13,6 +13,7 @@ import com.example.modam.domain.user.Interface.UserRepository;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.utils.VariousFunc;
+import com.example.modam.global.utils.redis.RedisCharacterClient;
 import com.example.modam.global.utils.redis.RedisStringClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,9 @@ public class ReportService {
     private final FriendRepository friendRepository;
     private final VariousFunc variousFunc;
     private final RedisStringClient redisStringClient;
+    private final RedisCharacterClient redisCharacterClient;
+
+    private final long ONE_MONTH = 60L * 60 * 24 * 31;
 
     public List<ReadingLogResponse> getReadingLog(long userId) {
 
@@ -106,6 +110,36 @@ public class ReportService {
                 .build();
 
         return response;
+    }
+
+    public CharacterResponse getCharacter(long userId) {
+
+        LocalDateTime current = LocalDateTime.now();
+        int numMonth = current.getMonthValue() - 1;
+        int numYear = current.getYear();
+        if (numMonth == 0) {
+            numMonth = 12;
+            numYear = numYear - 1;
+        }
+        String year = String.valueOf(numYear);
+        String month = String.format("%02d", numMonth);
+
+        String key = year + month + userId + "character";
+        if (redisCharacterClient.exists(key)) {
+            return redisCharacterClient.get(key);
+        }
+        ReportBlock<Map<String, Map<String, List<ReportGroup>>>> data = calculateFinishLog(userId);
+        ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> LogData = calculateReadingLog(userId);
+        String[] forCharacter = variousFunc.decideCharacter(LogData, data);
+
+        CharacterResponse characterResponse = CharacterResponse.builder()
+                .manyPlace(Place.valueOf(forCharacter[0]))
+                .readingTendency(forCharacter[1])
+                .build();
+
+        redisCharacterClient.set(key, characterResponse, ONE_MONTH);
+
+        return characterResponse;
     }
 
     private ReportBlock<Map<String, Map<String, List<ReportGroup>>>> calculateFinishLog(long userId) {

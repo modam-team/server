@@ -1,10 +1,7 @@
 package com.example.modam.domain.report.Presentation;
 
 import com.example.modam.domain.report.Application.ReportService;
-import com.example.modam.domain.report.Presentation.dto.ReadingLogResponse;
-import com.example.modam.domain.report.Presentation.dto.ReadingLogResponseWithTheme;
-import com.example.modam.domain.report.Presentation.dto.RecordReadingLogRequest;
-import com.example.modam.domain.report.Presentation.dto.ReportResponse;
+import com.example.modam.domain.report.Presentation.dto.*;
 import com.example.modam.global.response.ResponseDTO;
 import com.example.modam.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -95,6 +92,16 @@ public class ReportController {
     public ResponseDTO<ReportResponse> getReport(@AuthenticationPrincipal CustomUserDetails user) {
         long userId = user.getUser().getId();
         ReportResponse response = reportService.getReportData(userId);
+
+        return new ResponseDTO<>(
+                response
+        );
+    }
+
+    @GetMapping("/character")
+    public ResponseDTO<CharacterResponse> getCharacter(@AuthenticationPrincipal CustomUserDetails user) {
+        long userId = user.getUser().getId();
+        CharacterResponse response = reportService.getCharacter(userId);
 
         return new ResponseDTO<>(
                 response
