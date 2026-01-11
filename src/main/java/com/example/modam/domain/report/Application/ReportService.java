@@ -74,24 +74,38 @@ public class ReportService {
         ReportBlock<Map<String, Map<String, List<ReportGroup>>>> data = calculateFinishLog(userId);
         ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> LogData = calculateReadingLog(userId);
 
-        String[] forCharacter = variousFunc.decideCharacter(LogData, data);
+        LocalDateTime current = LocalDateTime.now();
+        int numMonth = current.getMonthValue() - 1;
+        int numYear = current.getYear();
+        if (numMonth == 0) {
+            numMonth = 12;
+            numYear = numYear - 1;
+        }
+        String year = String.valueOf(numYear);
+        String month = String.format("%02d", numMonth);
+
+        String cha_key = year + month + userId + "character";
+        if (!redisCharacterClient.exists(cha_key)) {
+            String[] forCharacter = variousFunc.decideCharacter(LogData, data);
+
+            CharacterResponse characterResponse = CharacterResponse.builder()
+                    .manyPlace(Place.valueOf(forCharacter[0]))
+                    .readingTendency(forCharacter[1])
+                    .build();
+
+            redisCharacterClient.set(cha_key, characterResponse, ONE_MONTH);
+        }
+
+        CharacterResponse character = redisCharacterClient.get(cha_key);
+
         long userNum = 0;
         long characterNum = 0;
 
-        if (!forCharacter[0].equals("empty_data") && !forCharacter[1].equals("empty_data")) {
+        if (!String.valueOf(character.getManyPlace()).equals("empty_data") && !character.getReadingTendency().equals("empty_data")) {
             userNum = userRepository.count();
 
-            LocalDateTime current = LocalDateTime.now();
-            int numMonth = current.getMonthValue() - 1;
-            int numYear = current.getYear();
-            if (numMonth == 0) {
-                numMonth = 12;
-                numYear = numYear - 1;
-            }
-            String year = String.valueOf(numYear);
-            String month = String.format("%02d", numMonth);
 
-            String key = year + month + forCharacter[0] + "_" + forCharacter[1];
+            String key = year + month + character.getManyPlace() + "_" + character.getReadingTendency();
 
             if (!redisStringClient.exists(key)) {
                 setReportRatio();
@@ -101,8 +115,7 @@ public class ReportService {
         }
 
         ReportResponse response = ReportResponse.builder()
-                .manyPlace(Place.valueOf(forCharacter[0]))
-                .readingTendency(forCharacter[1])
+                .character(character)
                 .data(data)
                 .logData(LogData)
                 .userTotalNum(userNum)

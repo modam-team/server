@@ -98,6 +98,13 @@ public class ReportController {
         );
     }
 
+    @Operation(
+            summary = "지난 달 케릭터 조회하기",
+            description = "지난 달 케릭터를 조회합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "유저의 케릭터")
+    })
     @GetMapping("/character")
     public ResponseDTO<CharacterResponse> getCharacter(@AuthenticationPrincipal CustomUserDetails user) {
         long userId = user.getUser().getId();

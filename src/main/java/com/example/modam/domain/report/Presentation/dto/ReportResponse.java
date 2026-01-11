@@ -11,8 +11,7 @@ import java.util.Map;
 @Getter
 @Builder
 public class ReportResponse {
-    private Place manyPlace;
-    private String readingTendency;
+    private CharacterResponse character;
     private long characterNum;
     private long userTotalNum;
     private ReportBlock<Map<String, Map<String, List<ReportGroup>>>> data;
