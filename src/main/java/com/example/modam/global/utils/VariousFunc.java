@@ -3,6 +3,7 @@ package com.example.modam.global.utils;
 import com.example.modam.domain.report.Domain.Place;
 import com.example.modam.domain.report.Presentation.dto.ReadReportGroup;
 import com.example.modam.domain.report.Presentation.dto.ReportBlock;
+import com.example.modam.domain.report.Presentation.dto.ReportGroup;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -63,57 +64,77 @@ public class VariousFunc {
     }
 
 
-    public String[] decideCharacter(ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> block) {
+    public String[] decideCharacter(ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> log,
+                                    ReportBlock<Map<String, Map<String, List<ReportGroup>>>> finish) {
 
         String forCharacter[] = new String[2];
 
-        if (block == null || !"OK".equals(block.getCode())) {
+        if (log == null || !"OK".equals(log.getCode()) || finish == null || !"OK".equals(finish.getCode())) {
             forCharacter[0] = "empty_data";
             forCharacter[1] = "empty_data";
             return forCharacter;
         }
 
-        Map<String, Map<String, List<ReadReportGroup>>> data = block.getData();
+        Map<String, Map<String, List<ReadReportGroup>>> logData = log.getData();
+        Map<String, Map<String, List<ReportGroup>>> finData = finish.getData();
 
         HashMap<String, Integer> categoryNum = new HashMap<>();
         HashMap<Place, Integer> placeNum = new HashMap<>();
 
         LocalDateTime current = LocalDateTime.now();
-        String year = String.valueOf(current.getYear());
-        String month = String.valueOf(current.getMonthValue());
+        int numMonth = current.getMonthValue() - 1;
+        int numYear = current.getYear();
+        if (numMonth == 0) {
+            numMonth = 12;
+            numYear = numYear - 1;
+        }
+        String year = String.valueOf(numYear);
+        String month = String.valueOf(numMonth);
 
-        List<ReadReportGroup> reportData = data.get(year).get(month);
-        if (reportData.isEmpty()) {
+        Map<String, List<ReadReportGroup>> yearLogData = logData.get(year);
+        Map<String, List<ReportGroup>> yearFinData = finData.get(year);
+        if (yearLogData == null || yearFinData == null) {
             forCharacter[0] = "empty_data";
             forCharacter[1] = "empty_data";
+            return forCharacter;
+        }
+
+        List<ReadReportGroup> placeData = yearLogData.get(month);
+        List<ReportGroup> categoryData = yearFinData.get(month);
+        if (placeData == null || placeData.isEmpty() || categoryData == null || categoryData.isEmpty()) {
+            forCharacter[0] = "empty_data";
+            forCharacter[1] = "empty_data";
+            return forCharacter;
+        }
+
+        for (ReadReportGroup r : placeData) {
+            Place currentPlace = r.getPlace();
+            placeNum.merge(currentPlace, 1, Integer::sum);
+        }
+        for (ReportGroup r : categoryData) {
+            String currentCategory = r.getCategory();
+            categoryNum.merge(currentCategory, 1, Integer::sum);
+        }
+
+        String mostCategory = categoryNum.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        Place mostPlace = placeNum.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        if (mostPlace != null) {
+            forCharacter[0] = mostPlace.name();
         } else {
-            for (ReadReportGroup r : reportData) {
-                String currentCategory = r.getCategory();
-                Place currentPlace = r.getPlace();
-                categoryNum.merge(currentCategory, 1, Integer::sum);
-                placeNum.merge(currentPlace, 1, Integer::sum);
-            }
-
-            String mostCategory = categoryNum.entrySet().stream()
-                    .max(Map.Entry.comparingByValue())
-                    .map(Map.Entry::getKey)
-                    .orElse(null);
-
-            Place mostPlace = placeNum.entrySet().stream()
-                    .max(Map.Entry.comparingByValue())
-                    .map(Map.Entry::getKey)
-                    .orElse(null);
-
-            if (mostPlace != null) {
-                forCharacter[0] = mostPlace.name();
-            } else {
-                forCharacter[0] = "empty_data";
-            }
-            if (mostCategory != null) {
-                forCharacter[1] = tendencyMapping.mapCategory(mostCategory);
-            } else {
-                forCharacter[1] = "empty_data";
-            }
+            forCharacter[0] = "empty_data";
+        }
+        if (mostCategory != null) {
+            forCharacter[1] = tendencyMapping.mapCategory(mostCategory);
+        } else {
+            forCharacter[1] = "empty_data";
         }
 
         return forCharacter;

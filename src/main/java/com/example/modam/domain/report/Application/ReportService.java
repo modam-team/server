@@ -67,11 +67,10 @@ public class ReportService {
 
     public ReportResponse getReportData(long userId) {
 
-
         ReportBlock<Map<String, Map<String, List<ReportGroup>>>> data = calculateFinishLog(userId);
         ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> LogData = calculateReadingLog(userId);
 
-        String[] forCharacter = variousFunc.decideCharacter(LogData);
+        String[] forCharacter = variousFunc.decideCharacter(LogData, data);
         long userNum = 0;
         long characterNum = 0;
 
@@ -79,8 +78,14 @@ public class ReportService {
             userNum = userRepository.count();
 
             LocalDateTime current = LocalDateTime.now();
-            String year = String.valueOf(current.getYear());
-            String month = String.valueOf(current.getMonthValue());
+            int numMonth = current.getMonthValue() - 1;
+            int numYear = current.getYear();
+            if (numMonth == 0) {
+                numMonth = 12;
+                numYear = numYear - 1;
+            }
+            String year = String.valueOf(numYear);
+            String month = String.format("%02d", numMonth);
 
             String key = year + month + forCharacter[0] + "_" + forCharacter[1];
 
@@ -169,20 +174,26 @@ public class ReportService {
     }
 
 
-
     private void setReportRatio() {
 
-        LocalDateTime now = LocalDateTime.now();
-        String year = String.valueOf(now.getYear());
-        String month = String.valueOf(now.getMonthValue());
+        LocalDateTime current = LocalDateTime.now();
+        int numMonth = current.getMonthValue() - 1;
+        int numYear = current.getYear();
+        if (numMonth == 0) {
+            numMonth = 12;
+            numYear = numYear - 1;
+        }
+        String year = String.valueOf(numYear);
+        String month = String.format("%02d", numMonth);
 
         List<Long> userIds = userRepository.findAllUserIds();
 
         for (Long userId : userIds) {
             try {
-                ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> data = calculateReadingLog(userId);
+                ReportBlock<Map<String, Map<String, List<ReadReportGroup>>>> logData = calculateReadingLog(userId);
+                ReportBlock<Map<String, Map<String, List<ReportGroup>>>> data = calculateFinishLog(userId);
 
-                String[] character = variousFunc.decideCharacter(data);
+                String[] character = variousFunc.decideCharacter(logData, data);
 
                 if ("empty_data".equals(character[0]) || "empty_data".equals(character[1])) {
                     continue;
