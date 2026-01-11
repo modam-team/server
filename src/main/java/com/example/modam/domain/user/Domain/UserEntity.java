@@ -4,6 +4,8 @@ import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,6 +57,10 @@ public class UserEntity {
     @Column(nullable = false)
     @Builder.Default
     private String themeColor="#608540";
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public void updateProfileImageUrl(String imageUrl){
         this.profileImageUrl = imageUrl;

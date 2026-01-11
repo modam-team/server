@@ -1,0 +1,5 @@
+ALTER TABLE user ADD COLUMN created_at DATETIME;
+
+UPDATE user SET created_at = '2026-01-01 00:00:00' WHERE created_at IS NULL;
+
+ALTER TABLE user MODIFY COLUMN created_at DATETIME NOT NULL;
