@@ -4,6 +4,7 @@ import com.example.modam.domain.report.Domain.Place;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import java.util.Map;
 @Builder
 public class ReportResponse {
     private CharacterResponse character;
+    private LocalDateTime userRegisterDate;
     private long characterNum;
     private long userTotalNum;
     private ReportBlock<Map<String, Map<String, List<ReportGroup>>>> data;
