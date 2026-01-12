@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -114,8 +112,11 @@ public class ReportService {
             characterNum = Long.parseLong(redisStringClient.get(key));
         }
 
+        LocalDateTime userRegisterDate = userRepository.findById(userId).get().getCreatedAt();
+
         ReportResponse response = ReportResponse.builder()
                 .character(character)
+                .userRegisterDate(userRegisterDate)
                 .data(data)
                 .logData(LogData)
                 .userTotalNum(userNum)
