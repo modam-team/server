@@ -61,7 +61,8 @@ public enum ErrorDefine {
     REPORT_DATA_EMPTY("RR404", HttpStatus.NOT_FOUND, "Report: User has no report data"),
 
     //Many Request
-    MANY_REQUEST("SM429", HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests"),
+    MANY_REQUEST("A429", HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests"),
+    EXTERNAL_API_ERROR("A503", HttpStatus.SERVICE_UNAVAILABLE, "External API Error: Aladin API is unavailable"),
 
     //File upload
     EMPTY_FILE("SM400", HttpStatus.BAD_REQUEST, "File: file is empty"),
