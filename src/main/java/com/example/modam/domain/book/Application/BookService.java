@@ -1,19 +1,19 @@
 package com.example.modam.domain.book.Application;
 
 import com.example.modam.domain.book.Presentation.dto.BookSearchRequest;
-import com.example.modam.global.exception.ApiException;
-import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.utils.BookSearch.BookSearchFactory;
 import com.example.modam.global.utils.CategoryMapping;
 import com.example.modam.domain.book.Presentation.dto.AladinResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,9 +31,14 @@ public class BookService {
     private final BookSearchFactory bookSearchFactory;
 
     @Async("aladin")
+    @CircuitBreaker(
+            name = "aladinApi",
+            fallbackMethod = "aladinCircuitFallback"
+    )
     public CompletableFuture<List<AladinResponse>> parseBookData(BookSearchRequest dto) throws Exception {
 
         URL url = bookSearchFactory.requestedUrl(dto);
+        log.info("call to Aladin API");
 
         try (InputStream in = url.openStream()) {
             JsonNode root = xmlMapper.readTree(in);
@@ -65,11 +70,20 @@ public class BookService {
 
             return CompletableFuture.completedFuture(result);
         } catch (Exception e) {
+            // circuit breaker 호출을 위한 실패 전파
             log.info("Fail to Call Aladin API: " + e.getMessage());
-            return CompletableFuture.failedFuture(
-                    new ApiException(ErrorDefine.EXTERNAL_API_ERROR)
-            );
+            throw new IOException(e);
         }
+    }
+
+    // circuit breaker 실패 시 fallback
+    private CompletableFuture<List<AladinResponse>> aladinCircuitFallback(
+            BookSearchRequest dto,
+            Throwable ex
+    ) {
+        log.warn("[Circuit OPEN] Aladin API blocked. fallback to empty result");
+
+        return CompletableFuture.completedFuture(List.of());
     }
 
     // 책 커버 선명하게 데이터 가공
