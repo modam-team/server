@@ -1,6 +1,8 @@
 package com.example.modam.domain.book.Application;
 
 import com.example.modam.domain.book.Presentation.dto.BookSearchRequest;
+import com.example.modam.global.exception.ApiException;
+import com.example.modam.global.exception.ErrorDefine;
 import com.example.modam.global.utils.BookSearch.BookSearchFactory;
 import com.example.modam.global.utils.CategoryMapping;
 import com.example.modam.domain.book.Presentation.dto.AladinResponse;
@@ -8,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookService {
@@ -26,7 +30,6 @@ public class BookService {
     private final CategoryMapping categoryMapping;
     private final BookSearchFactory bookSearchFactory;
 
-    // 응답 데이터인 XML을 응답 JSON으로 가공
     @Async("aladin")
     public CompletableFuture<List<AladinResponse>> parseBookData(BookSearchRequest dto) throws Exception {
 
@@ -62,11 +65,14 @@ public class BookService {
 
             return CompletableFuture.completedFuture(result);
         } catch (Exception e) {
-            System.err.println("Fail to Call Aladin API: " + e.getMessage());
-            return CompletableFuture.completedFuture(new ArrayList<>());
+            log.info("Fail to Call Aladin API: " + e.getMessage());
+            return CompletableFuture.failedFuture(
+                    new ApiException(ErrorDefine.EXTERNAL_API_ERROR)
+            );
         }
     }
 
+    // 책 커버 선명하게 데이터 가공
     public String preprocessCover(String cover) {
 
         String[] parts = cover.split("/");

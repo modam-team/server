@@ -7,6 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.concurrent.CompletionException;
+
 @RestControllerAdvice
 public class GlobalRestExceptionHandler {
     @ExceptionHandler(value = {ApiException.class})
@@ -28,4 +30,16 @@ public class GlobalRestExceptionHandler {
     public ResponseEntity<?> handleException(Exception e) {
         return ResponseDTO.toResponseEntity(e);
     }
+
+    @ExceptionHandler(CompletionException.class)
+    public ResponseEntity<?> handleCompletionException(CompletionException e) {
+        Throwable cause = e.getCause();
+
+        if (cause instanceof ApiException apiException) {
+            return ResponseDTO.toResponseEntity(apiException);
+        }
+
+        return ResponseDTO.toResponseEntity(e);
+    }
+
 }

@@ -4,6 +4,7 @@ import com.example.modam.domain.book.Application.BookDataService;
 import com.example.modam.domain.book.Presentation.dto.*;
 import com.example.modam.domain.book.Application.BookService;
 import com.example.modam.domain.book.Domain.BookEntity;
+import com.example.modam.global.config.RateLimit.AladinRateLimitGuard;
 import com.example.modam.global.config.Semaphore.AladinSemaphore;
 import com.example.modam.global.exception.ApiException;
 import com.example.modam.global.exception.ErrorDefine;
@@ -29,6 +30,7 @@ public class BookFacade {
     private final BestSellerCache bestSellerCache;
     private final VariousFunc variousFunc;
     private final RedisBookDataClient redisBookDataClient;
+    private final AladinRateLimitGuard aladinRateLimitGuard;
     private final long BOOK_SEARCH_TTL_SECONDS = 259_200L; // 3일
 
     @Qualifier("BookData")
@@ -41,7 +43,7 @@ public class BookFacade {
             BookDataService bookDataService,
             BestSellerCache bestSellerCache,
             VariousFunc variousFunc,
-            RedisBookDataClient redisBookDataClient,
+            RedisBookDataClient redisBookDataClient, AladinRateLimitGuard aladinRateLimitGuard,
             @Qualifier("BookData") ThreadPoolTaskExecutor bookData,
             AladinSemaphore aladinSemaphore
     ) {
@@ -50,6 +52,7 @@ public class BookFacade {
         this.bestSellerCache = bestSellerCache;
         this.variousFunc = variousFunc;
         this.redisBookDataClient = redisBookDataClient;
+        this.aladinRateLimitGuard = aladinRateLimitGuard;
         this.bookData = bookData;
         this.aladinSemaphore = aladinSemaphore;
     }
@@ -92,6 +95,7 @@ public class BookFacade {
             });
         }
 
+        aladinRateLimitGuard.check();
         aladinSemaphore.acquire();
 
         CompletableFuture<List<BookInfoResponse>> response;
