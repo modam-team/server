@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -30,11 +31,12 @@ public class BookService {
     private final CategoryMapping categoryMapping;
     private final BookSearchFactory bookSearchFactory;
 
-    @Async("aladin")
     @CircuitBreaker(
             name = "aladinApi",
             fallbackMethod = "aladinCircuitFallback"
     )
+    @Retry(name = "aladinApi")
+    @Async("aladin")
     public CompletableFuture<List<AladinResponse>> parseBookData(BookSearchRequest dto) throws Exception {
 
         URL url = bookSearchFactory.requestedUrl(dto);
@@ -72,7 +74,7 @@ public class BookService {
         } catch (Exception e) {
             // circuit breaker 호출을 위한 실패 전파
             log.info("Fail to Call Aladin API: " + e.getMessage());
-            throw new IOException(e);
+            return CompletableFuture.failedFuture(new IOException(e));
         }
     }
 
